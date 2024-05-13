@@ -56,79 +56,46 @@ def send_congratulatory_email(firstname, lastname, email, password, user_type):
 from crm_app.models import CustomUser
 from django.db.utils import ProgrammingError
 # ------------------------------- Package email ----------------------------
-# users = CustomUser.objects.all()
+
+
 # email_list = []
-
-# # Iterate through each user and append their email to the list
-# for user in users:
-#     email_list.append(user.email)
-
-
-# def send_package_email(title, country):
-#     subject = "Greetings! New Product Added ."
-
-#     # Render the HTML template with dynamic content
-#     html_message = render_to_string(
-#         "packagemail.html",
-#         {
-#             "title": title,
-#             "country": country,
-#         },
-#     )
-
-#     # Create a plain text version of the HTML content (for clients that don't support HTML)
-#     plain_message = strip_tags(html_message)
-
-#     # Change this to your email
-#     recipient_list = email_list
-
-#     send_mail(
-#         subject,
-#         plain_message,
-#         from_email=None,
-#         recipient_list=recipient_list,
-#         html_message=html_message,
-#     )
-
-
-
-email_list = []
-try:
-    # Attempt to fetch all users
-    users = CustomUser.objects.all()
-    # Populate email_list
-    email_list = [user.email for user in users]
-except ProgrammingError:
-    # If the table doesn't exist, handle it gracefully
-    print("CustomUser table does not exist. No email will be sent.")
-    # You can assign a default email_list or keep it empty
-    email_list = []
+# try:
+#     # Attempt to fetch all users
+#     users = CustomUser.objects.all()
+#     # Populate email_list
+#     email_list = [user.email for user in users]
+# except ProgrammingError:
+#     # If the table doesn't exist, handle it gracefully
+#     print("CustomUser table does not exist. No email will be sent.")
+#     # You can assign a default email_list or keep it empty
+#     email_list = []
 
 def send_package_email(title, country):
-    subject = "Greetings! New Product Added."
+    pass
+    # subject = "Greetings! New Product Added."
     
-    # Render the HTML template with dynamic content
-    html_message = render_to_string(
-        "packagemail.html",
-        {
-            "title": title,
-            "country": country,
-        },
-    )
+    # # Render the HTML template with dynamic content
+    # html_message = render_to_string(
+    #     "packagemail.html",
+    #     {
+    #         "title": title,
+    #         "country": country,
+    #     },
+    # )
 
-    # Create a plain text version of the HTML content (for clients that don't support HTML)
-    plain_message = strip_tags(html_message)
+    # # Create a plain text version of the HTML content (for clients that don't support HTML)
+    # plain_message = strip_tags(html_message)
 
-    # If email_list is empty, you can log a message or take other actions
-    if not email_list:
-        print("No emails to send. Exiting...")
-        return
+    # # If email_list is empty, you can log a message or take other actions
+    # if not email_list:
+    #     print("No emails to send. Exiting...")
+    #     return
 
-    # Send the email
-    send_mail(
-        subject,
-        plain_message,
-        from_email=None,
-        recipient_list=email_list,
-        html_message=html_message,
-    )
+    # # Send the email
+    # send_mail(
+    #     subject,
+    #     plain_message,
+    #     from_email=None,
+    #     recipient_list=email_list,
+    #     html_message=html_message,
+    # )

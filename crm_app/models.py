@@ -249,7 +249,7 @@ class Employee(models.Model):
     Address = models.TextField(null=True, blank=True)
     zipcode = models.CharField(max_length=100, null=True, blank=True)
     file = models.FileField(upload_to="Employee/profile_pic/", null=True, blank=True)
-    created = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
     tata_tele_authorization = models.CharField(max_length=500, null=True, blank=True)
     tata_tele_api_key = models.CharField(max_length=200, null=True, blank=True)
     tata_tele_agent_number = models.CharField(max_length=200, null=True, blank=True)
