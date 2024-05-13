@@ -1,0 +1,48 @@
+<!-- templates/select_agent_with_dynamic_dropdown.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Select Agent</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Include jQuery and Select2 in the correct order -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+</head>
+<body>
+    <h1>Search for an Agent</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="agent-dropdown">Type to Search for an Agent:</label>
+        <select id="agent-dropdown" name="agent" style="width:250px;"></select>  <!-- Dropdown for dynamic search -->
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- JavaScript to make the dropdown dynamic -->
+    <script>
+        $(document).ready(function() {
+            $("#agent-dropdown").select2({
+                ajax: {
+                    url: "{% url 'agent_search' %}",  // AJAX endpoint
+                    dataType: "json",
+                    delay: 250,  // Delay to avoid too many requests
+                    data: function (params) {
+                        return {
+                            q: params.term  // User input
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results  // Populate the dropdown with matches
+                        };
+                    },
+                },
+                minimumInputLength: 1,  // Trigger AJAX after one character
+                placeholder: "Search for an Agent",  // Placeholder text
+            });
+        });
+    </script>
+</body>
+</html>

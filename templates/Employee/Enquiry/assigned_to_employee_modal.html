@@ -1,0 +1,116 @@
+<style>
+    .search-select-container {
+        position: relative;
+    }
+
+    .agent-dropdownnn {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 50%;
+        z-index: 1000;
+        list-style: none;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-top: none;
+        padding: 0;
+        margin-top: 0;
+        
+        max-height: 200px; /* Optional: Set max height for dropdown */
+        overflow-y: auto; /* Optional: Add vertical scrollbar */
+    }
+
+    .agent-dropdownnn li {
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    .agent-dropdown li:hover {
+        background-color: #f0f0f0;
+    }
+</style>
+
+  <div class="modal fade" id="employeeeModal-{{i.id}}" tabindex="-1" aria-labelledby="employeeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{% url "emp_update_assign_employee" i.id %}" method="post" autocomplete="off">
+            {% csrf_token %}
+            
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="employeeeModalLabel">Assigned To Employee</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <hr>
+                <div class="modal-body">
+                    
+                   
+                        <label for="EmployeeSearchInput-{{i.id}}" class="custom-form-label">Assigned To Employee</label>
+                       
+                        <div class="search-select-container">
+                            
+                            <input type="text" id="employee-search-{{i.id}}" placeholder="Type to search for an Employee" class="form-control"/>  <!-- Search input -->
+                            <input type="text" id="employeeid-{{i.id}}" placeholder="Type to search for an Employee" class="form-control" name="employeeIdInput" hidden/>  <!-- Search input -->
+                            
+                            <ul id="employee-list-{{i.id}}" class="agent-dropdownnn">  <!-- List to display results -->
+                                <!-- Results will be inserted here -->
+                            </ul>
+                        </div> 
+                  
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Frontend JavaScript -->
+
+<script>
+    $(document).ready(function() {
+        $("[id^='employee-search']").on("input", function() {
+            var $input = $(this);
+            var id = $input.attr("id").split("-")[2];
+            var query = $input.val();
+            
+
+            // Check if the query length is at least 4 characters
+            if (query.length >= 3) {
+                $.ajax({
+                    url: "{% url 'employee_search' %}",
+                    data: { q: query },
+                    success: function(response) {
+                        var results = response.results;
+                        var $list = $("#employee-list-" + id);
+                        $list.empty();
+
+                        results.forEach(function(employee) {
+                            var listItem = `<li data-employee-id="${employee.id}">${employee.text}</li>`;
+                            $list.append(listItem);
+                            console.log(listItem,"LLLLLLLLLLLLLLLLLLLLLl")
+                        });
+                    },
+                });
+            } else {
+                // If the query length is less than 4, clear the list
+                $("#employee-list-" + id).empty();
+            }
+        });
+
+        $("[id^='employee-list']").on("click", "li", function() {
+            var $li = $(this);
+            var employeeName = $li.text();
+            var employeeId = $li.data("employee-id");
+            
+            var id = $li.closest(".modal").attr("id").split("-")[1];
+            
+            $("#employee-search-" + id).val(employeeName); // Set input value
+            $("#employeeid-" + id).val(employeeId); 
+        });
+    });
+</script>
+

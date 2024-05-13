@@ -1,0 +1,70 @@
+<div class="modal fade" id="colorModal-{{i.id}}" tabindex="-1" aria-labelledby="colorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{% url "color_code" i.id %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="redirect_to" value="{% if request.path == '/ActiveLeads/' %}active_leads{% elif request.path == '/LatestLeads/' %}latest_leads{% elif request.path == '/InprocessLeads/' %}inprocess_leads{% elif request.path == '/AppointmentLeads/' %}appointment_leads{% elif request.path == '/DeliveredLeads/' %}delivered_leads{% elif request.path == '/CompletedLeads/' %}completed_leads{% elif request.path == '/EnrolledLeads/' %}enrolled_leads{% else %}new_leads{% endif %}">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="colorModalLabel">Give Colour For Lead</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <hr>
+                <div class="modal-body">
+
+                <label class="custom-form-label" for="">Give Colour For Lead</label>
+                <select class="form-select" name="color_code" id="color_code">
+                   
+                    <option value="Grey" {% if i.color_code == "Grey" %}selected{% endif %}>Grey</option>
+                    <option value="Blue" {% if i.color_code == "Blue" %}selected{% endif %}>Blue</option>
+                    <option value="White" {% if i.color_code == "White" %}selected{% endif %}>White</option>
+                    <option value="Red" {% if i.color_code == "Red" %}selected{% endif %}>Red</option>
+                    <option value="Green" {% if i.color_code == "Green" %}selected{% endif %}>Green</option>
+                </select>
+  
+                    
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+  </div>
+
+
+   <script>
+    // Function to set the value of redirect_to based on the current URL
+    function setRedirectTo(currentPath, modalId) {
+        var redirectInput = document.querySelector('#' + modalId + ' input[name="redirect_to"]');
+        if (currentPath.includes("/ActiveLeads/")) {
+            redirectInput.value = "active_leads";
+        } else if (currentPath.includes("/LatestLeads/")) {
+            redirectInput.value = "latest_leads";
+        } else if (currentPath.includes("/InprocessLeads/")) {
+            redirectInput.value = "inprocess_leads";
+        } else if (currentPath.includes("/AppointmentLeads/")) {
+            redirectInput.value = "appointment_leads";
+        } else if (currentPath.includes("/DeliveredLeads/")) {
+            redirectInput.value = "delivered_leads";
+        } else if (currentPath.includes("/CompletedLeads/")) {
+            redirectInput.value = "completed_leads";
+        } else if (currentPath.includes("/EnrolledLeads/")) {
+            redirectInput.value = "enrolled_leads";
+        } else {
+            redirectInput.value = "new_leads";
+        }
+    }
+
+    // Call the setRedirectTo function when each modal is shown
+    document.addEventListener("DOMContentLoaded", function () {
+        var modals = document.querySelectorAll('.modal');
+        modals.forEach(function(modal) {
+            modal.addEventListener('shown.bs.modal', function () {
+                var currentPath = window.location.pathname;
+                var modalId = modal.getAttribute('id');
+                setRedirectTo(currentPath, modalId);
+            });
+        });
+    });
+</script>
