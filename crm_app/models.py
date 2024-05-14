@@ -316,8 +316,8 @@ class Agent(models.Model):
     branch_name = models.CharField(max_length=100, null=True, blank=True)
     account_no = models.CharField(max_length=100, null=True, blank=True)
     ifsc_code = models.CharField(max_length=100, null=True, blank=True)
-    last_updated = models.DateTimeField(auto_now_add=False, auto_now=True)
-    registeron = models.DateTimeField(auto_now_add=True, auto_now=False)
+    last_updated = models.DateTimeField(auto_now_add=False, auto_now=True,null=True,blank=True)
+    registeron = models.DateTimeField(auto_now_add=True, auto_now=False,null=True,blank=True)
     registerdby = models.ForeignKey(
         CustomUser,
         on_delete=models.SET_NULL,
