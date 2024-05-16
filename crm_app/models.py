@@ -113,8 +113,8 @@ class VisaCategory(models.Model):
     lastupdated_by = models.CharField(max_length=100, null=True, blank=True)
     last_updated_on = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        db_table = "VisaCategory"
+    # class Meta:
+    #     db_table = VisaCategory
 
     def __str__(self):
         return f"{self.category} - {self.subcategory}"

@@ -66,3 +66,6 @@ class LoginCheckMiddleWare(MiddlewareMixin):
 
             else:
                 return HttpResponseRedirect(reverse("login"))
+
+
+
