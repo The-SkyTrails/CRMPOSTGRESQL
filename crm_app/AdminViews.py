@@ -172,13 +172,13 @@ class admin_dashboard(LoginRequiredMixin, TemplateView):
         
         
 
-        url = "https://back.theskytrails.com/skyTrails/packages/getAllcrm"
-        response = requests.get(url)
-        data = response.json()
-        webpackages = data["data"]["pakage"]
+        # url = "https://back.theskytrails.com/skyTrails/packages/getAllcrm"
+        # response = requests.get(url)
+        # data = response.json()
+        # webpackages = data["data"]["pakage"]
 
-        for webpackage in webpackages:
-            webpackage["id"] = webpackage.pop("_id")
+        # for webpackage in webpackages:
+        #     webpackage["id"] = webpackage.pop("_id")
 
         active_users = CustomUser.objects.filter(is_logged_in__in=[True]).count()
        
@@ -290,7 +290,7 @@ class admin_dashboard(LoginRequiredMixin, TemplateView):
         context["leadappoint_count"] = leadappoint_count
         context["completed_count"] = completed_count
         context["leadresult_count"] = leadresult_count
-        context["webpackages"] = webpackages
+        # context["webpackages"] = webpackages
         context["enrolled_months"] = enrolled_months
         context["enrolled_counts"] = enrolled_counts
         context["all_months"] = all_months
