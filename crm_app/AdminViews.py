@@ -1737,8 +1737,8 @@ class PackageCreateView(LoginRequiredMixin, CreateView):
             form.instance.last_updated_by = self.request.user
             form.instance.approval = "Yes"
             self.object = form.save()
-            self.send_whatsapp_messages()
-            self.send_email()
+            # self.send_whatsapp_messages()
+            # self.send_email()
 
             messages.success(self.request, "Package Added Successfully.")
             return super().form_valid(form)
@@ -4302,6 +4302,15 @@ def get_file_extension(content_type):
 @login_required
 def search_enquiries(request):
     enquiry = Enquiry.objects.all().order_by("-id")
+    excluded_statuses = ["Accept", "Case Initiated"]
+    lead = [status for status in leads_status if status[0] not in excluded_statuses]
+    presales_employees = get_presale_employee()
+    sales_employees = get_sale_employee()
+    documentation_employees = get_documentation_team_employee()
+    visa_team = get_visa_team_employee()
+    assesment_employee = get_assesment_employee()
+    agent = get_agent()
+    outsourcepartner = get_outsourcepartner()
 
     if request.method == "POST":
         enquiry_id = request.POST.get("enquiry_id")
@@ -4366,7 +4375,19 @@ def search_enquiries(request):
         if filter_conditions:
             enquiry = enquiry.filter(filter_conditions)
 
-    return render(request, "Admin/Enquiry/lead-details.html", {"page": enquiry})
+    context = {
+        # "enquiry": enquiry,
+        "presales_employees": presales_employees,
+        "sales_employees": sales_employees,
+        "documentation_employees": documentation_employees,
+        "visa_team": visa_team,
+        "lead": lead,
+        "assesment_employee": assesment_employee,
+        "agent": agent,
+        "outsourcepartner": outsourcepartner,
+        "page": enquiry,
+    }   
+    return render(request, "Admin/Enquiry/lead-details.html",context)
 
 
 @login_required
