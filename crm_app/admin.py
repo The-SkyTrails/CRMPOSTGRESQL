@@ -79,8 +79,8 @@ class CustomUserAdmin(admin.ModelAdmin):
     list_filter = [
         "email",
     ]
-    list_display = ["email", "user_type"]
-    search_fields = ["email"]
+    list_display = ["id","email", "user_type"]
+    search_fields = ["id","email"]
     list_per_page = 10
 
 
