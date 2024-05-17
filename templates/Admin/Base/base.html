@@ -274,7 +274,7 @@
            
             notif = document.getElementById("notification");
             
-            const socket = new WebSocket('ws://' + window.location.host + '/ws/Admin/notifications/');
+            const socket = new WebSocket('wss://' + window.location.host + '/ws/Admin/notifications/');
     
             socket.onopen = function () {
                 console.log('WebSocket admin connection opened.');
