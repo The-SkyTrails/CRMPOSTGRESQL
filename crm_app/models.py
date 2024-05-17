@@ -850,7 +850,7 @@ class Enquiry(models.Model):
             next_serial_number = 1
 
         # Format the serial number as a zero-padded string (e.g., '00001')
-        return f"{next_serial_number:05d}"
+        return f"{next_serial_number:06d}"
 
     def generate_initials(self):
         first_initial = self.FirstName[0].upper() if self.FirstName else ""

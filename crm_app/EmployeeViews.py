@@ -93,13 +93,13 @@ class employee_dashboard(LoginRequiredMixin, TemplateView):
             :10
         ]
 
-        url = "https://back.theskytrails.com/skyTrails/packages/getAllcrm"
-        response = requests.get(url)
-        data = response.json()
-        webpackages = data["data"]["pakage"]
+        # url = "https://back.theskytrails.com/skyTrails/packages/getAllcrm"
+        # response = requests.get(url)
+        # data = response.json()
+        # webpackages = data["data"]["pakage"]
 
-        for webpackage in webpackages:
-            webpackage["id"] = webpackage.pop("_id")
+        # for webpackage in webpackages:
+        #     webpackage["id"] = webpackage.pop("_id")
 
         active_users = CustomUser.objects.filter(is_logged_in__in=[True]).count()
         active_employee = CustomUser.objects.filter(user_type="3", is_logged_in__in=[True])
@@ -354,12 +354,12 @@ class employee_dashboard(LoginRequiredMixin, TemplateView):
         context["story"] = story
         context["latest_news"] = latest_news
         context["todo"] = todo
-        context["data"] = data
+        # context["data"] = data
         context["active_users"] = active_users
         context["active_employee"] = active_employee
         context["active_agent"] = active_agent
 
-        context["webpackages"] = webpackages
+        # context["webpackages"] = webpackages
         # context["enrolled_months"] = enrolled_months
         # context["enrolled_counts"] = enrolled_counts
         # context["all_months"] = all_months
@@ -847,6 +847,7 @@ def preenrolled_save(request, id):
     sale_Emp = enquiry.assign_to_sales_employee
     doc_Emp = enquiry.assign_to_documentation_employee
     visa_Emp = enquiry.assign_to_visa_team_employee
+    saleteam_employees = get_sale_employee()
 
     if agnt:
         agent_id = Agent.objects.get(id=agnt.id)
@@ -870,11 +871,8 @@ def preenrolled_save(request, id):
         enquiry.lead_status = "PreEnrolled"
         enquiry.save()
         return redirect("employee_lead_list")
-
-    else:
+    if saleteam_employees:
         last_assigned_index = cache.get("last_assigned_index") or 0
-        saleteam_employees = get_sale_employee()
-
         next_index = (last_assigned_index + 1) % saleteam_employees.count()
         enquiry.assign_to_sales_employee = saleteam_employees[next_index]
         enquiry.lead_status = "PreEnrolled"
@@ -892,6 +890,10 @@ def preenrolled_save(request, id):
         employee_id = enquiry.assign_to_sales_employee.id
         send_notification(employee_id, "New Lead Assign Added", current_count)
 
+        
+
+    else:
+        messages.warning(request,'There is no Employee in Sales Department')
         # return redirect("employee_leads")
 
     return redirect("employee_lead_list")
@@ -902,15 +904,16 @@ def active_save(request, id):
 
     assesment_Emp = enquiry.assign_to_assesment_employee
 
+    assesment_team_employees = get_assesment_employee()
     if assesment_Emp:
+       
         enquiry.lead_status = "Active"
         enquiry.save()
 
         return redirect("employee_lead_list")
-    else:
+    if assesment_team_employees:
+        
         last_assigned_index = cache.get("last_assigned_index") or 0
-        assesment_team_employees = get_assesment_employee()
-
         next_index = (last_assigned_index + 1) % assesment_team_employees.count()
         enquiry.assign_to_assesment_employee = assesment_team_employees[next_index]
         enquiry.lead_status = "Active"
@@ -928,6 +931,32 @@ def active_save(request, id):
 
         employee_id = enquiry.assign_to_assesment_employee.id
         send_notification(employee_id, "New Lead Assign Added", current_count)
+
+        
+    else:
+        
+        messages.warning(request,"There is no employee in assesment department ")
+        return redirect('employee_lead_list')
+        
+        # assesment_team_employees = get_assesment_employee()
+
+        # next_index = (last_assigned_index + 1) % assesment_team_employees.count()
+        # enquiry.assign_to_assesment_employee = assesment_team_employees[next_index]
+        # enquiry.lead_status = "Active"
+        # enquiry.assign_to_assesment_employee
+
+        # enquiry.save()
+        # cache.set("last_assigned_index", next_index)
+        # create_notification(
+        #     enquiry.assign_to_assesment_employee, "New Lead Assign Added"
+        # )
+
+        # current_count = Notification.objects.filter(
+        #     is_seen=False, employee=enquiry.assign_to_assesment_employee
+        # ).count()
+
+        # employee_id = enquiry.assign_to_assesment_employee.id
+        # send_notification(employee_id, "New Lead Assign Added", current_count)
 
     return redirect("employee_lead_list")
 

@@ -70,14 +70,14 @@ class agent_dashboard(LoginRequiredMixin, TemplateView):
         ]
         context["package"] = package
 
-        url = "https://back.theskytrails.com/skyTrails/packages/getAllcrm"
-        response = requests.get(url)
-        data = response.json()
-        webpackages = data["data"]["pakage"]
+        # url = "https://back.theskytrails.com/skyTrails/packages/getAllcrm"
+        # response = requests.get(url)
+        # data = response.json()
+        # webpackages = data["data"]["pakage"]
 
-        for webpackage in webpackages:
-            webpackage["id"] = webpackage.pop("_id")
-            context["webpackages"] = webpackages
+        # for webpackage in webpackages:
+        #     webpackage["id"] = webpackage.pop("_id")
+        #     context["webpackages"] = webpackages
 
         story = SuccessStory.objects.all()
         context["story"] = story
