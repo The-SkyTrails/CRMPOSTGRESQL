@@ -1785,14 +1785,68 @@ class PackageCreateView(LoginRequiredMixin, CreateView):
             return Agent.objects.get(users=user).contact_no
 
 
+
+
+
+
+
 class PackageListView(LoginRequiredMixin, ListView):
     model = Package
     template_name = "Admin/Product/product.html"
     context_object_name = "Package"
+    paginate_by = 9
 
     def get_queryset(self):
-        # print("packageeeeee",Package.objects.filter(approval__in=[True]).order_by("-id"))
         return Package.objects.filter(approval = "Yes").order_by("-id")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Pagination logic
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list  
+        return context
+
+class DisapprivePackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Admin/Product/disapproveproduct.html"
+    context_object_name = "Package"
+    paginate_by = 9
+
+    def get_queryset(self):
+        
+        return Package.objects.filter(approval = "No").order_by("-id")
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Pagination logic
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list  
+        return context
+
 
 
 class DisapprivePackageListView(LoginRequiredMixin, ListView):

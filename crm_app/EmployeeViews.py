@@ -2430,25 +2430,40 @@ def FAQUpdateView(request):
 
 
 ################################################## PRODUCT ################################################
-
-
 class PackageListView(LoginRequiredMixin, ListView):
     model = Package
     template_name = "Employee/Product/product.html"
     context_object_name = "Package"
+    paginate_by = 9
 
     def get_queryset(self):
         return Package.objects.order_by("-id")
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         user = self.request.user
         dep = user.employee.department
+
+        # Pagination logic
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list  
+        
         context["dep"] = dep
 
         return context
-
 
 class PackageDetailView(LoginRequiredMixin, DetailView):
     model = Package

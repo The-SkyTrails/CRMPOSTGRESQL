@@ -1003,11 +1003,11 @@ def agent_PackageApplyView(request, id):
 
         return redirect("agent_packageenquiry_form1")
 
-
 class PackageListView(LoginRequiredMixin, ListView):
     model = Package
     template_name = "Agent/Product/product.html"
     context_object_name = "Package"
+    paginate_by = 9
 
     def get_queryset(self):
 
@@ -1017,10 +1017,24 @@ class PackageListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         faq_count = FAQ.objects.filter(user=user).count()
+        
+        # Pagination logic
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list  
+        
         context["faq_count"] = faq_count
         return context
-
-
 ############################################ QUERIES ######################################################
 
 

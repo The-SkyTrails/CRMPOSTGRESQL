@@ -1,6 +1,7 @@
 {% extends "Admin/Base/base.html" %}
 {% load static %}
 {% block main-content %}
+
 <div class="form-container">
    <div class="custom-container">
       <div class="icon-container">
@@ -81,7 +82,7 @@
    </div>
    {% include "Admin/Base/messages.html" %}
    <div class="row">
-      {% for i in Package  %}
+      {% for i in page  %}
       <div class="col-md-4" style="margin-bottom:4px;">
          <div class="card">
             <div class="images-content" style="height:14rem;">
@@ -165,6 +166,47 @@
          </div>
       </div>
       {% endfor %}
+      <div class="pagination" style="display: flex;justify-content:space-between;margin:10px;">
+      
+         <div class="next">
+             <span class="step-links" style="margin: 4px;">
+                 {% if page_obj.has_previous %}
+                     
+                     <a href="?page={{ page_obj.previous_page_number }}"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 20 21" fill="none">
+                         <path d="M12.2109 16.3334C11.9168 16.3333 11.6348 16.2105 11.4269 15.992L6.99141 11.3311C6.78353 11.1125 6.66675 10.8162 6.66675 10.5072C6.66675 10.1983 6.78353 9.90193 6.99141 9.68342L11.4269 5.02248C11.5292 4.91119 11.6516 4.82242 11.7869 4.76135C11.9222 4.70028 12.0677 4.66814 12.2149 4.66679C12.3621 4.66545 12.5082 4.69493 12.6444 4.75352C12.7807 4.81211 12.9045 4.89863 13.0086 5.00804C13.1127 5.11744 13.1951 5.24755 13.2508 5.39075C13.3066 5.53395 13.3347 5.68739 13.3334 5.84211C13.3321 5.99683 13.3015 6.14973 13.2434 6.29189C13.1853 6.43406 13.1008 6.56263 12.9949 6.67012L9.34335 10.5072L12.9949 14.3444C13.1499 14.5073 13.2555 14.7149 13.2983 14.9409C13.341 15.1669 13.3191 15.4012 13.2352 15.6141C13.1512 15.827 13.0092 16.0089 12.8268 16.137C12.6445 16.265 12.4302 16.3334 12.2109 16.3334Z" fill="#6B7280"/>
+                       </svg></a>
+                 {% endif %}
+         
+                 
+                  <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range|slice:":3" %}
+        <li class="page-item{% if page.number == num %} active{% endif %}">
+           <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+        {% if page_obj.paginator.num_pages > 3 %}
+        <li class="page-item"><span class="page-link">...</span></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">{{ page.paginator.num_pages }}</a></li>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a></li>
+        <!-- Added "Last" button -->
+        {% endif %}
+      </ul>
+      </nav>
+             </span>
+         </div>
+         
+      </div>
    </div>
+   
 </div>
+
+
 {% endblock main-content %}
