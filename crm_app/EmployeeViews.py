@@ -2430,14 +2430,19 @@ def FAQUpdateView(request):
 
 
 ################################################## PRODUCT ################################################
+
 class PackageListView(LoginRequiredMixin, ListView):
     model = Package
     template_name = "Employee/Product/product.html"
-    context_object_name = "Package"
+    context_object_name = "packages"
     paginate_by = 9
 
     def get_queryset(self):
-        return Package.objects.order_by("-id")
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(approval="Yes").order_by("-id")
     
 
     def get_context_data(self, **kwargs):
@@ -2464,7 +2469,7 @@ class PackageListView(LoginRequiredMixin, ListView):
         context["dep"] = dep
 
         return context
-
+        
 class PackageDetailView(LoginRequiredMixin, DetailView):
     model = Package
     template_name = "Employee/Product/Productdetails.html"

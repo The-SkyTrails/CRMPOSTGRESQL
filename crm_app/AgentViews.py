@@ -1010,8 +1010,11 @@ class PackageListView(LoginRequiredMixin, ListView):
     paginate_by = 9
 
     def get_queryset(self):
-
-        return Package.objects.order_by("-id")
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(approval="Yes").order_by("-id")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1035,6 +1038,7 @@ class PackageListView(LoginRequiredMixin, ListView):
         
         context["faq_count"] = faq_count
         return context
+
 ############################################ QUERIES ######################################################
 
 

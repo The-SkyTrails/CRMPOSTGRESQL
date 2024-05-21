@@ -1789,20 +1789,23 @@ class PackageCreateView(LoginRequiredMixin, CreateView):
 
 
 
-
 class PackageListView(LoginRequiredMixin, ListView):
     model = Package
     template_name = "Admin/Product/product.html"
-    context_object_name = "Package"
+    context_object_name = "packages" 
     paginate_by = 9
 
     def get_queryset(self):
-        return Package.objects.filter(approval = "Yes").order_by("-id")
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(approval="Yes").order_by("-id")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Pagination logic
+       
         product_list = self.get_queryset()
         paginator = Paginator(product_list, self.paginate_by)
         page_number = self.request.GET.get('page')
@@ -1815,23 +1818,26 @@ class PackageListView(LoginRequiredMixin, ListView):
             page = paginator.page(paginator.num_pages)
 
         context['page_obj'] = page
-        context['page'] = page.object_list  
+        context['page'] = page.object_list
         return context
 
 class DisapprivePackageListView(LoginRequiredMixin, ListView):
     model = Package
     template_name = "Admin/Product/disapproveproduct.html"
-    context_object_name = "Package"
+    context_object_name = "packages"
     paginate_by = 9
 
     def get_queryset(self):
-        
-        return Package.objects.filter(approval = "No").order_by("-id")
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(approval="No", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(approval="No").order_by("-id")
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # Pagination logic
+        
+        
         product_list = self.get_queryset()
         paginator = Paginator(product_list, self.paginate_by)
         page_number = self.request.GET.get('page')
@@ -1844,19 +1850,9 @@ class DisapprivePackageListView(LoginRequiredMixin, ListView):
             page = paginator.page(paginator.num_pages)
 
         context['page_obj'] = page
-        context['page'] = page.object_list  
+        context['page'] = page.object_list 
+
         return context
-
-
-
-class DisapprivePackageListView(LoginRequiredMixin, ListView):
-    model = Package
-    template_name = "Admin/Product/disapproveproduct.html"
-    context_object_name = "Package"
-
-    def get_queryset(self):
-        
-        return Package.objects.filter(approval = "No").order_by("-id")
 
 
 class editPackage(LoginRequiredMixin, UpdateView):

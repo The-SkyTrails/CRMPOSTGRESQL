@@ -51,11 +51,15 @@
     <div class="custom-box">
       <div class="custom-text">All Product</div>
     </div>
+    <form action="" method="get">
+      <input type="search" name="query" id="query" class="form-control" placeholder="Search here...">
+     
+  </form>
   </div>
   {% include "Agent/Base/messages.html" %}
   <div class="row">
     {% for i in page  %}
-    {% if i.approval == "Yes" %}
+    
     <div class="col-md-4" style="margin-bottom:4px;">
       <div class="card">
       <div class="images-content" style="height:14rem;">
@@ -113,7 +117,7 @@
 
       </div>
     </div>
-    {% endif %}
+   
     {% endfor %}
     <div class="pagination" style="display: flex;justify-content:space-between;margin:10px;">
       
