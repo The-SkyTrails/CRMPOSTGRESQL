@@ -130,7 +130,8 @@
                   <p class="card-textt">File Charges:<span class="sp"> {{package.file_charges}}</span></p>
                   {% comment %} <p class="card-textt">Last Updated By:<span class="sp"> {{package.last_updated_by}}</span> </p> {% endcomment %}
                   <p class="card-textt">Last Updated On:<span class="sp">  {{package.last_updated_on}}</span> </p>
-                  <p class="card-textt">Product PDF: <a href="{{package.product_pdf.url}}" target="_blank">{{package.product_pdf}}</a></p>
+                  {% if package.product_pdf %}<p class="card-textt">Product PDF: <a href="{{package.product_pdf.url}}" target="_blank">{{package.product_pdf}}</a></p>{% endif %}
+                  
 
                 </div>
               </div>
