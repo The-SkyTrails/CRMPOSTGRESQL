@@ -2596,8 +2596,8 @@ def admin_new_leads_details(request):
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     
     enquiry_list = Enquiry.objects.all().order_by("-id")
-    paginator = Paginator(enquiry_list, 5)
-    page_number = request.GET.get('page')
+    paginator = Paginator(enquiry_list,1)
+    page_number = request.GET.get('page',5)
     
 
     try:
@@ -2616,7 +2616,7 @@ def admin_new_leads_details(request):
     outsourcepartner = get_outsourcepartner()
 
     context = {
-        # "enquiry": enquiry,
+        "enquiry": enquiry_list,
         "presales_employees": presales_employees,
         "sales_employees": sales_employees,
         "documentation_employees": documentation_employees,
