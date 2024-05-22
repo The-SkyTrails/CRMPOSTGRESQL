@@ -534,3 +534,21 @@ def get_group_chat_messages(request):
     chat_content = loader.render_to_string("chat/group_chat_content.html", context)
     return HttpResponse(chat_content)
 
+
+from .filters import EnquiryFilter
+from .models import Enquiry
+def check_status(request):
+    enq_num = request.GET.get('enquiry_number')
+    if enq_num:
+        enquiry_filter = EnquiryFilter(request.GET, queryset=Enquiry.objects.all())
+        enq_exists = enquiry_filter.qs.exists()
+    else:
+        enquiry_filter = EnquiryFilter(queryset=Enquiry.objects.none())
+        enq_exists = False
+        
+    context = {
+        'form': enquiry_filter.form,
+        'enq': enquiry_filter.qs,
+        'enq_exists': enq_exists,
+    }
+    return render(request, "check_status.html", context)
