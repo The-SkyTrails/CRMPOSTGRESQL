@@ -123,6 +123,8 @@ class employee_dashboard(LoginRequiredMixin, TemplateView):
         enrolled_monthly_counts = defaultdict(int)
         sorted_enrolled_counts = 0
 
+        pending_queries = FAQ.objects.filter(answer__exact="").exclude(answer__isnull=True)
+
         
 
         # if dep == "Presales":
@@ -364,7 +366,7 @@ class employee_dashboard(LoginRequiredMixin, TemplateView):
         # context["enrolled_counts"] = enrolled_counts
         # context["all_months"] = all_months
         # context["all_counts"] = all_counts
-
+        context["pending_queries"] = pending_queries
        
 
         return context

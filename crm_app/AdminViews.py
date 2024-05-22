@@ -267,6 +267,10 @@ class admin_dashboard(LoginRequiredMixin, TemplateView):
         #     if all_enq.exists():
         #         enq_count = all_enq[0]["count"]
 
+        pending_query = FAQ.objects.filter(answer__exact="").exclude(answer__isnull=True)
+
+        context["pending_query"] = pending_query
+
         
         context["total_agent_count"] = total_agent_count
         context["employee_count"] = employee_count
