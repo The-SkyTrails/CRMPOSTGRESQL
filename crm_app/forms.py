@@ -12,6 +12,7 @@ class VisaCountryForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "placeholder": "Country",
+                    'required': 'required'
                 }
             )
         }
@@ -24,19 +25,19 @@ class VisaCategoryForm(forms.ModelForm):
         widgets = {
             "visa_country_id": forms.Select(
                 attrs={
-                    "class": "form-select",
+                    "class": "form-select",'required': 'required'
                 }
             ),
             "category": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Category Name",
+                    "placeholder": "Category Name",'required': 'required'
                 }
             ),
             "subcategory": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "SubCategory Name",
+                    "placeholder": "SubCategory Name",'required': 'required'
                 }
             ),
         }
@@ -50,7 +51,7 @@ class DocumentCategoryForm(forms.ModelForm):
             "Document_category": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Document Category",
+                    "placeholder": "Document Category",'required': 'required'
                 }
             )
         }
@@ -64,12 +65,12 @@ class DocumentForm(forms.ModelForm):
             "document_name": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": "Document Name",
+                    "placeholder": "Document Name",'required': 'required'
                 }
             ),
             "document_category": forms.Select(
                 attrs={
-                    "class": "form-select",
+                    "class": "form-select",'required': 'required'
                 }
             ),
         }
@@ -81,8 +82,8 @@ class CaseCategoryDocumentForm(forms.ModelForm):
         fields = ["country", "category", "document"]
 
         widgets = {
-            "country": forms.Select(attrs={"class": "form-select"}),
-            "category": forms.Select(attrs={"class": "form-select"}),
+            "country": forms.Select(attrs={"class": "form-select",'required': 'required'}),
+            "category": forms.Select(attrs={"class": "form-select",'required': 'required'}),
             # 'subcategory': forms.Select(attrs={'class': 'form-control'}),
             "document": forms.CheckboxSelectMultiple(),
         }
@@ -98,8 +99,8 @@ class BranchForm(forms.ModelForm):
         model = Branch
         fields = ["branch_name", "branch_source"]
         widgets = {
-            "branch_name": forms.TextInput(attrs={"class": "form-control"}),
-            "branch_source": forms.Select(attrs={"class": "form-select"}),
+            "branch_name": forms.TextInput(attrs={"class": "form-control",'required': 'required'}),
+            "branch_source": forms.Select(attrs={"class": "form-select",'required': 'required'}),
         }
 
 
@@ -109,7 +110,7 @@ class GroupForm(forms.ModelForm):
         fields = ["group_name", "group_member"]
         widgets = {
             "group_name": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter Group Name"}
+                attrs={"class": "form-control", "placeholder": "Enter Group Name",'required': 'required'}
             ),
         }
 
@@ -136,7 +137,7 @@ class CompanyCourierDetailsForm(forms.ModelForm):
 
         widgets = {
             "company_name": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter Company Name"}
+                attrs={"class": "form-control", "placeholder": "Enter Company Name",'required': 'required'}
             ),
             "address": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter Address"}
@@ -151,15 +152,15 @@ class CompanyCourierDetailsForm(forms.ModelForm):
                 attrs={"class": "form-control", "placeholder": "Enter State"}
             ),
             "zipcode": forms.NumberInput(
-                attrs={"class": "form-control", "placeholder": "Enter Zipcode"}
+                attrs={"class": "form-control", "placeholder": "Enter Zipcode",'required': 'required'}
             ),
             "docker_no": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter Docker No"}
+                attrs={"class": "form-control", "placeholder": "Enter Docker No",'required': 'required'}
             ),
             "courier_no": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter Number"}
             ),
-            "status": forms.Select(attrs={"class": "form-select"}),
+            "status": forms.Select(attrs={"class": "form-select",'required': 'required'}),
         }
 
 
@@ -175,7 +176,7 @@ class ReceiverDetailsForm(forms.ModelForm):
                 attrs={"class": "form-control", "placeholder": "Enter Number"}
             ),
             "receiver_address": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter Address"}
+                attrs={"class": "form-control", "placeholder": "Enter Address",'required': 'required'}
             ),
             "sender_address": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter Address"}
@@ -627,7 +628,7 @@ class FAQForm(forms.ModelForm):
         fields = ["question", "answer"]
         widgets = {
             "question": forms.Textarea(
-                attrs={"class": "input-item", "placeholder": "Type your question here."}
+                attrs={"class": "input-item", "placeholder": "Type your question here.",'required': 'required'}
             ),
             "answer": forms.Textarea(attrs={"class": "form-control"}),
         }
@@ -661,7 +662,7 @@ class NewsForm(forms.ModelForm):
         model = News
         fields = ["news", "employee", "agent", "outsource_Agent"]
         widgets = {
-            "news": forms.Textarea(attrs={"class": "form-control"}),
+            "news": forms.Textarea(attrs={"class": "form-control",'required': 'required'}),
         }
 
 
@@ -683,22 +684,22 @@ class PreEnquiryForm1(forms.ModelForm):
 
         widgets = {
             "email": forms.EmailInput(
-                attrs={"class": "form-control", "placeholder": "Enter Email Id"}
+                attrs={"class": "form-control", "placeholder": "Enter Email Id",'required': 'required'}
             ),
             "contact": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter Contact No"}
+                attrs={"class": "form-control", "placeholder": "Enter Contact No",'required': 'required'}
             ),
             "FirstName": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter First Name"}
+                attrs={"class": "form-control", "placeholder": "Enter First Name",'required': 'required'}
             ),
             "LastName": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter Last Name"}
             ),
-            "Dob": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
-            "Gender": forms.Select(attrs={"class": "form-select"}),
-            "Country": forms.Select(attrs={"class": "form-select"}),
+            "Dob": forms.DateInput(attrs={"class": "form-control", "type": "date",'required': 'required'}),
+            "Gender": forms.Select(attrs={"class": "form-select",'required': 'required'}),
+            "Country": forms.Select(attrs={"class": "form-select",'required': 'required'}),
             "passport_no": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Enter Passport Number"}
+                attrs={"class": "form-control", "placeholder": "Enter Passport Number",'required': 'required'}
             ),
             "assign_to_agent": forms.Select(attrs={"class": "form-select"}),
             "lead_status": forms.Select(attrs={"class": "form-select"}),

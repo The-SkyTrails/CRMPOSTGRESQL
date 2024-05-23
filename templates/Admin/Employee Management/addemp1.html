@@ -75,7 +75,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="custom-form-label label-with-margin">Department</label>
-                                <select class="form-select" name="department" id="department">
+                                <select class="form-select" name="department" id="department" required>
                                     <option value="---------">---------</option>
                                     {% for i in dep %}
                                     <option value="{{i.0}}">{{i.1}}</option>
@@ -92,7 +92,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="custom-form-label label-with-margin">Branch</label>
-                                <select class="form-select" name="branch_id" id="branch_id">
+                                <select class="form-select" name="branch_id" id="branch_id" required>
                                     <option value="">Select</option>
                                     {% for i in branch %}
                                     <option value="{{i.id}}">{{i.branch_name}}</option>
@@ -103,7 +103,7 @@
                         </div>
                         <div class="col-md-4 ">
                             <label for="exampleFormControlInput1" class="custom-form-label">Group</label>
-                             <select class="form-select" name="group_id" id="group_id">
+                             <select class="form-select" name="group_id" id="group_id" required>
                                 <option value="">Select</option>
                                     {% for i in group %}
                                     {% if i.group_name == "TheSkytrails CRM" %}
@@ -119,19 +119,19 @@
                         <div class="col-md-4 ">
                             <label for="exampleFormControlInput1" class="custom-form-label">Contact Number </label>
                             <input type="text" name="contact" id="contact" class="form-control border-left-0"
-                                placeholder="Contact No">
+                                placeholder="Contact No" required>
                         </div>
 
                         <div class="col-md-4 ">
                             <label for="exampleFormControlInput1" class="custom-form-label">Employee Code</label>
                             <input type="text" name="emp_code" id="emp_code" class="form-control border-left-0"
-                                placeholder="Enter Employee Code">
+                                placeholder="Enter Employee Code" required>
                         </div>
 
                          <div class="col-md-4 ">
                             <label for="exampleFormControlInput1" class="custom-form-label">First Name</label>
                             <input type="text" name="firstname" id="firstname" class="form-control border-left-0"
-                                placeholder="First Name">
+                                placeholder="First Name" required>
                         </div>
 
                          
@@ -148,7 +148,7 @@
                             <div class="form-group">
                                 <label class="custom-form-label label-with-margin">Email Address</label>
                                 <input type="email" name="email" id="email" class="form-control border-left-0"
-                                    placeholder="Email Address">
+                                    placeholder="Email Address" required>
                             </div>
                         </div>
                         <div class="col-md-4">
