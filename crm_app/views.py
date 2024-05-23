@@ -537,15 +537,34 @@ def get_group_chat_messages(request):
 
 from .filters import EnquiryFilter
 from .models import Enquiry
+import pyttsx3
+
 def check_status(request):
+    engine = pyttsx3.init('sapi5')
+    voices = engine.getProperty('voices')
+    engine.setProperty('voice', voices[0].id)
+
     enq_num = request.GET.get('enquiry_number')
     if enq_num:
         enquiry_filter = EnquiryFilter(request.GET, queryset=Enquiry.objects.all())
         enq_exists = enquiry_filter.qs.exists()
+
+        if enq_exists:
+            for enquiry in enquiry_filter.qs:
+                message = f"Enquiry number {enquiry.enquiry_number}. Status is {enquiry.lead_status}."
+                engine.say(message)
+            engine.runAndWait()
+        else:
+            engine.say("No enquiry number found.")
+            engine.runAndWait()
+        
     else:
         enquiry_filter = EnquiryFilter(queryset=Enquiry.objects.none())
         enq_exists = False
         
+
+    
+
     context = {
         'form': enquiry_filter.form,
         'enq': enquiry_filter.qs,
