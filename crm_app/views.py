@@ -491,6 +491,10 @@ def Error404(request, exception):
     return render(request, "Admin/404.html")
 
 
+
+def handler500(request, *args, **argv):
+    raise Exception("This is a test exception to trigger a 500 error")
+
 def chats(request):
     user = request.user
     user_type = user.user_type
