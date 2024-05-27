@@ -16,7 +16,7 @@ from .models import (
     ChatGroup,
     ChatMessage,
 )
-from .doubletick import whatsapp_signup_mes
+from .doubletick import whatsapp_signup_mes,login_otp_mes
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from rest_framework import viewsets
@@ -156,6 +156,7 @@ def agent_signup(request):
             random_number = random.randint(0, 99999)
             send_otp = str(random_number).zfill(6)
             request.session["sendotp"] = send_otp
+            login_otp_mes(send_otp,mobile)
 
             if user_type == "4":
                 contact_no = user2.agent.contact_no
@@ -304,7 +305,7 @@ def CustomLoginView(request):
                     random_number = random.randint(0, 99999)
                     send_otp = str(random_number).zfill(6)
                     request.session["sendotp"] = send_otp
-                    print("senddddd ot", send_otp)
+                    login_otp_mes(send_otp,mob)
                     url = "http://sms.txly.in/vb/apikey.php"
                     payload = {
                         "apikey": "lbwUbocDLNFjenpa",
@@ -360,6 +361,7 @@ def resend_otp(request):
                     random_number = random.randint(0, 99999)
                     send_otp = str(random_number).zfill(6)
                     request.session["sendotp"] = send_otp
+                    login_otp_mes(send_otp,mob)
 
                     url = "http://sms.txly.in/vb/apikey.php"
                     payload = {

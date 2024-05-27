@@ -106,3 +106,42 @@ def product_add_mes(title , country , contact):
     
 
 
+
+
+def login_otp_mes(send_otp,mobile):
+    send_otp = str(send_otp) if send_otp else ""
+    
+    url = "https://public.doubletick.io/whatsapp/message/template"
+
+    payload = {
+        "messages": [
+            {
+                "content": {
+                    "language": "en",
+                    "templateData": {
+                        "header": {
+                            "type": "TEXT",
+                            "placeholder": "body",
+                            "mediaUrl": "kjhgfdxfcj",
+                            "filename": "kjhgcnhj"
+                        },
+                        "body": {
+                            "placeholders": [
+                                send_otp
+                            ]
+                        }
+                    },
+                    "templateName": "otpfinal"
+                },
+                "from": "+918800517859",
+                "to": "+91" + mobile
+            }
+        ]
+    }
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "Authorization": "key_IqTwUC2O8n"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
