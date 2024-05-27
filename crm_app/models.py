@@ -86,7 +86,7 @@ class Admin(models.Model):
     users = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     department = models.CharField(max_length=50)
     contact_no = models.CharField(max_length=10)
-
+    
     # def __str__(self):
     #     return self.users.first_name
 
