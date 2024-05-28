@@ -16,7 +16,7 @@ def delete_old_job_executions(max_age=2):
 def start():
     scheduler = BackgroundScheduler()
     scheduler.add_jobstore(DjangoJobStore(),"default")
-    scheduler.add_job(backup_every_one_min,'interval',hour=1,jobstore='default',id="backup_every_one_min",replace_existing=True)
+    scheduler.add_job(backup_every_one_min,'interval',hours=1,jobstore='default',id="backup_every_one_min",replace_existing=True)
     scheduler.add_job(delete_old_job_executions,'interval',seconds=10,jobstore='default',id="delete_old_job_executions",replace_existing=True)
 
     try:
