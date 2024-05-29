@@ -2601,7 +2601,7 @@ def admin_new_leads_details(request):
     
     enquiry_list = Enquiry.objects.all().order_by("-id")
     paginator = Paginator(enquiry_list,10)
-    page_number = request.GET.get('page',5)
+    page_number = request.GET.get('page',1)
     
 
     try:
