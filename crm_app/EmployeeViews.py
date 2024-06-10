@@ -5545,7 +5545,16 @@ def update_assigned_employee(request, id):
         try:
             assign_to_employee = request.POST.get("employeeIdInput")
             emp = Employee.objects.get(id=assign_to_employee)
-            enquiry.assign_to_employee = emp
+            if emp.department == "Presales":
+                enquiry.assign_to_employee = emp
+            elif emp.department == "Assesment":
+                enquiry.assign_to_assesment_employee = emp
+            if emp.department == "Sales":
+                enquiry.assign_to_sales_employee = emp
+            if emp.department == "Documentation":
+                enquiry.assign_to_documentation_employee = emp
+            if emp.department == "Visa Team":
+                enquiry.assign_to_visa_team_employee = emp
             employee_id = emp.id
             create_notification(emp, "New Lead Assign Added")
 
@@ -5557,90 +5566,18 @@ def update_assigned_employee(request, id):
         except Employee.DoesNotExist:
             if enquiry.assign_to_employee is None:
                 enquiry.assign_to_employee = None
-            else:
-                pass
-
-        try:
-            assign_to_assesment_employee = request.POST.get(
-                "assign_to_assesment_employee"
-            )
-            emp = Employee.objects.get(id=assign_to_assesment_employee)
-            enquiry.assign_to_assesment_employee = emp
-
-            employee_id = emp.id
-            create_notification(emp, "New Assign Added")
-
-            current_count = Notification.objects.filter(
-                is_seen=False, employee=employee_id
-            ).count()
-            assign_notification(employee_id, "New Assign Added", current_count)
-
-        except Employee.DoesNotExist:
-            if enquiry.assign_to_assesment_employee is None:
+            elif enquiry.assign_to_assesment_employee is None:
                 enquiry.assign_to_assesment_employee = None
-            else:
-                pass
-
-        try:
-            assign_to_sales_employee = request.POST.get("assign_to_sales_employee")
-            emp = Employee.objects.get(id=assign_to_sales_employee)
-            enquiry.assign_to_sales_employee = emp
-
-            employee_id = emp.id
-            create_notification(emp, "New Assign Added")
-
-            current_count = Notification.objects.filter(
-                is_seen=False, employee=employee_id
-            ).count()
-            assign_notification(employee_id, "New Assign Added", current_count)
-
-        except Employee.DoesNotExist:
-            if enquiry.assign_to_sales_employee is None:
+            elif enquiry.assign_to_sales_employee is None:
                 enquiry.assign_to_sales_employee = None
-            else:
-                pass
-
-        try:
-            assign_to_documentation_employee = request.POST.get(
-                "assign_to_documentation_employee"
-            )
-            emp = Employee.objects.get(id=assign_to_documentation_employee)
-            enquiry.assign_to_documentation_employee = emp
-
-            employee_id = emp.id
-            create_notification(emp, "New Lead Assign Added")
-
-            current_count = Notification.objects.filter(
-                is_seen=False, employee=employee_id
-            ).count()
-            assign_notification(employee_id, "New Lead Assign Added", current_count)
-
-        except Employee.DoesNotExist:
-            if enquiry.assign_to_documentation_employee is None:
+            elif enquiry.assign_to_documentation_employee is None:
                 enquiry.assign_to_documentation_employee = None
-            else:
-                pass
-
-        try:
-            assign_to_visa_team_employee = request.POST.get(
-                "assign_to_visa_team_employee"
-            )
-            emp = Employee.objects.get(id=assign_to_visa_team_employee)
-            enquiry.assign_to_visa_team_employee = emp
-
-            employee_id = emp.id
-            create_notification(emp, "New Assign Added")
-
-            current_count = Notification.objects.filter(
-                is_seen=False, employee=employee_id
-            ).count()
-            assign_notification(employee_id, "New Assign Added", current_count)
-
-        except Employee.DoesNotExist:
-            if enquiry.assign_to_visa_team_employee is None:
+            elif enquiry.assign_to_visa_team_employee is None:
                 enquiry.assign_to_visa_team_employee = None
             else:
                 pass
+        
+        
         enquiry.save()
         messages.success(request, "Lead Assigned Successfully...")
         redirect_to = request.POST.get("redirect_to")
