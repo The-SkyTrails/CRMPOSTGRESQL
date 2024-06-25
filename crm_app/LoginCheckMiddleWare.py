@@ -9,7 +9,7 @@ class LoginCheckMiddleWare(MiddlewareMixin):
 
         user = request.user
         if modulename == "crm_app.views" and view_func.__name__ in [
-            "chats",
+            "single_Chat",
             "get_group_chat_messages",
         ]:
             return None
