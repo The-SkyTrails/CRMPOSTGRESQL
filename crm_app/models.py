@@ -1102,11 +1102,12 @@ class ChatGroup(models.Model):
 
 class ChatMessage(models.Model):
 
-    group = models.ForeignKey(ChatGroup, on_delete=models.CASCADE)
+    # group = models.ForeignKey(ChatGroup, on_delete=models.CASCADE)
     message_by = models.ForeignKey(
         CustomUser, on_delete=models.SET_NULL, null=True, blank=True
     )
-    message_content = models.CharField(max_length=1000)
+    receive_by = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name="receive_by")
+    message = models.TextField()
     filename = models.CharField(max_length=100, null=True, blank=True)
     attachment = models.FileField(
         upload_to="chat_attachments/",

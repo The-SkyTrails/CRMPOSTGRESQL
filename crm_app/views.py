@@ -559,3 +559,58 @@ def check_status(request):
         'enq_exists': enq_exists,
     }
     return render(request, "check_status.html", context)
+
+
+from django.db.models import Q
+def single_Chat(request):
+    user = request.user
+    users = CustomUser.objects.exclude(Q(id=user.id) | Q(user_type='1'))
+   
+    user_type = user.user_type
+    usersid = request.user.id
+    if user_type == "2":
+        base_template = "Admin/Base/base.html"
+    elif user_type == "3":
+        base_template = "Employee/Base/base.html"
+    else:
+        base_template = "Agent/Base/base.html"
+    context = {
+        "base_template": base_template,
+        "user_type": user_type,
+        "users": users,
+        "usersid": usersid,
+    }
+    return render(request,'SingleChat/chat.html',context)
+
+def get_single_chat_messages(request):
+    user_id = request.GET.get("user_id")
+    
+    other_user_id = CustomUser.objects.get(id=user_id)
+    user = request.user
+    user_id = request.user.id
+    print("iddd",user)
+    
+    
+    msg_all = ChatMessage.objects.filter(
+        Q(message_by=user, receive_by=other_user_id) | 
+        Q(message_by=other_user_id, receive_by=user)
+    ).order_by('msg_time')
+
+    print("message all",msg_all)
+
+    # receiver_msg = ChatMessage.objects.filter(receive_by=user)
+    
+    
+    
+    context = {
+        'other_user_id': other_user_id,
+        'user': user,
+        'msg_All': msg_all,
+        'user_id': user_id,
+        
+    }
+
+   
+
+    chat_content = loader.render_to_string("SingleChat/chat_content.html",context)
+    return HttpResponse(chat_content)

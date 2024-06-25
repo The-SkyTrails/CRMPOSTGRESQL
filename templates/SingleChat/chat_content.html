@@ -1,0 +1,66 @@
+{% load static %}
+<div class="contact-profile">
+    <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
+    <p>{{other_user_id.first_name}} {{other_user_id.last_name}}</p>
+    <div class="social-media">
+       <i class="fa fa-facebook" aria-hidden="true"></i>
+       <i class="fa fa-twitter" aria-hidden="true"></i>
+       <i class="fa fa-instagram" aria-hidden="true"></i>
+    </div>
+ </div>
+ <div class="messages">
+    <ul>
+      {% if user.is_authenticated  %}
+      {% for i in msg_All %}
+      {% if i.receive_by == user %}
+     
+       <li class="sent">
+          <img src="http://emilcarlsson.se/assets/mikeross.png" alt="" />
+          {% comment %} <p>How the hell am I supposed to get a jury to believe you when I am not even sure that I do?!</p> {% endcomment %}
+          <p>{{i.message}}</p>
+         
+       </li>
+       {% else %}
+       
+      
+
+      
+       <li class="replies">
+          <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
+          <p>{{i.message}}</p>
+         
+       </li> 
+       {% endif %}
+       {% endfor %}
+       {% endif %}
+       
+      
+       
+      
+{% comment %}         
+       <li class="replies">
+          <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
+          <p>When you're backed against the wall, break the god damn thing down.</p>
+       </li>  {% endcomment %}
+       
+
+       
+       
+       
+     
+    </ul>
+
+    
+ </div>
+ <input type="text" value="{{user_id}}" id="user_id" hidden>
+ <div class="message-input">
+    <div class="wrap">
+       <input type="text" placeholder="Write your message..." />
+       <i class="fa fa-paperclip attachment" aria-hidden="true"></i>
+       <button class="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+       
+    </div>
+   
+ </div>
+
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

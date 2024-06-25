@@ -1,0 +1,201 @@
+{% extends base_template %}
+{% block link %}
+<link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,300' rel='stylesheet' type='text/css'>
+{% endblock link %}
+{% block main-content %}
+
+<div class="bodycontent">
+     
+  <div id="frame">
+    
+    <div id="sidepanel">
+      <div id="profile">
+        <div class="wrap">
+          <img id="profile-img" src="http://emilcarlsson.se/assets/mikeross.png" class="online" alt="" />
+          <p>{{request.user.first_name}} {{request.user.last_name}}</p>
+          <i class="fa fa-chevron-down expand-button" aria-hidden="true"></i>
+          <div id="status-options">
+            <ul>
+              <li id="status-online" class="active">
+                <span class="status-circle"></span>
+                <p>Online</p>
+              </li>
+              <li id="status-away">
+                <span class="status-circle"></span>
+                <p>Away</p>
+              </li>
+              <li id="status-busy">
+                <span class="status-circle"></span>
+                <p>Busy</p>
+              </li>
+              <li id="status-offline">
+                <span class="status-circle"></span>
+                <p>Offline</p>
+              </li>
+            </ul>
+          </div>
+          
+          <div id="expanded">
+            <label for="twitter"><i class="fa fa-facebook fa-fw" aria-hidden="true"></i></label>
+            <input name="twitter" type="text" value="mikeross" />
+            <label for="twitter"><i class="fa fa-twitter fa-fw" aria-hidden="true"></i></label>
+            <input name="twitter" type="text" value="ross81" />
+            <label for="twitter"><i class="fa fa-instagram fa-fw" aria-hidden="true"></i></label>
+            <input name="twitter" type="text" value="mike.ross" />
+          </div>
+        </div>
+      </div>
+      <div id="search">
+        <label for=""><i class="fa fa-search" aria-hidden="true"></i></label>
+        <input type="text" placeholder="Search contacts..."  id="searchInput"/>
+      </div>
+      
+      <div id="contacts">
+
+        <ul style="list-style-type:none">
+          {% for user in users %}
+          <li class="contact all-member ">
+            <div class="wrap">
+              <span class="contact-status online"></span>
+              <img src="http://emilcarlsson.se/assets/louislitt.png" alt="" />
+              
+             
+                <a href="javascript:void(0)"  data-user-id="{{ user.id }}" style="color:#f5f5f5; text-decoration: none;" class="chat-group-link">
+                    <div class="meta">
+                    <p class="name">{{user.first_name}} {{user.last_name}}</p>
+                    
+                    
+                    
+                    </div>
+                </a>
+                
+              
+            </div>
+          </li>
+          {% endfor %}
+
+        </ul>
+        
+      </div>
+      {% comment %} <div id="bottom-bar">
+        <button id="addcontact"><i class="fa fa-user-plus fa-fw" aria-hidden="true"></i> <span>Add
+            contact</span></button>
+        <button id="settings"><i class="fa fa-cog fa-fw" aria-hidden="true"></i> <span>Settings</span></button>
+      </div> {% endcomment %}
+    </div>
+
+    
+    <div class="content chat-messages" id="chat-messages"></div>
+
+
+  
+</div>
+
+
+
+<script>
+        $(document).ready(function () {
+            let chatSocket;
+
+            function connectToWebSocket(userId) {
+                // Close any existing WebSocket connection
+                if (chatSocket) {
+                    chatSocket.close();
+                }
+
+                // Create a new WebSocket connection
+                chatSocket = new WebSocket(
+                    'wss://' + window.location.host + '/ws/chat/single/' + userId + '/'
+                );
+
+                // WebSocket event handlers
+                chatSocket.onmessage = function(e) {
+                    const data = JSON.parse(e.data);
+                    const message = data['message'];
+                    const msg_by = data['msg_by'];
+                    const user = "{{ usersid|escapejs }}";
+                    console.log("userssssssssssssss",user)
+                    console.log("msg by",msg_by)
+
+                    if (msg_by == user) {
+                        $('#chat-messages .messages ul').append('<li class="replies"><p>' + message + '</p></li>');
+                    } else {
+                        $('#chat-messages .messages ul').append('<li class="sent"><p>' + message + '</p></li>');
+                    }
+                };
+
+                chatSocket.onclose = function(e) {
+                    console.error('Chat socket closed unexpectedly');
+                };
+            }
+
+            $('.chat-group-link').click(function () {
+                const userId = $(this).data('user-id');
+
+                // Check if the clicked user's parent li is already active
+                if (!$(this).closest('.contact').hasClass('active')) {
+                    // Deactivate all users
+                    $('.contact').removeClass('active');
+
+                    // Activate the clicked user's parent li
+                    $(this).closest('.contact').addClass('active');
+
+                    // Load chat messages for the selected user using AJAX
+                    loadGroupChat(userId);
+
+                    // Connect to WebSocket
+                    connectToWebSocket(userId);
+                }
+            });
+
+            function loadGroupChat(userId) {
+                // Fetch chat messages for the selected user using AJAX
+                $.ajax({
+                    url: `/get_single_chat_messages/?user_id=${userId}`,
+                    success: function (data) {
+                        $('#chat-messages').html(data);
+                    }
+                });
+            }
+
+            // Send message
+            $('#chat-messages').on('click', '.submit', function () {
+                const messageInputDom = $('.message-input input');
+                const message = messageInputDom.val();
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                }));
+                messageInputDom.val(''); // Clear the input field after sending
+            });
+            $('#chat-messages').on('keydown',function (event){
+              if (event.key === 'Enter'){
+                event.preventDefault();
+                const messageInputDom = $('.message-input input');
+                const message = messageInputDom.val();
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                }));
+                messageInputDom.val('');
+              }
+            })
+        });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $('#searchInput').on('input', function () {
+            var searchQuery = $(this).val().toLowerCase();
+
+            // Hide all groups
+            $('.all-member').hide();
+
+            // Show only the groups that match the search query
+            $('.all-member').filter(function () {
+                return $(this).text().toLowerCase().includes(searchQuery);
+            }).show();
+        });
+    });
+</script>
+
+{% endblock main-content %}

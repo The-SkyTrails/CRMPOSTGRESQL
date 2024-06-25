@@ -1,4 +1,4 @@
-{% load static %}
+    {% load static %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -22,6 +22,7 @@
         />
     
         <link rel="stylesheet" href="{% static "style/Styling/Bootstrap/style.css" %}" />
+        <link rel="stylesheet" href="{% static "style/chat/style.css" %}">
         <link
           href="{% static "style/Styling/Bootstrap/css/bootstrap.min.css" %}"
           rel="stylesheet"
@@ -31,7 +32,10 @@
         <link rel="stylesheet" href="{% static "style/Styling/DashboardDesign/css/style.css" %}">
 
         <link rel="stylesheet" href="{% static "style/Styling/DashboardDesign/css/swiper-bundle.min.css" %}">
+        <link rel='stylesheet prefetch'
+    href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css'>
         {% block extra_head  %}{% endblock extra_head  %}
+        {% block link %}{% endblock link %}
 
 
     </head>
