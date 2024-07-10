@@ -11,13 +11,15 @@
 
 import requests
 
-url = "https://back.theskytrails.com/skyTrails/international/getAll"
+url = "https://back.theskytrails.com/skyTrails/api/user/passport/getAllPassportEnquiry"
 
 response = requests.get(url)
+
 
 if response.status_code == 200:
     # The API call was successful, and you can access the data using response.json()
     data = response.json()
+    print(data)
     
 else:
     # The API call failed, and you can print the status code and any error message

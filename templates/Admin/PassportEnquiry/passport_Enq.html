@@ -1,0 +1,56 @@
+{% extends "Admin/Base/base.html" %}
+{% load crispy_forms_tags %}
+{% load custom_filters %} 
+{% block main-content %}
+
+    <div class="form-container">
+    
+
+      <!-- ////////////////  div content ////////////////////// -->
+     
+      {% include "Admin/Base/messages.html" %}
+      <!-- /////////////////////////Table//////////////////////////////////// -->
+
+      <div class="table-container">
+        <div class="table-responsive" style="height:450px">
+          <table id="example" class="display">
+            <thead>
+              <tr>
+                <th>S.NO.</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Contact</th>
+                <th>Gender</th>
+                <th>DOB</th>
+                <th>Age</th>
+                <th>Documents</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in passport_data.result %}
+              <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{i.firstName }} </td>
+                <td>{{i.lastName}}</td>
+                <td>{{i.email}}</td>
+                <td>{{i.contactNumber}}</td>
+                <td>{{i.gender}}</td>
+                <td>{{i.dob}}</td>
+                <td>{{i.age}}</td>
+                <td>
+                    {% for document_url in i.document %}
+                    
+                     <a href="{{ document_url }}" target="_blank">{{ document_url|filename }}</a><br>
+                    {% endfor %}
+                </td>
+              </tr>
+              {% endfor %}
+             
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+   
+    {% endblock main-content %}

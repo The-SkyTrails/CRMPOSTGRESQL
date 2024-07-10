@@ -308,6 +308,13 @@ urlpatterns = [
     path("Search/", search, name="search"),
     path("search/agents/", agent_search_view, name="agent_search"),  # The endpoint for AJAX requests
     path("search/outagents/", outagent_search_view, name="outagent_search"),
+
+    # ------------------------------ Passport enquiry show -----------
+
+    path("Passport/Enquiry", passport_enquiry_view, name="passport_enq"),
+
+
+
     
 
 

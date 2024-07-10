@@ -4820,7 +4820,7 @@ def agent_search_view(request):
 
 
 def outagent_search_view(request):
-    print("heloooooooooooooooooooo")
+   
     
     query = request.GET.get("q", "")  # The search query from the dropdown
     # Fetch a limited number of agents that match the query
@@ -4840,3 +4840,16 @@ def outagent_search_view(request):
     ]
 
     return JsonResponse({"results": results})
+
+
+
+def passport_enquiry_view(request):
+    url = "https://back.theskytrails.com/skyTrails/api/user/passport/getAllPassportEnquiry"
+    response = requests.get(url)
+    
+    if response.status_code == 200:
+        data = response.json()
+        return render(request, 'Admin/PassportEnquiry/passport_Enq.html', {'passport_data': data})
+    else:
+        error_message = f"Failed to fetch data from API. Status code: {response.status_code}"
+        return render(request, 'Admin/PassportEnquiry/passport_Enq.html', {'error_message': error_message})
