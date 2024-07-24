@@ -70,12 +70,26 @@ def employee_followup_list(request):
 # ----------------------------------------------------------------
 from django.db.models import Func, F, Value, CharField
 from collections import defaultdict
+from django.utils.timezone import make_aware
 
 class employee_dashboard(LoginRequiredMixin, TemplateView):
     template_name = "Employee/Dashboard/dashboard.html"
 
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        today = datetime.now().date()
+        start_of_day = make_aware(datetime.combine(today, datetime.min.time()))
+        agents_added_today_count = Agent.objects.filter(
+            registeron__gte=start_of_day,
+            registerdby=self.request.user
+        ).count()
+
+        total_agents_registered_by_user = Agent.objects.filter(
+            registerdby=self.request.user
+        ).count()
+
+
         enq_count = 0
         enq_enrolled_count = 0
 
@@ -367,6 +381,9 @@ class employee_dashboard(LoginRequiredMixin, TemplateView):
         # context["all_months"] = all_months
         # context["all_counts"] = all_counts
         context["pending_queries"] = pending_queries
+
+        context["agents_added_today_count"] = agents_added_today_count
+        context["total_agents_registered_by_user"] = total_agents_registered_by_user
        
 
         return context

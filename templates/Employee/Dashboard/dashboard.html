@@ -23,6 +23,27 @@
    .tablescroll::-webkit-scrollbar {
    display: none;
    }
+.agentCard {
+display:flex;
+flex-direction : column;
+gap:10px;
+}
+
+.agentCardInner {
+display:flex;
+flex-direction:row;
+justify-content:space-between;
+align-items:center;
+}
+
+.customPara {
+   color: var(--green-700, #046c4e);
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 77%;
+}
+
 </style>
 <div class="container mt-4">
    <div class="marque">
@@ -77,19 +98,29 @@
          </a>
          {% include "Employee/Dashboard/activeuser_modal.html" %}
          <a href="{% url "emp_agent_list" %}">
-         <div class="card" style="height: 28% ; border:none;margin-bottom:6%;">
-            <div class="card-body d-md-flex card-bodys d-flex justify-content-between">
+         <div class="card" style=" border:none;margin-bottom:6%;">
+            <div class="p-3">
                <div class="first-div">
                   <div class="flex-col justify-start items-start inline-flex">
                      <img src="{% static "style/Styling/Bootstrap/img/image 1.svg" %}" alt="" class="imgdas" />
-                     <div class="Frame2 px-2 justify-center items-center gap-2.5 inline-flex">
-                        <div class="Headingsection">Total Agents</div>
+                     <div class="agentCard">
+                     <div class="agentCardInner">
+                        <p class="Headingsection">Today's Agent</p>
+                        <p class="customPara">{{agents_added_today_count}}</p>
+                     </div>
+                     <div class="agentCardInner">
+                        <p class="Headingsection">Total Agent</p>
+                        <p class="customPara">{{total_agents_registered_by_user}}</p>
+                     </div>
+                     <div class="agentCardInner">
+                        <p class="Headingsection">Total Agent/Assign Agent</p>
+                        <p class="customPara">{{agent_count}}</p>
+                     </div>
                      </div>
                   </div>
+                  
                </div>
-               <div class="second-div">
-                  <p>{{agent_count}}</p>
-               </div>
+               
             </div>
          </div>
          </a>
