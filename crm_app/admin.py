@@ -88,7 +88,7 @@ class AgentAdmin(admin.ModelAdmin):
     list_filter = [
         "users","registerdby"
     ]
-    list_display = ["users", "contact_no", "assign_employee"]
+    list_display = ["users", "contact_no", "assign_employee","registerdby","registeron"]
     search_fields = ["id"]
     list_per_page = 10
 
