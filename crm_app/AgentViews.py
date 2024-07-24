@@ -49,7 +49,7 @@ class agent_dashboard(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         enq_enrolled_count = 0
         enq_count = 0
-        enrolled_monthly_counts = 0
+        
 
         leadaccept_count = Enquiry.objects.filter(
             Q(lead_status="Enrolled")
