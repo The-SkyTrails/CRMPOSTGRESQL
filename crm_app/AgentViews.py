@@ -2138,7 +2138,10 @@ def agent_add_employee(request):
         if CustomUser.objects.filter(username=email).exists():
             messages.warning(request, f'"this email {email}" already exists.')
             return redirect("agent_add_employee")
-
+        
+        
+        currentuser = request.user.user_type
+        print("usertype",currentuser)
        
         user = CustomUser.objects.create_user(
             # id=new_customuser_id,
@@ -2158,7 +2161,12 @@ def agent_add_employee(request):
         user.agentsubagentemployee.Address = address
         user.agentsubagentemployee.zipcode = zipcode
         user.agentsubagentemployee.profile_pic_agent_employee = files
-        user.agentsubagentemployee.agent=request.user.agent
+        if currentuser == 4:
+            user.agentsubagentemployee.agent=request.user.agent
+            user.save()
+        else:
+            user.agentsubagentemployee.outsourcingagent=request.user.outsourcingagent
+            
         # user.users = new_customuser_id
         user.save()
   

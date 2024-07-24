@@ -2,6 +2,7 @@ from django.urls import path, include
 from .AgentViews import *
 from .API_views import AgentWebsitePackage
 
+
 urlpatterns = [
     path("Dashboard/", agent_dashboard.as_view(), name="agent_dashboard"),
     path("AddEnquiry/", Enquiry1View.as_view(), name="agent_enquiry_form1"),
