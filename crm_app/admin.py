@@ -86,7 +86,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 class AgentAdmin(admin.ModelAdmin):
     list_filter = [
-        "users","registerdby"
+        "users","registerdby","registeron"
     ]
     list_display = ["users", "contact_no", "assign_employee","registerdby","registeron"]
     search_fields = ["id"]
