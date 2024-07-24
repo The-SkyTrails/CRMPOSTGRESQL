@@ -42,6 +42,156 @@ from django.core.paginator import Paginator
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+# class agent_dashboard(LoginRequiredMixin, TemplateView):
+#     template_name = "Agent/Dashboard/dashboard.html"
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         enq_enrolled_count = 0
+#         enq_count = 0
+        
+
+#         leadaccept_count = Enquiry.objects.filter(
+#             Q(lead_status="Enrolled")
+#             | Q(lead_status="Inprocess")
+#             | Q(lead_status="Ready To Submit")
+#             | Q(lead_status="Appointment")
+#             | Q(lead_status="Ready To Collection")
+#             | Q(lead_status="Result")
+#             | Q(lead_status="Delivery"),
+#             created_by=self.request.user,
+#         ).count()
+#         context["leadaccept_count"] = leadaccept_count
+
+#         lead_count = Enquiry.objects.filter(created_by=self.request.user).count()
+#         context["lead_count"] = lead_count
+
+#         package = Package.objects.filter(approval = "Yes").order_by("-last_updated_on")[
+#             :10
+#         ]
+#         context["package"] = package
+
+#         # url = "https://back.theskytrails.com/skyTrails/packages/getAllcrm"
+#         # response = requests.get(url)
+#         # data = response.json()
+#         # webpackages = data["data"]["pakage"]
+
+#         # for webpackage in webpackages:
+#         #     webpackage["id"] = webpackage.pop("_id")
+#         #     context["webpackages"] = webpackages
+
+#         story = SuccessStory.objects.all()
+#         context["story"] = story
+        
+#         user = self.request.user
+#         faq_count = FAQ.objects.filter(user=user).count()
+#         context["faq_count"] = faq_count
+
+#         if user.user_type == "4":
+#             enrolled_monthly_counts = defaultdict(int)
+#             all_enquiries_monthly_counts = defaultdict(int)
+#             agent = Agent.objects.get(users=user)
+#             latest_news = News.objects.filter(agent__in=[True]).order_by("-created_at")[:10]
+
+#             enrolled_monthly_enquiries =  Enquiry.objects.filter(
+#                     Q(
+#                         lead_status="Enrolled",
+#                         assign_to_agent=user.agent,
+#                     )
+#                     | Q(lead_status="Enrolled", created_by=user)
+#                 )
+            
+#             all_monthly_enquiries =   Enquiry.objects.filter(
+#                     Q(assign_to_agent=user.agent) | Q(created_by=user)
+#                 )
+            
+#             for enquiry in enrolled_monthly_enquiries:
+#                 month_year = datetime(enquiry.registered_on.year, enquiry.registered_on.month, 1)
+#                 enrolled_monthly_counts[month_year] += 1
+
+#             for enquiry in all_monthly_enquiries:
+#                 month_year = datetime(enquiry.registered_on.year, enquiry.registered_on.month, 1)
+#                 all_enquiries_monthly_counts[month_year] += 1
+
+#             sorted_enrolled_counts = sorted(enrolled_monthly_counts.items())
+#             enrolled_months = [date.strftime("%B %Y") for date, _ in sorted_enrolled_counts]
+#             enrolled_counts = [count for _, count in sorted_enrolled_counts]
+            
+#             sorted_all_counts = sorted(all_enquiries_monthly_counts.items())
+#             all_months = [date.strftime("%B %Y") for date, _ in sorted_all_counts if date.year == datetime.now().year]  # Filter by current year
+#             all_counts = [count for _, count in sorted_all_counts if _.year == datetime.now().year]  # Filter by current year
+            
+#             enq_count = sum(all_counts)
+#             enq_enrolled_count = sum(enrolled_counts)
+
+#             context["agent"] = agent
+#             context["latest_news"] = latest_news
+#             context["enrolled_months"] = enrolled_months
+#             context["enrolled_counts"] = enrolled_counts
+#             context["all_months"] = all_months
+#             context["all_counts"] = all_counts
+#             context["enq_count"] = enq_count
+#             context["enq_enrolled_count"] = enq_enrolled_count
+
+
+
+#         if user.user_type == "5":
+#             outagent = OutSourcingAgent.objects.get(users=user)
+#             news = News.objects.filter(outsource_Agent__in=[True]).order_by("-created_at")[
+#                 :10
+#             ]
+
+#             todo = Todo.objects.filter(user=self.request.user).order_by("-id")
+
+#             enrolled_monthly_enquiries = Enquiry.objects.filter(
+#                     Q(
+#                         lead_status="Enrolled",
+#                         assign_to_outsourcingagent=user.outsourcingagent,
+#                     )
+#                     | Q(lead_status="Enrolled", created_by=user)
+#                 )
+            
+#             all_monthly_enquiries =   Enquiry.objects.filter(
+#                     Q(assign_to_outsourcingagent=user.outsourcingagent)
+#                     | Q(created_by=user)
+#                 )
+            
+#             for enquiry in enrolled_monthly_enquiries:
+#                 month_year = datetime(enquiry.registered_on.year, enquiry.registered_on.month, 1)
+#                 enrolled_monthly_counts[month_year] += 1
+
+#             for enquiry in all_monthly_enquiries:
+#                 month_year = datetime(enquiry.registered_on.year, enquiry.registered_on.month, 1)
+#                 all_enquiries_monthly_counts[month_year] += 1
+
+#             sorted_enrolled_counts = sorted(enrolled_monthly_counts.items())
+#             enrolled_months = [date.strftime("%B %Y") for date, _ in sorted_enrolled_counts]
+#             enrolled_counts = [count for _, count in sorted_enrolled_counts]
+            
+#             sorted_all_counts = sorted(all_enquiries_monthly_counts.items())
+#             all_months = [date.strftime("%B %Y") for date, _ in sorted_all_counts if date.year == datetime.now().year]  # Filter by current year
+#             all_counts = [count for _, count in sorted_all_counts if _.year == datetime.now().year]  # Filter by current year
+            
+#             enq_count = sum(all_counts)
+#             enq_enrolled_count = sum(enrolled_counts)
+#             context["agent"] = outagent
+#             context["latest_news"] = news
+#             context["enrolled_months"] = enrolled_months
+#             context["enrolled_counts"] = enrolled_counts
+#             context["all_months"] = all_months
+#             context["all_counts"] = all_counts
+#             context["enq_count"] = enq_count
+#             context["enq_enrolled_count"] = enq_enrolled_count
+            
+             
+#             context["todo"] = todo
+
+#         return context
+
+
+from collections import defaultdict
+from datetime import datetime
+
 class agent_dashboard(LoginRequiredMixin, TemplateView):
     template_name = "Agent/Dashboard/dashboard.html"
 
@@ -49,7 +199,6 @@ class agent_dashboard(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         enq_enrolled_count = 0
         enq_count = 0
-        
 
         leadaccept_count = Enquiry.objects.filter(
             Q(lead_status="Enrolled")
@@ -66,9 +215,7 @@ class agent_dashboard(LoginRequiredMixin, TemplateView):
         lead_count = Enquiry.objects.filter(created_by=self.request.user).count()
         context["lead_count"] = lead_count
 
-        package = Package.objects.filter(approval = "Yes").order_by("-last_updated_on")[
-            :10
-        ]
+        package = Package.objects.filter(approval="Yes").order_by("-last_updated_on")[:10]
         context["package"] = package
 
         # url = "https://back.theskytrails.com/skyTrails/packages/getAllcrm"
@@ -82,29 +229,28 @@ class agent_dashboard(LoginRequiredMixin, TemplateView):
 
         story = SuccessStory.objects.all()
         context["story"] = story
-        
+
         user = self.request.user
         faq_count = FAQ.objects.filter(user=user).count()
         context["faq_count"] = faq_count
 
+        # Initialize the monthly counts dictionaries
+        enrolled_monthly_counts = defaultdict(int)
+        all_enquiries_monthly_counts = defaultdict(int)
+
         if user.user_type == "4":
-            enrolled_monthly_counts = defaultdict(int)
-            all_enquiries_monthly_counts = defaultdict(int)
             agent = Agent.objects.get(users=user)
             latest_news = News.objects.filter(agent__in=[True]).order_by("-created_at")[:10]
 
-            enrolled_monthly_enquiries =  Enquiry.objects.filter(
-                    Q(
-                        lead_status="Enrolled",
-                        assign_to_agent=user.agent,
-                    )
-                    | Q(lead_status="Enrolled", created_by=user)
-                )
-            
-            all_monthly_enquiries =   Enquiry.objects.filter(
-                    Q(assign_to_agent=user.agent) | Q(created_by=user)
-                )
-            
+            enrolled_monthly_enquiries = Enquiry.objects.filter(
+                Q(lead_status="Enrolled", assign_to_agent=user.agent)
+                | Q(lead_status="Enrolled", created_by=user)
+            )
+
+            all_monthly_enquiries = Enquiry.objects.filter(
+                Q(assign_to_agent=user.agent) | Q(created_by=user)
+            )
+
             for enquiry in enrolled_monthly_enquiries:
                 month_year = datetime(enquiry.registered_on.year, enquiry.registered_on.month, 1)
                 enrolled_monthly_counts[month_year] += 1
@@ -116,11 +262,11 @@ class agent_dashboard(LoginRequiredMixin, TemplateView):
             sorted_enrolled_counts = sorted(enrolled_monthly_counts.items())
             enrolled_months = [date.strftime("%B %Y") for date, _ in sorted_enrolled_counts]
             enrolled_counts = [count for _, count in sorted_enrolled_counts]
-            
+
             sorted_all_counts = sorted(all_enquiries_monthly_counts.items())
             all_months = [date.strftime("%B %Y") for date, _ in sorted_all_counts if date.year == datetime.now().year]  # Filter by current year
             all_counts = [count for _, count in sorted_all_counts if _.year == datetime.now().year]  # Filter by current year
-            
+
             enq_count = sum(all_counts)
             enq_enrolled_count = sum(enrolled_counts)
 
@@ -133,29 +279,21 @@ class agent_dashboard(LoginRequiredMixin, TemplateView):
             context["enq_count"] = enq_count
             context["enq_enrolled_count"] = enq_enrolled_count
 
-
-
         if user.user_type == "5":
             outagent = OutSourcingAgent.objects.get(users=user)
-            news = News.objects.filter(outsource_Agent__in=[True]).order_by("-created_at")[
-                :10
-            ]
+            news = News.objects.filter(outsource_Agent__in=[True]).order_by("-created_at")[:10]
 
             todo = Todo.objects.filter(user=self.request.user).order_by("-id")
 
             enrolled_monthly_enquiries = Enquiry.objects.filter(
-                    Q(
-                        lead_status="Enrolled",
-                        assign_to_outsourcingagent=user.outsourcingagent,
-                    )
-                    | Q(lead_status="Enrolled", created_by=user)
-                )
-            
-            all_monthly_enquiries =   Enquiry.objects.filter(
-                    Q(assign_to_outsourcingagent=user.outsourcingagent)
-                    | Q(created_by=user)
-                )
-            
+                Q(lead_status="Enrolled", assign_to_outsourcingagent=user.outsourcingagent)
+                | Q(lead_status="Enrolled", created_by=user)
+            )
+
+            all_monthly_enquiries = Enquiry.objects.filter(
+                Q(assign_to_outsourcingagent=user.outsourcingagent) | Q(created_by=user)
+            )
+
             for enquiry in enrolled_monthly_enquiries:
                 month_year = datetime(enquiry.registered_on.year, enquiry.registered_on.month, 1)
                 enrolled_monthly_counts[month_year] += 1
@@ -167,11 +305,11 @@ class agent_dashboard(LoginRequiredMixin, TemplateView):
             sorted_enrolled_counts = sorted(enrolled_monthly_counts.items())
             enrolled_months = [date.strftime("%B %Y") for date, _ in sorted_enrolled_counts]
             enrolled_counts = [count for _, count in sorted_enrolled_counts]
-            
+
             sorted_all_counts = sorted(all_enquiries_monthly_counts.items())
             all_months = [date.strftime("%B %Y") for date, _ in sorted_all_counts if date.year == datetime.now().year]  # Filter by current year
             all_counts = [count for _, count in sorted_all_counts if _.year == datetime.now().year]  # Filter by current year
-            
+
             enq_count = sum(all_counts)
             enq_enrolled_count = sum(enrolled_counts)
             context["agent"] = outagent
@@ -182,11 +320,11 @@ class agent_dashboard(LoginRequiredMixin, TemplateView):
             context["all_counts"] = all_counts
             context["enq_count"] = enq_count
             context["enq_enrolled_count"] = enq_enrolled_count
-            
-             
             context["todo"] = todo
 
         return context
+
+
 
 
 
