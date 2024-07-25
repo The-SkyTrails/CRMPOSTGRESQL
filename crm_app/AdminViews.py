@@ -180,12 +180,13 @@ class admin_dashboard(LoginRequiredMixin, TemplateView):
         # for webpackage in webpackages:
         #     webpackage["id"] = webpackage.pop("_id")
 
-        active_users = CustomUser.objects.filter(user_type=["3","4", "5"],is_logged_in=True).count()
+        active_users = CustomUser.objects.filter(user_type__in=["3", "4", "5"], is_logged_in=True).count()
+
 
         active_employee = CustomUser.objects.filter(user_type="3", is_logged_in=True)
         
         active_agent = CustomUser.objects.filter(
-            user_type=["4", "5"], is_logged_in=True
+            user_type__in=["4", "5"], is_logged_in=True
         )
         
 
