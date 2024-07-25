@@ -216,10 +216,10 @@ class agent_dashboard(LoginRequiredMixin, TemplateView):
         if self.request.user.user_type == '4':
             
             lead_count = Enquiry.objects.filter( Q(created_by=self.request.user)
-            | Q(assign_to_agent=self.request.user),archive = False).count()
+            | Q(assign_to_agent=self.request.user.agent),archive = False).count()
         if self.request.user.user_type == '5': 
              lead_count = Enquiry.objects.filter( Q(created_by=self.request.user)
-            | Q(assign_to_outsourcingagent=self.request.user),archive = False).count()
+            | Q(assign_to_outsourcingagent=self.request.user.outsourcingagent),archive = False).count()
 
         context["lead_count"] = lead_count
 
