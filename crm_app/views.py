@@ -566,31 +566,33 @@ def check_status(request):
 
 
 from django.db.models import Q
+
 def single_Chat(request):
     user = request.user
-    print("usersssssss")
-    users = None
-    if user.user_type == '5':
-         
-        print("outsource agent")
-    if user.user_type == '4':
-        print("outsource agent")
-    else:
-        
-        users = CustomUser.objects.exclude(Q(id=user.id) | Q(user_type='1'))
+    
    
     user_type = user.user_type
     usersid = request.user.id
+    users = None
     if user_type == "2":
+        users = CustomUser.objects.exclude(Q(id=user.id) | Q(user_type='1'))
         base_template = "Admin/Base/base.html"
-    if user_type == "3":
+    elif user_type == "3":
+        users = CustomUser.objects.exclude(Q(id=user.id) | Q(user_type='1'))
         base_template = "Employee/Base/base.html"
-    if user_type == "4":
+    elif user_type == "4":
+        agnet_assign_employee = Agent.objects.get(users=user)
+        users = [agnet_assign_employee.assign_employee.users]
+        print("asigg",agnet_assign_employee)
         base_template = "Agent/Base/base.html"
-    if user_type == "5":
+    elif user_type == "5":
+        outsource_assign_employee = OutSourcingAgent.objects.get(users=user)
+        users = [outsource_assign_employee.assign_employee.users]
         base_template = "Agent/Base/base.html"
 
+
     # else:
+    #     print("hellooo")
     #     base_template = "Agent/Base/base.html"
     context = {
         "base_template": base_template,
@@ -599,6 +601,7 @@ def single_Chat(request):
         "usersid": usersid,
     }
     return render(request,'SingleChat/chat.html',context)
+
 
 def get_single_chat_messages(request):
     user_id = request.GET.get("user_id")
