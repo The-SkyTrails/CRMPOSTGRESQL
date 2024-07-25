@@ -267,8 +267,8 @@ class Employee(models.Model):
             self.group.group_member.add(self.users)
         super(Employee, self).save(*args, **kwargs)
 
-    # def __str__(self):
-    #     return self.users.username
+    def __str__(self):
+        return self.users.username
 
 
 marital_status = [

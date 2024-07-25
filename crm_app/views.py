@@ -574,10 +574,15 @@ def single_Chat(request):
     usersid = request.user.id
     if user_type == "2":
         base_template = "Admin/Base/base.html"
-    elif user_type == "3":
+    if user_type == "3":
         base_template = "Employee/Base/base.html"
-    else:
+    if user_type == "4":
         base_template = "Agent/Base/base.html"
+    if user_type == "5":
+        base_template = "Agent/Base/base.html"
+
+    # else:
+    #     base_template = "Agent/Base/base.html"
     context = {
         "base_template": base_template,
         "user_type": user_type,
