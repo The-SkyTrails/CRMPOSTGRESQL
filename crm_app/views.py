@@ -215,8 +215,12 @@ def verify_otp(request):
                 login(request, user)
                 user_type = user.user_type
                 if user_type == "1":
+                    user.is_logged_in = True
+                    user.save()
                     return redirect("dashboard")
                 if user_type == "2":
+                    user.is_logged_in = True
+                    user.save()
                     return redirect("admin_dashboard")
                 if user_type == "3":
                     user.is_logged_in = True

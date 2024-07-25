@@ -86,6 +86,9 @@ class Admin(models.Model):
     users = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     department = models.CharField(max_length=50)
     contact_no = models.CharField(max_length=10)
+    # profile_pic = models.ImageField(
+    #     upload_to="Admin/Profile Pic/", null=True, blank=True
+    # )
     
     # def __str__(self):
     #     return self.users.first_name
