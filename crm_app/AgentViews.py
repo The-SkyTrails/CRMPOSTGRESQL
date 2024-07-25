@@ -208,11 +208,19 @@ class agent_dashboard(LoginRequiredMixin, TemplateView):
             | Q(lead_status="Ready To Collection")
             | Q(lead_status="Result")
             | Q(lead_status="Delivery"),
+            archive = False,
             created_by=self.request.user,
         ).count()
+        lead_count = 0
         context["leadaccept_count"] = leadaccept_count
+        if self.request.user.user_type == '4':
+            
+            lead_count = Enquiry.objects.filter( Q(created_by=self.request.user)
+            | Q(assign_to_agent=self.request.user),archive = False).count()
+        if self.request.user.user_type == '5': 
+             lead_count = Enquiry.objects.filter( Q(created_by=self.request.user)
+            | Q(assign_to_outsourcingagent=self.request.user),archive = False).count()
 
-        lead_count = Enquiry.objects.filter(created_by=self.request.user).count()
         context["lead_count"] = lead_count
 
         package = Package.objects.filter(approval="Yes").order_by("-last_updated_on")[:10]

@@ -130,39 +130,39 @@ class admin_dashboard(LoginRequiredMixin, TemplateView):
 
         employee_count = Employee.objects.all().count()
 
-        leadarchive_count = Enquiry.objects.filter(archive__in=[True]).count()
+        leadarchive_count = Enquiry.objects.filter(archive=True).count()
        
         
 
-        leadaccept_count = Enquiry.objects.filter(lead_status="Enrolled").count()
+        leadaccept_count = Enquiry.objects.filter(lead_status="Enrolled",archive = False).count()
         
 
         leadinprocess_count = Enquiry.objects.filter(
-            Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit")
+            Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit"),archive = False
         ).count()
 
         
        
 
         leadappoint_count = Enquiry.objects.filter(
-            Q(lead_status="Appointment") | Q(lead_status="Ready To Collection")
+            Q(lead_status="Appointment") | Q(lead_status="Ready To Collection"),archive = False
         ).count()
 
         
 
-        completed_count = Enquiry.objects.filter(lead_status="Delivery").count()
+        completed_count = Enquiry.objects.filter(lead_status="Delivery",archive = False).count()
         
 
         leadpending_count = Enquiry.objects.filter(
-            Q(lead_status="Active") | Q(lead_status="PreEnrolled")
+            Q(lead_status="Active",) | Q(lead_status="PreEnrolled"),archive = False
         ).count()
         
 
-        leadtotal_count = Enquiry.objects.all().count()
+        leadtotal_count = Enquiry.objects.filter(archive = False).count()
 
-        leadnew_count = Enquiry.objects.filter(lead_status="New Lead").count()
+        leadnew_count = Enquiry.objects.filter(lead_status="New Lead", archive = False).count()
         
-        leadresult_count = Enquiry.objects.filter(lead_status="Result").count()
+        leadresult_count = Enquiry.objects.filter(lead_status="Result",archive = False).count()
 
         package = Package.objects.filter(approval="Yes").order_by("-last_updated_on")[
             :10
