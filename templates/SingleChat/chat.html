@@ -53,6 +53,45 @@
       <div id="contacts">
 
         <ul style="list-style-type:none">
+         {% if user_type == '5' %}
+          <li class="contact all-member ">
+            <div class="wrap">
+              <span class="contact-status online"></span>
+              <img src="http://emilcarlsson.se/assets/louislitt.png" alt="" />
+              
+             
+                <a href="javascript:void(0)"  data-user-id="{{ user.id }}" style="color:#f5f5f5; text-decoration: none;" class="chat-group-link">
+                    <div class="meta">
+                    <p class="name">{{assign_emp.users}} </p>
+                    
+                    
+                    
+                    </div>
+                </a>
+                
+              
+            </div>
+          </li>
+          {% elif user_type == '4' %}
+          <li class="contact all-member ">
+            <div class="wrap">
+              <span class="contact-status online"></span>
+              <img src="http://emilcarlsson.se/assets/louislitt.png" alt="" />
+              
+             
+                <a href="javascript:void(0)"  data-user-id="{{ user.id }}" style="color:#f5f5f5; text-decoration: none;" class="chat-group-link">
+                    <div class="meta">
+                    <p class="name">{{assign_emp.users}} </p>
+                    
+                    
+                    
+                    </div>
+                </a>
+                
+              
+            </div>
+          </li>
+         {% else %}
           {% for user in users %}
           <li class="contact all-member ">
             <div class="wrap">
@@ -73,6 +112,8 @@
             </div>
           </li>
           {% endfor %}
+         {% endif %}
+         
 
         </ul>
         
