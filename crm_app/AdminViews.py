@@ -2601,16 +2601,11 @@ def admin_new_leads_details(request):
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     
     enquiry_list = Enquiry.objects.all().order_by("-id")
-    paginator = Paginator(enquiry_list,10)
-    page_number = request.GET.get('page',1)
-    
+    paginator = Paginator(enquiry_list,1)
+    page_number = request.GET.get('page')
 
-    try:
-        page = paginator.page(page_number)
-    except PageNotAnInteger:
-        page = paginator.page(1)
-    except EmptyPage:
-        page = paginator.page(paginator.num_pages)
+    page = paginator.get_page(page_number)
+    
     
     presales_employees = get_presale_employee()
     sales_employees = get_sale_employee()
@@ -3688,7 +3683,7 @@ def edit_profile(request):
 
         return redirect("admin_profile")
 
-    return render(request, "Admin/Profile/Profile.html")
+    return render(request, "Admin/Profile/Profile.html") 
 
 def leadupated(request, id):
     enquiry = Enquiry.objects.get(id=id)

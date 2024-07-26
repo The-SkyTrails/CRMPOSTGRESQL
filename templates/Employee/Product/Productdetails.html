@@ -1,6 +1,6 @@
 {% extends "Employee/Base/base.html" %}
 {% load static %}
-
+{% load custom_filters %}
 {% block main-content %}
 
 
@@ -45,18 +45,71 @@
         </div>
       </div>
       <div class="text-container">
-        <div class="text">All Product</div>
+        <div class="text">Product Details</div>
       </div>
     </div>
 
     <div class="customs-container">
       <div class="custom-box">
-        <div class="custom-text">All Product</div>
+        <div class="custom-text">Product Details</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        {% if package.image %}
+           <img src="{{ package.image.url }}" class="img-fluid imges" alt="Product Image" style="padding: 5%;" />
+          {% else %}
+           <img src="{% static 'assets/images/noimage.png' %}" class="img-fluid imges" alt="Product Image" style="padding: 12%;" />
+          {% endif %}
+      </div>
+      <div class="col-md-6" style="background-color: beige;padding:3%;">
+        <div class="div" style="display: flex;justify-content:space-between;">
+          <h5 class="card-title1"> {{package.title}}</h5>
+          <div style="display: flex;justify-content:space-between;">
+            <form action="{% url "empPackageApply" package.id %}" method="POST">
+              {% csrf_token %}
+              
+              <div class="ArrowRight">
+                <button class="border-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16" style="color: #0d6efd;">
+                    <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
+                  </svg>
+                </button>
+                
+              </div>
+              </form>
+             
+                <a href="{% url "emp_pac_pdf" package.id  %}" download>
+                  <div class="ArrowRight">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                      <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293z"/>
+                      <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                    </svg>
+                   </div>
+                 </a>
+             
+          </div>
+          
+        </div>
+        
+        <p class="card-textt">Country:<span class="sp">{{package.visa_country}}</span></p>
+              <p class="card-textt">Category-SubCategory: <span class="sp">{{package.visa_category}}</span></p>
+              <p class="card-textt">No. Of Visa : <span class="sp">{{package.number_of_visa}}</span></p>
+              <p class="card-textt">Expiry Date:<span class="sp">{{package.package_expiry_date}}</span> </p>
+              <p class="card-textt">Processing Time:<span class="sp"> {{package.processing_time}}</span></p>
+              <p class="card-textt">Product Code : <span class="sp"> {{package.amount}}</span></p>
+              <p class="card-textt">Advanced Product Code:<span class="sp"> {{package.advance_amount}}</span> </p>
+              <p class="card-textt">File Charges:<span class="sp"> {{package.file_charges}}</span></p>
+              <h5 class="card-textt">Description:</h5>
+              <p class="card-textt"><span class="sp"> {{package.description}}</span></p>
+              <p class="card-textt">Product PDF:<span class="sp">{% if package.product_pdf %}<a href="{{package.product_pdf.url}}" target="_blank">{{package.product_pdf.url|filename}}</a>{% else %}nofile{% endif %}</span></p>
+              
       </div>
     </div>
 
 
-    <div class="div1">
+    <!-- <div class="div1">
       <div class="cards mb-3" style="max-width: 800px;">
         <div class="row g-0">
           <div class="col-md-3">
@@ -146,7 +199,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
 
     

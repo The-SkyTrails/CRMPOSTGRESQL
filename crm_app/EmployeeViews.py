@@ -5672,3 +5672,14 @@ def employee_search_view(request):
     ]
 
     return JsonResponse({"results": results})
+
+
+
+from wkhtmltopdf.views import PDFTemplateResponse
+
+def emp_package_pdf(request, id):
+    package = Package.objects.get(id=id)
+
+    context = {"package": package}
+
+    return PDFTemplateResponse(request, "Admin/Product/package_pdf.html", context)

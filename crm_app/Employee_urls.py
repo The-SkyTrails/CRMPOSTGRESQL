@@ -333,5 +333,5 @@ urlpatterns = [
 
     path("employee/agents/", emp_search_view, name="emp_search"),  # The endpoint for AJAX requests
     path("search/employee/", employee_search_view, name="employee_search"),
-    
+    path("emp_package_pdf/<int:id>/", emp_package_pdf, name="emp_pac_pdf"),
 ]
