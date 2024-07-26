@@ -14,8 +14,9 @@
       <div class="profile-content">
         <div class="imgcontent-profile">
           <div class="img-user">
-            {% if admin.file %}
-            <img src="{{admin.file.url}}" alt="user"/>
+            
+            {% if user.admin.file %}
+            <img src="{{user.admin.file.url}}" alt="user" style="height: 128px; width:128px;border-radius:50%;"/>
             {% else %}
             <img src="{% static "style/Styling/Bootstrap/img/Avatar.png" %}" alt="user"/>
             {% endif %}

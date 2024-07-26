@@ -2539,12 +2539,15 @@ def edit_profile(request):
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name")
         contact = request.POST.get("contact")
+        file = request.FILES.get("files")
 
         employee_instance = Employee.objects.get(users=request.user)
 
         employee_instance.users.first_name = first_name
         employee_instance.users.last_name = last_name
         employee_instance.contact_no = contact
+        if file:
+            employee_instance.file = file
 
         employee_instance.users.save()
         employee_instance.save()
@@ -2552,7 +2555,6 @@ def edit_profile(request):
         return redirect("Employee_profile")
 
     return render(request, "Employee/Profile/Profile.html")
-
 
 # ---------------------------------------------------
 

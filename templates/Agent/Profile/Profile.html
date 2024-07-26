@@ -16,19 +16,14 @@
       <div class="imgcontent-profile">
         <div class="img-user">
 
-          {% if agent.users.user_type == '4' %}
-          {% if agent.profile_pic %}
-         
-          <img src="{{agent.profile_pic.url}}" alt="user" />
-          {% else %}
-          <img src="{% static "style/Styling/Bootstrap/img/Avatar.png" %}" alt="user" />
-          {% endif %}
-          {% elif agent.users.user_type == '5' %}
-          {% if outsource.profile_pic %}
-          <img src="{{outsource.profile_pic.url}}" alt="user" />
-          {% else %}
-          <img src="{% static "style/Styling/Bootstrap/img/Avatar.png" %}" alt="user" />
-          {% endif %}
+          
+            {% if agent.profile_pic %}
+          
+            <img src="{{agent.profile_pic.url}}" alt="user" style="height: 128px; width:128px;border-radius:50%;" />
+            {% else %}
+            <img src="{% static "style/Styling/Bootstrap/img/Avatar.png" %}" alt="user" />
+            
+          
           {% endif %}
 
 

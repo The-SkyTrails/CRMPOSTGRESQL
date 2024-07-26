@@ -1345,6 +1345,8 @@ def edit_profile(request):
         last_name = request.POST.get("last_name")
         # email = request.POST.get('email')
         contact = request.POST.get("contact")
+        file = request.FILES.get("files")
+        
 
         if users.user_type == "4":
             agent_instance = Agent.objects.get(users=request.user)
@@ -1353,6 +1355,8 @@ def edit_profile(request):
             agent_instance.users.last_name = last_name
             # agent_instance.users.email = email
             agent_instance.contact_no = contact
+            if file:
+                agent_instance.profile_pic = file
 
             agent_instance.users.save()
             agent_instance.save()
@@ -1364,6 +1368,9 @@ def edit_profile(request):
             outsource_instance.users.last_name = last_name
             # outsource_instance.users.email = email
             outsource_instance.contact_no = contact
+            if file:
+                outsource_instance.profile_pic = file
+                
 
             outsource_instance.users.save()
             outsource_instance.save()
@@ -1371,8 +1378,6 @@ def edit_profile(request):
         return redirect("Agent_profile")
 
     return render(request, "Agent/Profile/Profile.html")
-
-
 ################################################# APPOINTMENT ###################################################
 
 

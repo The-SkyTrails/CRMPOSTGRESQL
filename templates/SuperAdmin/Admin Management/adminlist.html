@@ -73,6 +73,7 @@
                     <tr>
 
                         <th>S.No.</th>
+                        <th>Profile</th>
                         <th>Name</th>
                         <th>Contact Number</th>
                         <th>Email Address</th>
@@ -85,7 +86,11 @@
                     <tr>
                         
                         <td>{{forloop.counter}}</td>
-
+                        <td>{% if i.file %}
+                            <img src="{{ i.file.url }}" class="img-responsive" alt="Product Image" style="height:40px;"/>
+                            {% else %}
+                            <img src="{% static 'style/Styling/Bootstrap/img/no-image.jpg' %}" class="img-responsive" alt="Product Image" style="height:40px;" />
+                            {% endif %}</td>
                         <td>{{i.users.first_name}} {{i.users.last_name}} </td>
                         <td>{{i.contact_no}}</td>
                         <td>{{i.users.email}}</td>

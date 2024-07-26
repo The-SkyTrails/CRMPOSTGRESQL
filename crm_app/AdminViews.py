@@ -3673,6 +3673,7 @@ def edit_profile(request):
         last_name = request.POST.get("last_name")
         email = request.POST.get("email")
         contact = request.POST.get("contact")
+        file = request.FILES.get("files")
 
         admin_instance = Admin.objects.get(users=request.user)
 
@@ -3680,14 +3681,14 @@ def edit_profile(request):
         admin_instance.users.last_name = last_name
         admin_instance.users.email = email
         admin_instance.contact_no = contact
-
+        if file:
+            admin_instance.file = file
         admin_instance.users.save()
         admin_instance.save()
 
         return redirect("admin_profile")
 
     return render(request, "Admin/Profile/Profile.html")
-
 
 def leadupated(request, id):
     enquiry = Enquiry.objects.get(id=id)

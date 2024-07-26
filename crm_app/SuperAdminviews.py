@@ -30,6 +30,7 @@ def add_admin(request):
         email = request.POST.get("email")
         contact = request.POST.get("contact")
         password = request.POST.get("password")
+        files = request.FILES.get("files")
         user_type = "2"
 
         try:
@@ -46,12 +47,13 @@ def add_admin(request):
                 first_name=firstname,
                 last_name=lastname,
                 email=email,
-                password=password,
+                password=password,         
                 user_type="2",
             )
 
             user.admin.department = department
             user.admin.contact_no = contact
+            user.admin.file=files
             user.save()
             subject = "Congratulations! Your Account is Created"
             # message = (
@@ -108,7 +110,7 @@ def add_admin(request):
             )
             return redirect("view_admin")
         except Exception as e:
-            messages.warning(request, "Something is Wrong Try Again")
+            messages.warning(request, e)
 
     return render(request, "SuperAdmin/Admin Management/addadmin.html")
 
@@ -130,6 +132,7 @@ def edit_admin(request, user_id):
         lastname = request.POST.get("lastname")
         email = request.POST.get("email")
         contact = request.POST.get("contact")
+        files = request.FILES.get("files")
 
         try:
             if (
@@ -148,6 +151,8 @@ def edit_admin(request, user_id):
 
             admin.department = department
             admin.contact_no = contact
+            if files:
+                admin.file=files
             admin.save()
 
             messages.success(request, f"{email} Updated Successfully")
