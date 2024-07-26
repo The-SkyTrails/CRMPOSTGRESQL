@@ -2601,7 +2601,7 @@ def admin_new_leads_details(request):
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     
     enquiry_list = Enquiry.objects.all().order_by("-id")
-    paginator = Paginator(enquiry_list,1)
+    paginator = Paginator(enquiry_list,10)
     page_number = request.GET.get('page')
 
     page = paginator.get_page(page_number)
