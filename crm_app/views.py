@@ -419,7 +419,7 @@ def forgot_psw(request):
             request.session["user_id"] = user.id
 
             random_number = random.randint(0, 999)
-            forgetsend_otp = str(random_number).zfill(4)
+            forgetsend_otp = str(random_number).zfill(6)
             request.session["forgotsendotp"] = forgetsend_otp
 
             url = "http://sms.txly.in/vb/apikey.php"
