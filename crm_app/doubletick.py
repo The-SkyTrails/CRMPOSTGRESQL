@@ -92,7 +92,7 @@ def product_add_mes(title , country , contact):
                     "templateName": "product_v4"
                 },
                 "from": "+918800517859",
-                "to": "+91" + contact
+                "to": "+91"+contact
             }
         ]
     }
@@ -135,6 +135,89 @@ def login_otp_mes(send_otp,mobile):
                 },
                 "from": "+918800517859",
                 "to": "+91" + mobile
+            }
+        ]
+    }
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "Authorization": "key_IqTwUC2O8n"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+
+
+def product_update_mes(title , country , contact):
+    title = str(title) if title else ""
+    country = str(country) if country else ""
+    
+    url = "https://public.doubletick.io/whatsapp/message/template"
+
+    payload = {
+        "messages": [
+            {
+                "content": {
+                    "language": "en",
+                    "templateData": {
+                        "header": {
+                            "type": "TEXT",
+                            "placeholder": "body",
+                            "mediaUrl": "kjhgfdxfcj",
+                            "filename": "kjhgcnhj"
+                        },
+                        "body": {
+                            "placeholders": [
+                                title,
+                                country,
+                            ]
+                        }
+                    },
+                    "templateName": "product_v5_update"
+                },
+                "from": "+918800517859",
+                "to": "+91"+contact
+            }
+        ]
+    }
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "Authorization": "key_IqTwUC2O8n"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    
+def product_delete_mes(title , country , contact):
+    title = str(title) if title else ""
+    country = str(country) if country else ""
+    
+    url = "https://public.doubletick.io/whatsapp/message/template"
+
+    payload = {
+        "messages": [
+            {
+                "content": {
+                    "language": "en",
+                    "templateData": {
+                        "header": {
+                            "type": "TEXT",
+                            "placeholder": "body",
+                            "mediaUrl": "kjhgfdxfcj",
+                            "filename": "kjhgcnhj"
+                        },
+                        "body": {
+                            "placeholders": [
+                                title,
+                                country,
+                            ]
+                        }
+                    },
+                    "templateName": "product_v5_delete"
+                },
+                "from": "+918800517859",
+                "to": "+91"+contact
             }
         ]
     }

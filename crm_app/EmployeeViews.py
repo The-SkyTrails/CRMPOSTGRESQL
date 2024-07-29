@@ -667,6 +667,16 @@ def employee_lead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                    
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
+                    
             elif dep == "Sales":
                 enq_list = Enquiry.objects.filter(
                     Q(assign_to_sales_employee=user.employee) | Q(created_by=user)
@@ -680,6 +690,15 @@ def employee_lead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                    
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
 
             elif dep == "Documentation":
                 enq_list = Enquiry.objects.filter(
@@ -695,6 +714,16 @@ def employee_lead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                    
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
+                    
             elif dep == "Visa Team":
                 enq_list = Enquiry.objects.filter(
                     Q(assign_to_visa_team_employee=user.employee) | Q(created_by=user)
@@ -708,6 +737,16 @@ def employee_lead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                    
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
+                    
             elif dep == "Assesment":
                 enq_list = Enquiry.objects.filter(
                     Q(assign_to_assesment_employee=user.employee) | Q(created_by=user)
@@ -721,6 +760,15 @@ def employee_lead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                    
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             else:
                 enq_list = Enquiry.objects.filter(created_by=request.user)
                 paginator = Paginator(enq_list, 10)
@@ -732,9 +780,19 @@ def employee_lead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                    
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
 
     context = {
         "page": page,
+        "base_url":base_url,
         "user": user,
         "dep": dep,
         "presales_employees": presales_employees,
@@ -744,8 +802,8 @@ def employee_lead_list(request):
         "lead": lead,
         "assesment_employee": assesment_employee,
     }
-    return render(request, "Employee/Enquiry/lead_list.html",context)
 
+    return render(request, "Employee/Enquiry/lead_list.html",context)
 
 @login_required
 def employee_lead_grid(request):
@@ -1165,25 +1223,26 @@ def emp_add_notes(request):
         except Enquiry.DoesNotExist:
             pass
 
+        page_number = request.POST.get('page', 1)
         redirect_to = request.POST.get("redirect_to")
         if redirect_to == "active_leads":
-            return HttpResponseRedirect(reverse("employee_activelead_list"))
+            url = reverse("employee_activelead_list")
         elif redirect_to == "latest_leads":
-            return HttpResponseRedirect(reverse("employee_Latestlead_list"))
+            url = reverse("employee_Latestlead_list")
         elif redirect_to == "enrolled_leads":
-            return HttpResponseRedirect(reverse("employee_enrolled_lead"))
+            url = reverse("employee_enrolled_lead")
         elif redirect_to == "inprocess_leads":
-            return HttpResponseRedirect(reverse("employee_inprocesslead_list"))
+            url = reverse("employee_inprocesslead_list")
         elif redirect_to == "appointment_leads":
-            return HttpResponseRedirect(reverse("employee_appointlead_list"))
+            url = reverse("employee_appointlead_list")
         elif redirect_to == "delivered_leads":
-            return HttpResponseRedirect(reverse("employee_Resultlead_list"))
+            url = reverse("employee_Resultlead_list")
         elif redirect_to == "completed_leads":
-            return HttpResponseRedirect(reverse("employee_Deliverylead_list"))
+            url = reverse("employee_Deliverylead_list")
         else:
-            return HttpResponseRedirect(reverse("employee_lead_list"))
-
-
+            url = reverse("employee_lead_list")
+            
+        return HttpResponseRedirect(f"{url}?page={page_number}")
 # ------------------------------------------ AGent Details --------------------------
 
 
@@ -4722,6 +4781,14 @@ def employee_Enrolledlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Sales":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -4739,6 +4806,14 @@ def employee_Enrolledlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Documentation":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -4756,6 +4831,14 @@ def employee_Enrolledlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Visa Team":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -4773,6 +4856,14 @@ def employee_Enrolledlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Assesment":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -4790,6 +4881,14 @@ def employee_Enrolledlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             else:
                 enq_list = Enquiry.objects.filter(
                     (Q(created_by=user) & (Q(lead_status="Enrolled")))
@@ -4803,9 +4902,18 @@ def employee_Enrolledlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
 
             context = {
                 "page": page,
+                "base_url":base_url,
                 "user": user,
                 "dep": dep,
                 "presales_employees": presales_employees,
@@ -4861,6 +4969,14 @@ def employee_inprocesslead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Sales":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -4887,6 +5003,14 @@ def employee_inprocesslead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Documentation":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -4913,6 +5037,14 @@ def employee_inprocesslead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Visa Team":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -4939,6 +5071,14 @@ def employee_inprocesslead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Assesment":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -4965,6 +5105,14 @@ def employee_inprocesslead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             else:
                 enq_list = Enquiry.objects.filter(
                     (
@@ -4984,9 +5132,18 @@ def employee_inprocesslead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
 
             context = {
                 "page": page,
+                "base_url":base_url,
                 "user": user,
                 "dep": dep,
                 "presales_employees": presales_employees,
@@ -5042,6 +5199,14 @@ def employee_appointlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Sales":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5068,6 +5233,14 @@ def employee_appointlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Documentation":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5094,6 +5267,14 @@ def employee_appointlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Visa Team":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5120,6 +5301,14 @@ def employee_appointlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Assesment":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5146,6 +5335,14 @@ def employee_appointlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             else:
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5165,9 +5362,18 @@ def employee_appointlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
 
             context = {
                 "page": page,
+                "base_url":base_url,
                 "user": user,
                 "dep": dep,
                 "presales_employees": presales_employees,
@@ -5209,6 +5415,14 @@ def employee_Resultlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Sales":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5226,6 +5440,14 @@ def employee_Resultlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Documentation":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5243,6 +5465,14 @@ def employee_Resultlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Visa Team":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5260,6 +5490,14 @@ def employee_Resultlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Assesment":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5277,6 +5515,14 @@ def employee_Resultlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             else:
                 enq_list = Enquiry.objects.filter(
                     (Q(created_by=user) & (Q(lead_status="Result")))
@@ -5290,9 +5536,18 @@ def employee_Resultlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
 
             context = {
                 "page": page,
+                "base_url":base_url,
                 "user": user,
                 "dep": dep,
                 "presales_employees": presales_employees,
@@ -5334,6 +5589,14 @@ def employee_Deliverylead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Sales":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5351,6 +5614,14 @@ def employee_Deliverylead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Documentation":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5368,6 +5639,14 @@ def employee_Deliverylead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Visa Team":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5385,6 +5664,14 @@ def employee_Deliverylead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Assesment":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5402,6 +5689,14 @@ def employee_Deliverylead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             else:
                 enq_list = Enquiry.objects.filter(
                     (Q(created_by=user) & (Q(lead_status="Delivery")))
@@ -5415,8 +5710,17 @@ def employee_Deliverylead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             context = {
                 "page": page,
+                "base_url":base_url,
                 "user": user,
                 "dep": dep,
                 "presales_employees": presales_employees,
@@ -5460,6 +5764,14 @@ def employee_Latestlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Sales":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5477,6 +5789,14 @@ def employee_Latestlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Documentation":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5494,6 +5814,14 @@ def employee_Latestlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Visa Team":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5511,6 +5839,14 @@ def employee_Latestlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Assesment":
                 enq_list = Enquiry.objects.filter(
                     (
@@ -5528,6 +5864,14 @@ def employee_Latestlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             else:
                 enq_list = Enquiry.objects.filter(
                     (Q(created_by=user) & (Q(lead_status="New Lead")))
@@ -5541,9 +5885,18 @@ def employee_Latestlead_list(request):
                     page = paginator.page(1)
                 except EmptyPage:
                     page = paginator.page(paginator.num_pages)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
 
             context = {
                 "page": page,
+                "base_url":base_url,
                 "user": user,
                 "dep": dep,
                 "presales_employees": presales_employees,
@@ -5599,25 +5952,26 @@ def update_assigned_employee(request, id):
         
         enquiry.save()
         messages.success(request, "Lead Assigned Successfully...")
+        page_number = request.POST.get('page', 1)
         redirect_to = request.POST.get("redirect_to")
         if redirect_to == "active_leads":
-            return HttpResponseRedirect(reverse("employee_activelead_list"))
+            url = reverse("employee_activelead_list")
         elif redirect_to == "latest_leads":
-            return HttpResponseRedirect(reverse("employee_Latestlead_list"))
+            url = reverse("employee_Latestlead_list")
         elif redirect_to == "enrolled_leads":
-            return HttpResponseRedirect(reverse("employee_enrolled_lead"))
+            url = reverse("employee_enrolled_lead")
         elif redirect_to == "inprocess_leads":
-            return HttpResponseRedirect(reverse("employee_inprocesslead_list"))
+            url = reverse("employee_inprocesslead_list")
         elif redirect_to == "appointment_leads":
-            return HttpResponseRedirect(reverse("employee_appointlead_list"))
+            url = reverse("employee_appointlead_list")
         elif redirect_to == "delivered_leads":
-            return HttpResponseRedirect(reverse("employee_Resultlead_list"))
+            url = reverse("employee_Resultlead_list")
         elif redirect_to == "completed_leads":
-            return HttpResponseRedirect(reverse("employee_Deliverylead_list"))
+            url = reverse("employee_Deliverylead_list")
         else:
-            return HttpResponseRedirect(reverse("employee_lead_list"))
-
-
+            url = reverse("employee_lead_list")
+            
+        return HttpResponseRedirect(f"{url}?page={page_number}")
 
 
 def fetch_agents(request):

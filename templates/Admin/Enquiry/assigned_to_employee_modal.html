@@ -2,6 +2,7 @@
     <div class="modal-dialog">
         <form action="{% url "update_assign_employee" i.id %}" method="post">
             {% csrf_token %}
+            <input type="hidden" name="page" value="{{ page.number }}">
             <input type="hidden" name="redirect_to" value="{% if request.path == '/ActiveLeads/' %}active_leads{% elif request.path == '/LatestLeads/' %}latest_leads{% elif request.path == '/InprocessLeads/' %}inprocess_leads{% elif request.path == '/AppointmentLeads/' %}appointment_leads{% elif request.path == '/DeliveredLeads/' %}delivered_leads{% elif request.path == '/CompletedLeads/' %}completed_leads{% elif request.path == '/EnrolledLeads/' %}enrolled_leads{% else %}new_leads{% endif %}">
             <div class="modal-content">
                 <div class="modal-header">

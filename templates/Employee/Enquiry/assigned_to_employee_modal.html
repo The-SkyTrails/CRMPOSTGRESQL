@@ -34,6 +34,8 @@
     <div class="modal-dialog">
         <form action="{% url "emp_update_assign_employee" i.id %}" method="post" autocomplete="off">
             {% csrf_token %}
+            <input type="hidden" name="page" value="{{ page.number }}">
+            <input type="hidden" name="redirect_to" value="{% if request.path == '/ActiveLead/List/' %}active_leads{% elif request.path == '/LatestLead/List/' %}latest_leads{% elif request.path == '/InProcessLead/List/' %}inprocess_leads{% elif request.path == '/AppointmentLead/List/' %}appointment_leads{% elif request.path == '/ResultLead/List/' %}delivered_leads{% elif request.path == '/DeliveryLead/List/' %}completed_leads{% elif request.path == '/EnrolledLead/List/' %}enrolled_leads{% else %}new_leads{% endif %}">
             
             <div class="modal-content">
                 <div class="modal-header">

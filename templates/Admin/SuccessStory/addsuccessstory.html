@@ -1,7 +1,6 @@
-
 <div class="modal" id="myModal">
   <div class="modal-dialog">
-    <form action="" method="POST" id="addCountryForm"  autocomplete="off" enctype="multipart/form-data">
+    <form id="successStoryForm" action="" method="POST" autocomplete="off" enctype="multipart/form-data">
       {% csrf_token %}
       <div class="modal-content">
         <!-- Modal Header -->
@@ -10,16 +9,28 @@
           <button type="button" class="btn-close" data-dismiss="modal"></button>
         </div>
         <!-- Modal Body -->
-        
-          
-          <div class="modal-body">
-            <div class="row formrow">
-              <div class="col-md-12">
-                {{form.image}}
+        <div class="modal-body">
+          <div class="row formrow">
+            <div class="col-md-12">
+              <input type="file" id="imageInput" name="image" class="form-control">
+              <div id="imagePreview" style="display:none;">
+                <img id="image" src="" alt="Image preview" style="display:none;">
+                <canvas id="editCanvas"></canvas>
+                <div id="brushControls" style="display:none;">
+                  <label for="brushSize">Brush Size:</label>
+                  <input type="range" id="brushSize" min="5" max="50" value="10">
+                  <label for="blurIntensity">Blur Intensity:</label>
+                  <input type="range" id="blurIntensity" min="0" max="10" value="2" step="0.1">
+                </div>
               </div>
             </div>
           </div>
-        
+          <div class="row formrow">
+            <div class="col-md-12">
+              {{ form.description }}
+            </div>
+          </div>
+        </div>
         <!-- Modal Footer -->
         <div class="modal-footer">
           <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -30,3 +41,105 @@
     </form>
   </div>
 </div>
+
+<script>
+let cropper;
+let isDrawing = false;
+let brushSize = 10;
+let blurIntensity = 2;
+let editCanvas, editCtx;
+
+document.getElementById('imageInput').addEventListener('change', function(event) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const imageElement = document.getElementById('image');
+    imageElement.src = e.target.result;
+    imageElement.style.display = 'block';
+    
+    imageElement.onload = function() {
+      document.getElementById('imagePreview').style.display = 'block';
+      document.getElementById('brushControls').style.display = 'block';
+
+      if (cropper) {
+        cropper.destroy();
+      }
+
+      cropper = new Cropper(imageElement, {
+        aspectRatio: 16 / 9,
+        viewMode: 1,
+        crop: function(event) {
+          const croppedCanvas = cropper.getCroppedCanvas();
+
+          // Ensure the canvas matches the cropped area dimensions
+          editCanvas = document.getElementById('editCanvas');
+          editCtx = editCanvas.getContext('2d');
+          editCanvas.width = croppedCanvas.width;
+          editCanvas.height = croppedCanvas.height;
+          editCtx.clearRect(0, 0, editCanvas.width, editCanvas.height);
+          editCtx.drawImage(croppedCanvas, 0, 0);
+        }
+      });
+    };
+  };
+  reader.readAsDataURL(event.target.files[0]);
+});
+
+document.getElementById('brushSize').addEventListener('input', function() {
+  brushSize = this.value;
+});
+
+document.getElementById('blurIntensity').addEventListener('input', function() {
+  blurIntensity = this.value;
+});
+
+document.getElementById('editCanvas').addEventListener('mousedown', function(event) {
+  isDrawing = true;
+  editCtx.beginPath();
+  editCtx.moveTo(event.offsetX, event.offsetY);
+});
+
+document.getElementById('editCanvas').addEventListener('mousemove', function(event) {
+  if (!isDrawing) return;
+  editCtx.lineWidth = brushSize;
+  editCtx.lineCap = 'round';
+  editCtx.strokeStyle = `rgba(192, 192, 192, ${blurIntensity / 10})`; // Light grey color
+  editCtx.lineTo(event.offsetX, event.offsetY);
+  editCtx.stroke();
+});
+
+document.getElementById('editCanvas').addEventListener('mouseup', function() {
+  isDrawing = false;
+});
+
+document.getElementById('successStoryForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const formData = new FormData(this);
+
+  if (editCanvas) {
+    editCanvas.toBlob(function(blob) {
+      formData.set('image', blob, 'final_image.png');
+
+      fetch('', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRFToken': document.querySelector('[name="csrfmiddlewaretoken"]').value
+        }
+      }).then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Success Story added successfully');
+            window.location.href = data.redirect_url;
+          } else {
+            alert('Error adding Success Story');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred');
+        });
+    });
+  }
+});
+</script>

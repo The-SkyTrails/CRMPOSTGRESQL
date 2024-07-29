@@ -63,10 +63,17 @@
     <div class="col-md-4" style="margin-bottom:6px;">
       <div class="card">
 
+        {% if i.image %}
         <img src="{{ i.image.url }}" class="card-img-top" alt="Product Image" style="border-radius: 8px;"/>
-
+        {% else %}
+        No Image
+        {% endif %}
+        <div class="card-body">
+          <p class="card-text"><b>Description</b> : {{i.description}} </p>
+        </div>
       </div>
     </div>
+
 
     
     {% endfor %}

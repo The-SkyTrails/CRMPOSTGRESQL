@@ -466,19 +466,19 @@ def forget_otp(request):
 
 def reset_psw(request):
     user_id = request.session.get("user_id", "Default value if key does not exist")
-
+    print("user id",user_id)
     if request.method == "POST":
         new_psw = request.POST.get("new_psw")
         confirm_psw = request.POST.get("confirm_psw")
+        print("confirm psw",confirm_psw)
 
         if new_psw == confirm_psw:
             user_instance = CustomUser.objects.get(id=user_id)
+            print("user instance",user_instance)
 
             try:
-                # Use set_password to properly hash and save the password
-                # print("Before setting password:", user_instance.password)
+                
                 user_instance.set_password(confirm_psw)
-                # print("After setting password:", user_instance.password)
                 user_instance.save()
 
                 messages.success(request, "Password Reset Successfully....")

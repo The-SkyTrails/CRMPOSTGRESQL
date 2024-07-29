@@ -4,6 +4,7 @@
       <div class="modal-content">
         <form action="{% url "add_notes" %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+            <input type="hidden" name="page" value="{{ page.number }}">
             <input type="hidden" name="redirect_to" value="{% if request.path == '/ActiveLeads/' %}active_leads{% elif request.path == '/LatestLeads/' %}latest_leads{% elif request.path == '/InprocessLeads/' %}inprocess_leads{% elif request.path == '/AppointmentLeads/' %}appointment_leads{% elif request.path == '/DeliveredLeads/' %}delivered_leads{% elif request.path == '/CompletedLeads/' %}completed_leads{% elif request.path == '/EnrolledLeads/' %}enrolled_leads{% else %}new_leads{% endif %}">
         <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">Add Notes</h5>

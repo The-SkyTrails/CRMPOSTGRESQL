@@ -54,7 +54,11 @@
     </header>
 
     <section>
+        {% if package.image %}
+        <img src="{{package.image.url}}" alt="img" style="height:400px;">
+        {% else %}
         <img src="https://github.com/Radhika57/CRM-EMAIL-IMAGES/blob/main/rohit%20sir%20mail%20image.jpg?raw=true" alt="img">
+        {% endif %}
         <h2>{{package.title}}</h2>
         <p>Description : <b>{{package.description}}</b></p>
         <p>Country : <b>{{package.visa_country}}</b></p>

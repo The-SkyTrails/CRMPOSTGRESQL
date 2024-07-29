@@ -649,13 +649,12 @@ class ChatGroupForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
     )
 
-
 class SuccessStoryForm(forms.ModelForm):
     class Meta:
         model = SuccessStory
-        fields = ["image"]
-        widgets = {"image": forms.FileInput(attrs={"class": "form-control"})}
-
+        fields = ["image","description"]
+        widgets = {"image": forms.FileInput(attrs={"class": "form-control"}),
+                   "description": forms.Textarea(attrs={"class": "form-control","placeholder":"Description"})}
 
 class NewsForm(forms.ModelForm):
     class Meta:

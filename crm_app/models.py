@@ -1124,6 +1124,7 @@ class SuccessStory(models.Model):
     create_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     image = models.FileField(upload_to="images/general/successstories/")
     last_updated_on = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True, null=True)
 
 
 class News(models.Model):
