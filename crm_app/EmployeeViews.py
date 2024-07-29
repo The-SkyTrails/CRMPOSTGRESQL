@@ -6037,3 +6037,239 @@ def emp_package_pdf(request, id):
     context = {"package": package}
 
     return PDFTemplateResponse(request, "Admin/Product/package_pdf.html", context)
+
+
+
+class HolidayPackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Employee/Product/holiday_visa.html"
+    context_object_name = "packages"
+    paginate_by = 9
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(package_type="Holiday",approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(package_type="Holiday",approval="Yes").order_by("-id")
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        user = self.request.user
+        dep = user.employee.department
+
+        # Pagination logic
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list  
+        
+        context["dep"] = dep
+
+        return context
+    
+class VisitorPackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Employee/Product/visitor_visa.html"
+    context_object_name = "packages"
+    paginate_by = 9
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(package_type="Visitor",approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(package_type="Visitor",approval="Yes").order_by("-id")
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        user = self.request.user
+        dep = user.employee.department
+
+        # Pagination logic
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list  
+        
+        context["dep"] = dep
+
+        return context
+    
+class WorkPackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Employee/Product/work_visa.html"
+    context_object_name = "packages"
+    paginate_by = 9
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(package_type="Work",approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(package_type="Work",approval="Yes").order_by("-id")
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        user = self.request.user
+        dep = user.employee.department
+
+        # Pagination logic
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list  
+        
+        context["dep"] = dep
+
+        return context
+    
+class StudyPackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Employee/Product/study_visa.html"
+    context_object_name = "packages"
+    paginate_by = 9
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(package_type="Study",approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(package_type="Study",approval="Yes").order_by("-id")
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        user = self.request.user
+        dep = user.employee.department
+
+        # Pagination logic
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list  
+        
+        context["dep"] = dep
+
+        return context
+    
+class InvestmentPackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Employee/Product/investment_visa.html"
+    context_object_name = "packages"
+    paginate_by = 9
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(package_type="Investment",approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(package_type="Investment",approval="Yes").order_by("-id")
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        user = self.request.user
+        dep = user.employee.department
+
+        # Pagination logic
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list  
+        
+        context["dep"] = dep
+
+        return context
+    
+class SettlementPackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Employee/Product/settlement_visa.html"
+    context_object_name = "packages"
+    paginate_by = 9
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(package_type="Settlement",approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(package_type="Settlement",approval="Yes").order_by("-id")
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        user = self.request.user
+        dep = user.employee.department
+
+        # Pagination logic
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list  
+        
+        context["dep"] = dep
+
+        return context

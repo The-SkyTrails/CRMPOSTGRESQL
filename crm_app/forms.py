@@ -133,6 +133,7 @@ class CompanyCourierDetailsForm(forms.ModelForm):
             "docker_no",
             "courier_no",
             "status",
+            "doc_via"
         ]
 
         widgets = {
@@ -161,6 +162,7 @@ class CompanyCourierDetailsForm(forms.ModelForm):
                 attrs={"class": "form-control", "placeholder": "Enter Number"}
             ),
             "status": forms.Select(attrs={"class": "form-select",'required': 'required'}),
+            "doc_via": forms.Select(attrs={"class": "form-select",'required': 'required'}),
         }
 
 
@@ -201,6 +203,7 @@ class PackageForm(forms.ModelForm):
             "image",
             "processing_time",
             "product_pdf",
+            "package_type",
         ]
         widgets = {
             "visa_country": forms.Select(attrs={"class": "form-select"}),
@@ -237,6 +240,7 @@ class PackageForm(forms.ModelForm):
             "image": forms.FileInput(attrs={"class": "form-control"}),
             "product_pdf": forms.FileInput(attrs={"class": "form-control"}),
             "processing_time": forms.Select(attrs={"class": "form-select"}),
+            "package_type": forms.Select(attrs={"class": "form-select"}),
         }
 
 

@@ -312,6 +312,12 @@ urlpatterns = [
     # ------------------------------ Passport enquiry show -----------
 
     path("Passport/Enquiry", passport_enquiry_view, name="passport_enq"),
+    path("HolidayPackageList/", HolidayPackageListView.as_view(), name="Holiday_Package_list"),
+    path("VisitorPackageList/", VisitorPackageListView.as_view(), name="Visitor_Package_list"),
+    path("WorkPackageList/", WorkPackageListView.as_view(), name="Work_Package_list"),
+    path("StudyPackageList/", StudyPackageListView.as_view(), name="Study_Package_list"),
+    path("InvestmentPackageList/", InvestmentPackageListView.as_view(), name="Investment_Package_list"),
+    path("SettlementPackageList/", SettlementPackageListView.as_view(), name="Settlement_Package_list"),
 
 
 

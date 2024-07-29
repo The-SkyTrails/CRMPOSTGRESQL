@@ -6,6 +6,7 @@ from .models import *
 from django.urls import reverse
 from django.db.models import Q
 from .doubletick import whatsapp_signup_mes, product_add_mes , product_update_mes , product_delete_mes
+from django.utils.dateparse import parse_date
 
 from django.views.generic import (
     CreateView,
@@ -2675,19 +2676,39 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 def admin_new_leads_details(request):
     excluded_statuses = ["Accept", "Case Initiated"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
-    
-    enquiry_list = Enquiry.objects.all().order_by("-id")
-    paginator = Paginator(enquiry_list,10)
-    page_number = request.GET.get('page',1)
-    
 
-    try:
-        page = paginator.page(page_number)
-    except PageNotAnInteger:
-        page = paginator.page(1)
-    except EmptyPage:
-        page = paginator.page(paginator.num_pages)
+    presales_employees = get_presale_employee()
+    sales_employees = get_sale_employee()
+    documentation_employees = get_documentation_team_employee()
+    visa_team = get_visa_team_employee()
+    assesment_employee = get_assesment_employee()
+    agent = get_agent()
+    outsourcepartner = get_outsourcepartner()
+
+    search_query = request.GET.get('search', '')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    queries = Q(archive=False)
+    if search_query:
+        search_parts = search_query.split()
+        for part in search_parts:
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+    if start_date:
+        start_date = parse_date(start_date)
+        queries &= Q(registered_on__date__gte=start_date)
+
+    if end_date:
+        end_date = parse_date(end_date)
+        queries &= Q(registered_on__date__lte=end_date)
+
+    enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
         
+    paginator = Paginator(enquiry_list, 1)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+
     query_params = request.GET.copy()
     if 'page' in query_params:
         del query_params['page']
@@ -2696,15 +2717,6 @@ def admin_new_leads_details(request):
         base_url += '&page='
     else:
         base_url += 'page='
-
-    
-    presales_employees = get_presale_employee()
-    sales_employees = get_sale_employee()
-    documentation_employees = get_documentation_team_employee()
-    visa_team = get_visa_team_employee()
-    assesment_employee = get_assesment_employee()
-    agent = get_agent()
-    outsourcepartner = get_outsourcepartner()
 
     context = {
         "enquiry": enquiry_list,
@@ -2718,8 +2730,13 @@ def admin_new_leads_details(request):
         "outsourcepartner": outsourcepartner,
         "page": page,
         'base_url': base_url,
+        'search_query': search_query,
+        'start_date': start_date,
+        'end_date': end_date
     }
     return render(request, "Admin/Enquiry/lead-details.html", context)
+
+
 
 @login_required
 def update_assigned_agent(request, id):
@@ -3095,16 +3112,36 @@ def enrolled_Application(request):
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     enquiry = Enquiry.objects.filter(lead_status="Enrolled").order_by("-id")
 
-    enquiry_list = Enquiry.objects.filter(lead_status="Enrolled").order_by("-id")
+    search_query = request.GET.get('search', '')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    queries = Q(lead_status="Enrolled") & Q(archive=False)
+    if search_query:
+        search_parts = search_query.split()
+        for part in search_parts:
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+    if start_date:
+        start_date = parse_date(start_date)
+        queries &= Q(registered_on__date__gte=start_date)
+
+    if end_date:
+        end_date = parse_date(end_date)
+        queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+    enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+
     paginator = Paginator(enquiry_list, 5)
     page_number = request.GET.get('page')
     
-    try:
-        page = paginator.page(page_number)
-    except PageNotAnInteger:
-        page = paginator.page(1)
-    except EmptyPage:
-        page = paginator.page(paginator.num_pages)
+    paginator = Paginator(enquiry_list, 1)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+
         
     query_params = request.GET.copy()
     if 'page' in query_params:
@@ -3134,7 +3171,10 @@ def enrolled_Application(request):
         "outsourcepartner": outsourcepartner,
         "lead": lead,
         "page": page,
-        "base_url":base_url
+        "base_url":base_url,
+        "search_query":search_query,
+        'start_date': start_date,
+        'end_date': end_date
     }
     return render(request, "Admin/Enquiry/Enrolled Enquiry/Enrolledleads.html", context)
 
@@ -4677,19 +4717,41 @@ def package_pdf(request, id):
 def admin_active_leads_details(request):
     excluded_statuses = ["Accept", "Case Initiated"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
-    enquiry_list = Enquiry.objects.filter(
-        Q(lead_status="Active") | Q(lead_status="PreEnrolled")
-    ).order_by("-id")
+
+
+    search_query = request.GET.get('search', '')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    queries = Q(lead_status="Active") | Q(lead_status="PreEnrolled")
+    if search_query:
+        search_parts = search_query.split()
+        for part in search_parts:
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+    if start_date:
+        start_date = parse_date(start_date)
+        queries &= Q(registered_on__date__gte=start_date)
+
+    if end_date:
+        end_date = parse_date(end_date)
+        queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+    enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+
     paginator = Paginator(enquiry_list, 5)
     page_number = request.GET.get('page')
     
-    try:
-        page = paginator.page(page_number)
-    except PageNotAnInteger:
-        page = paginator.page(1)
-    except EmptyPage:
-        page = paginator.page(paginator.num_pages)
-        
+    paginator = Paginator(enquiry_list, 1)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+
+
+
+    
     query_params = request.GET.copy()
     if 'page' in query_params:
         del query_params['page']
@@ -4717,7 +4779,10 @@ def admin_active_leads_details(request):
         "agent": agent,
         "outsourcepartner": outsourcepartner,
         "lead": lead,
-        "base_url":base_url
+        "base_url":base_url,
+        "search_query":search_query,
+        'start_date': start_date,
+        'end_date': end_date
     }
     return render(request, "Admin/Enquiry/statusleads/activeleads.html", context)
 
@@ -5034,3 +5099,197 @@ def passport_enquiry_view(request):
     else:
         error_message = f"Failed to fetch data from API. Status code: {response.status_code}"
         return render(request, 'Admin/PassportEnquiry/passport_Enq.html', {'error_message': error_message})
+
+
+
+class HolidayPackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Admin/Product/holiday_visa.html"
+    context_object_name = "packages" 
+    paginate_by = 9
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(package_type="Holiday",approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(package_type="Holiday",approval="Yes").order_by("-id")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+       
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list
+        return context
+    
+class VisitorPackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Admin/Product/visitor_visa.html"
+    context_object_name = "packages" 
+    paginate_by = 9
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(package_type="Visitor",approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(package_type="Visitor",approval="Yes").order_by("-id")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+       
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list
+        return context
+    
+class WorkPackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Admin/Product/work_visa.html"
+    context_object_name = "packages" 
+    paginate_by = 9
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(package_type="Work",approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(package_type="Work",approval="Yes").order_by("-id")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+       
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list
+        return context
+    
+class StudyPackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Admin/Product/study_visa.html"
+    context_object_name = "packages" 
+    paginate_by = 9
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(package_type="Study",approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(package_type="Study",approval="Yes").order_by("-id")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+       
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list
+        return context
+    
+class InvestmentPackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Admin/Product/investment_visa.html"
+    context_object_name = "packages" 
+    paginate_by = 9
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(package_type="Investment",approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(package_type="Investment",approval="Yes").order_by("-id")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+       
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list
+        return context
+    
+class SettlementPackageListView(LoginRequiredMixin, ListView):
+    model = Package
+    template_name = "Admin/Product/settlement_visa.html"
+    context_object_name = "packages" 
+    paginate_by = 9
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Package.objects.filter(package_type="Settlement",approval="Yes", title__icontains=query).order_by("-id")
+        else:
+            return Package.objects.filter(package_type="Settlement",approval="Yes").order_by("-id")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+       
+        product_list = self.get_queryset()
+        paginator = Paginator(product_list, self.paginate_by)
+        page_number = self.request.GET.get('page')
+
+        try:
+            page = paginator.page(page_number)
+        except PageNotAnInteger:
+            page = paginator.page(1)
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+
+        context['page_obj'] = page
+        context['page'] = page.object_list
+        return context

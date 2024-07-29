@@ -137,7 +137,7 @@
         </div>
 
     </div>
-    <form action="{% url "search_enquiries" %}" method="post">
+    {% comment %} <form action="{% url "search_enquiries" %}" method="post">
         {% csrf_token %}
         <div class="search">
             <div class="row">
@@ -208,10 +208,12 @@
                 </div>
             </div>
         </div>
-    </form>
+    </form> {% endcomment %}
+
+    
     <div class="table-container">
         <div class="table-responsive">
-            <table id="example" class="display">
+            <table id="" class="display">
                 <thead>
                     <tr>
                         <th>SR NO</th>

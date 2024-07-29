@@ -102,5 +102,11 @@ urlpatterns = [
     path("Employee/List", agent_emp_list.as_view(), name="agent_emp_list"),
     path("Employee/Edit/<int:pk>/", agent_emp_edit, name="agent_emp_edit"),
     path("Employee/Delete/<int:id>/", agent_emp_delete, name="agent_emp_delete"),
+    path("HolidayPackageList/", HolidayPackageListView.as_view(), name="Agent_HolidayPackage_list"),
+    path("VisitorPackageList/", VisitorPackageListView.as_view(), name="Agent_VisitorPackage_list"),
+    path("WorkPackageList/", WorkPackageListView.as_view(), name="Agent_WorkPackage_list"),
+    path("StudyPackageList/", StudyPackageListView.as_view(), name="Agent_StudyPackage_list"),
+    path("InvestmentPackageList/", InvestmentPackageListView.as_view(), name="Agent_InvestmentPackage_list"),
+    path("SettlementPackageList/", SettlementPackageListView.as_view(), name="Agent_SettlementPackage_list"),
     
 ]

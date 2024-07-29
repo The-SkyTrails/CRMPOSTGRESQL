@@ -10,6 +10,19 @@ import datetime
 from django.db.models import Q
 import json
 
+DOC_VIA_TYPE = [
+    ("By Post","By Post"),
+    ("By Hand","By Hand"),
+]
+
+PACKAGE_CHOICES = [
+    ("Holiday", "Holiday"),
+    ("Visitor", "Visitor"),
+    ("Work", "Work"),
+    ("Study", "Study"),
+    ("Investment", "Investment"),
+    ("Settlement", "Settlement"),
+]
 
 BRANCH_SOURCES = [
     ("COCO", "Company Owned Company Operated"),
@@ -203,6 +216,7 @@ class CourierAddress(models.Model):
     receiver_address = models.CharField(max_length=150)
     sender_address = models.CharField(max_length=150, blank=True, null=True)
     status = models.CharField(max_length=50, choices=COURIER_STATUS)
+    doc_via = models.CharField(max_length=100,choices=DOC_VIA_TYPE)
     lastupdated_by = models.CharField(max_length=100, null=True, blank=True)
     last_updated_on = models.DateTimeField(auto_now=True)
 
@@ -527,6 +541,7 @@ class Package(models.Model):
         max_length=30, choices=PROCESSING_TIME_CHOICES, blank=True, null=True
     )
     approval = models.CharField(max_length=10,choices=CHOICES,default="No")
+    package_type = models.CharField(max_length=100,choices=PACKAGE_CHOICES)
 
     def __str__(self):
         return self.title

@@ -334,4 +334,10 @@ urlpatterns = [
     path("employee/agents/", emp_search_view, name="emp_search"),  # The endpoint for AJAX requests
     path("search/employee/", employee_search_view, name="employee_search"),
     path("emp_package_pdf/<int:id>/", emp_package_pdf, name="emp_pac_pdf"),
+    path("HolidayPackageList/", HolidayPackageListView.as_view(), name="Employee_HolidayPackage_list"),
+    path("VisitorPackageList/", VisitorPackageListView.as_view(), name="Employee_VisitorPackage_list"),
+    path("WorkPackageList/", WorkPackageListView.as_view(), name="Employee_WorkPackage_list"),
+    path("StudyPackageList/", StudyPackageListView.as_view(), name="Employee_StudyPackage_list"),
+    path("InvestmentPackageList/", InvestmentPackageListView.as_view(), name="Employee_InvestmentPackage_list"),
+    path("SettlementPackageList/", SettlementPackageListView.as_view(), name="Employee_SettlementPackage_list"),
 ]
