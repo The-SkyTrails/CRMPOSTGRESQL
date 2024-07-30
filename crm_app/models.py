@@ -317,7 +317,7 @@ class Agent(models.Model):
         upload_to="Agent/Profile Pic/", null=True, blank=True
     )
     assign_employee = models.ForeignKey(
-        Employee, on_delete=models.SET_NULL, null=True, blank=True
+        CustomUser, on_delete=models.SET_NULL, null=True, blank=True , related_name="rm_user"
     )
 
     organization_name = models.CharField(max_length=100, null=True, blank=True)
@@ -373,7 +373,7 @@ class OutSourcingAgent(models.Model):
         upload_to="OutSourcing/Agent/Profile Pic/", null=True, blank=True
     )
     assign_employee = models.ForeignKey(
-        Employee, on_delete=models.SET_NULL, null=True, blank=True
+        CustomUser, on_delete=models.SET_NULL, null=True, blank=True , related_name="out_rm_user"
     )
 
     organization_name = models.CharField(max_length=100, null=True, blank=True)

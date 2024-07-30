@@ -104,8 +104,9 @@
       <div class="col">
          <div class="card h-100" style="border: none">
             <div class="card-body1 card-bodys2">
-               <h5 class="card-title">{{agent.assign_employee.users}}</h5>
-               <a class="dropdown-item" href="tel:{{agent.assign_employee.contact_no}}">
+               <h5 class="card-title">{{agent.assign_employee}}</h5>
+               {% if agent.assign_employee.user_type == "2" %}
+               <a class="dropdown-item" href="tel:{{agent.assign_employee.admin.contact_no}}">
                   <div class="NavLink">
                      <div class="AddUser">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -114,10 +115,10 @@
                               fill="#046C4E" />
                         </svg>
                      </div>
-                     <div class="dropText">{{agent.assign_employee.contact_no}}</div>
+                     <div class="dropText">{{agent.assign_employee.admin.contact_no}}</div>
                   </div>
                </a>
-               <a class="dropdown-item" href="mailto:{{agent.assign_employee.users.email}}">
+               <a class="dropdown-item" href="mailto:{{agent.assign_employee.email}}">
                   <div class="NavLink">
                      <div class="AddUser">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -129,11 +130,11 @@
                               fill="#046C4E" />
                         </svg>
                      </div>
-                     <div class="dropText">{{agent.assign_employee.users.email}}</div>
+                     <div class="dropText">{{agent.assign_employee.email}}</div>
                   </div>
                </a>
                <div class="report">
-                  <a href="https://wa.me/+91{{agent.assign_employee.contact_no}}" target="_blank">
+                  <a href="https://wa.me/+91{{agent.assign_employee.admin.contact_no}}" target="_blank">
                      <div class="" style="float: left;">
                         <span class="badge whatsappbutton">
                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
@@ -174,6 +175,77 @@
                   </div>
                   {% include "Agent/Dashboard/rm_modal.html" %}
                </div>
+               {% else %}
+               <a class="dropdown-item" href="tel:{{agent.assign_employee.employee.contact_no}}">
+                  <div class="NavLink">
+                     <div class="AddUser">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                           <path
+                              d="M11.5969 14.778C12.0153 15.195 12.582 15.4292 13.1728 15.4292C13.7635 15.4292 14.3302 15.195 14.7486 14.778L15.5366 13.9902C15.955 13.5732 16.5216 13.339 17.1124 13.339C17.7032 13.339 18.2699 13.5732 18.6883 13.9902L20.2642 15.5658C20.4946 15.7587 20.6798 15.9998 20.807 16.272C20.9341 16.5442 21 16.841 21 17.1415C21 17.4419 20.9341 17.7387 20.807 18.0109C20.6798 18.2832 20.4946 18.5242 20.2642 18.7171C16.1376 22.8441 11.3875 20.8836 7.2486 16.7453C3.10969 12.607 1.15898 7.86211 5.28664 3.73509C5.47967 3.50491 5.72079 3.31981 5.99305 3.19281C6.2653 3.06581 6.56208 3 6.86251 3C7.16294 3 7.45972 3.06581 7.73198 3.19281C8.00424 3.31981 8.24536 3.50491 8.43838 3.73509L10.0143 5.31072C10.4316 5.72891 10.666 6.29556 10.666 6.88635C10.666 7.47713 10.4316 8.04379 10.0143 8.46198L9.22632 9.2498C8.80895 9.66799 8.57455 10.2346 8.57455 10.8254C8.57455 11.4162 8.80895 11.9829 9.22632 12.4011L11.5969 14.778Z"
+                              fill="#046C4E" />
+                        </svg>
+                     </div>
+                     <div class="dropText">{{agent.assign_employee.employee.contact_no}}</div>
+                  </div>
+               </a>
+               <a class="dropdown-item" href="mailto:{{agent.assign_employee.email}}">
+                  <div class="NavLink">
+                     <div class="AddUser">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                           <path
+                              d="M12 12.8531L21.275 5.44053C20.9189 5.15812 20.4673 5.00211 20 5H4C3.53267 5.00211 3.08115 5.15812 2.725 5.44053L12 12.8531Z"
+                              fill="#046C4E" />
+                           <path
+                              d="M13.25 14.3119C12.8861 14.5717 12.4412 14.7136 11.983 14.716C11.556 14.7168 11.1403 14.5877 10.799 14.3483L2 7.3184V17.1333C2 17.6284 2.21071 18.1032 2.58579 18.4533C2.96086 18.8033 3.46957 19 4 19H20C20.5304 19 21.0391 18.8033 21.4142 18.4533C21.7893 18.1032 22 17.6284 22 17.1333V7.3184L13.25 14.3119Z"
+                              fill="#046C4E" />
+                        </svg>
+                     </div>
+                     <div class="dropText">{{agent.assign_employee.email}}</div>
+                  </div>
+               </a>
+               <div class="report">
+                  <a href="https://wa.me/+91{{agent.assign_employee.employee.contact_no}}" target="_blank">
+                     <div class="" style="float: left;">
+                        <span class="badge whatsappbutton">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                              viewBox="0 0 24 24" fill="none">
+                              <g clip-path="url(#clip0_75_921)">
+                                 <path
+                                    d="M0.514995 11.8564C0.514433 13.8728 1.0453 15.8418 2.05473 17.5772L0.418457 23.5067L6.5324 21.9156C8.22344 22.8293 10.1181 23.3081 12.0435 23.3082H12.0486C18.4046 23.3082 23.5786 18.1749 23.5813 11.8654C23.5825 8.808 22.3839 5.93302 20.2063 3.77005C18.029 1.60726 15.1334 0.415534 12.0481 0.414139C5.69131 0.414139 0.517713 5.54716 0.515089 11.8564"
+                                    fill="url(#paint0_linear_75_921)" />
+                                 <path
+                                    d="M0.103217 11.8527C0.102561 13.9417 0.652452 15.981 1.69787 17.7786L0.00292969 23.9207L6.3361 22.2726C8.0811 23.2168 10.0458 23.7147 12.045 23.7154H12.0501C18.6342 23.7154 23.994 18.3975 23.9968 11.8621C23.998 8.69488 22.7563 5.71656 20.5009 3.47609C18.2451 1.23591 15.2459 0.00130233 12.0501 0C5.46492 0 0.105841 5.31721 0.103217 11.8527ZM3.87476 17.469L3.63829 17.0965C2.64423 15.5277 2.11955 13.7149 2.1203 11.8534C2.12245 6.4213 6.5767 2.00186 12.0539 2.00186C14.7063 2.00298 17.1991 3.02921 19.074 4.89116C20.9488 6.7533 21.9804 9.22865 21.9798 11.8614C21.9773 17.2935 17.523 21.7135 12.0501 21.7135H12.0462C10.2642 21.7126 8.51646 21.2376 6.99228 20.34L6.62956 20.1265L2.87133 21.1045L3.87476 17.4689V17.469Z"
+                                    fill="url(#paint1_linear_75_921)" />
+                                 <path
+                                    d="M9.06427 6.89749C8.84063 6.40419 8.60529 6.39423 8.39262 6.38558C8.21848 6.37814 8.01941 6.3787 7.82052 6.3787C7.62144 6.3787 7.298 6.45302 7.0246 6.7493C6.75092 7.04586 5.97974 7.76251 5.97974 9.22009C5.97974 10.6778 7.04943 12.0864 7.19855 12.2843C7.34786 12.4818 9.26362 15.5687 12.2977 16.7562C14.8193 17.7431 15.3325 17.5468 15.8798 17.4973C16.4271 17.448 17.6459 16.7808 17.8946 16.089C18.1434 15.3973 18.1434 14.8044 18.0688 14.6805C17.9942 14.557 17.7951 14.4829 17.4966 14.3348C17.198 14.1866 15.7304 13.4699 15.4569 13.371C15.1832 13.2722 14.9842 13.2229 14.7851 13.5195C14.5861 13.8157 14.0144 14.4829 13.8402 14.6805C13.6661 14.8785 13.4919 14.9032 13.1935 14.755C12.8948 14.6063 11.9334 14.2939 10.7929 13.2847C9.90546 12.4993 9.30636 11.5296 9.13222 11.2329C8.95807 10.9367 9.11357 10.7762 9.26325 10.6286C9.39737 10.4958 9.56186 10.2826 9.71126 10.1097C9.86009 9.93665 9.90977 9.81321 10.0093 9.61563C10.1089 9.41786 10.0591 9.24484 9.98456 9.09665C9.90977 8.94847 9.3297 7.48326 9.06427 6.89749Z"
+                                    fill="white" />
+                              </g>
+                              <defs>
+                                 <linearGradient id="paint0_linear_75_921" x1="1158.56" y1="2309.67" x2="1158.56" y2="0.414139"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#1FAF38" />
+                                    <stop offset="1" stop-color="#60D669" />
+                                 </linearGradient>
+                                 <linearGradient id="paint1_linear_75_921" x1="1199.7" y1="2392.07" x2="1199.7" y2="0"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#F9F9F9" />
+                                    <stop offset="1" stop-color="white" />
+                                 </linearGradient>
+                                 <clipPath id="clip0_75_921">
+                                    <rect width="24" height="24" fill="white" />
+                                 </clipPath>
+                              </defs>
+                           </svg>
+                           Whatsapp Us
+                        </span>
+                     </div>
+                  </a>
+                  <div class="" style="float: right;">
+                     <a href="#" style="color: red;" data-toggle="modal" data-target="#reportModal">Report Against RM</a>
+                  </div>
+                  {% include "Agent/Dashboard/rm_modal.html" %}
+               </div>
+               {% endif %}
             </div>
          </div>
       </div>

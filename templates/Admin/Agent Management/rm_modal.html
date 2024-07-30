@@ -1,0 +1,116 @@
+<style>
+    .search-select-container {
+        position: relative;
+    }
+
+    .rm-dropdownnn {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 50%;
+        z-index: 1000;
+        list-style: none;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-top: none;
+        padding: 0;
+        margin-top: 0;
+        
+        max-height: 200px; 
+        overflow-y: auto; 
+    }
+
+    .rm-dropdownnn li {
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    .rm-dropdownnn li:hover {
+        background-color: #f0f0f0;
+    }
+</style>
+
+<div class="modal fade" id="rmModal-{{i.id}}" tabindex="-1" aria-labelledby="rmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="rmForm-{{i.id}}" action="{% url 'update_assigned_rm' i.id %}" method="post" autocomplete="off">
+            {% csrf_token %}
+            <input type="hidden" name="page" value="{{ page_obj.number }}">
+            
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="rmModalLabel">Assigned To RM</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <hr>
+                <div class="modal-body">
+                    <label for="rmSearchInput-{{i.id}}" class="custom-form-label">Assigned</label>
+                    <div class="search-select-container">
+                        <input type="text" id="rm-search-{{i.id}}" placeholder="Type to search for an RM" class="form-control"/>
+                        <input type="hidden" id="rmtid-{{i.id}}" name="rmIdInput"/>
+                        <ul id="rm-list-{{i.id}}" class="rm-dropdownnn"></ul>
+                    </div>
+                    <div class="alert alert-danger mt-2 d-none" id="rmAlert-{{i.id}}">No RM selected.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("[id^='rm-search']").on("input", function() {
+            var $input = $(this);
+            var id = $input.attr("id").split("-")[2];
+            var query = $input.val();
+            
+            if (query.length >= 3) {
+                $.ajax({
+                    url: "{% url 'rm_search' %}",
+                    data: { q: query },
+                    success: function(response) {
+                        var results = response.results;
+                        var $list = $("#rm-list-" + id);
+                        $list.empty();
+
+                        results.forEach(function(rm) {
+                            var listItem = `<li data-rm-id="${rm.id}">${rm.text}</li>`;
+                            $list.append(listItem);
+                        });
+                    },
+                });
+            } else {
+                $("#rm-list-" + id).empty();
+            }
+        });
+
+        $("[id^='rm-list']").on("click", "li", function() {
+            var $li = $(this);
+            var rmName = $li.text();
+            var rmId = $li.data("rm-id");
+            
+            var id = $li.closest(".modal").attr("id").split("-")[1];
+            
+            $("#rm-search-" + id).val(rmName);
+            $("#rmtid-" + id).val(rmId);
+        });
+
+        $("[id^='rmForm']").on("submit", function(event) {
+            var id = $(this).attr("id").split("-")[1];
+            var rmIdInput = $("#rmtid-" + id).val();
+
+            if (!rmIdInput) {
+                event.preventDefault();
+                $("#rmAlert-" + id).removeClass("d-none");
+            } else {
+                $("#rmAlert-" + id).addClass("d-none");
+            }
+        });
+    });
+</script>

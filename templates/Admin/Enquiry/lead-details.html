@@ -505,7 +505,7 @@
          console.log("demooooo",searchTerm)
         
          setTimeout(function() {
-         window.location.href = '{% url "admin_new_leads_details" %}?search=' + searchTerm;
+         window.location.href = '{% url "admin_new_leads_details" %}?page=' + searchTerm ;
          }, 1000); // 2-second delay
            
        });

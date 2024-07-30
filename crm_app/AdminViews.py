@@ -1173,7 +1173,7 @@ def add_agent(request):
                 )
                 logged_in_user = request.user
                 last_assigned_index = cache.get("last_assigned_index") or 0
-                sales_team_employees = Employee.objects.filter(department="Sales")
+                sales_team_employees = CustomUser.objects.filter(user_type__in=[2, 3])
                 user.outsourcingagent.type = type
                 user.outsourcingagent.contact_no = contact
                 user.outsourcingagent.country = country
@@ -1190,15 +1190,15 @@ def add_agent(request):
                     user.outsourcingagent.assign_employee = sales_team_employees[
                         next_index
                     ]
-                    chat_group_name = f"{fullname} Group"
-                    chat_group = ChatGroup.objects.create(
-                        group_name=chat_group_name,
-                        create_by=logged_in_user,
-                    )
-                    chat_group.group_member.add(
-                        user.outsourcingagent.assign_employee.users
-                    )  # Add assigned employee
-                    chat_group.group_member.add(user)
+                    # chat_group_name = f"{fullname} Group"
+                    # chat_group = ChatGroup.objects.create(
+                    #     group_name=chat_group_name,
+                    #     create_by=logged_in_user,
+                    # )
+                    # chat_group.group_member.add(
+                    #     user.outsourcingagent.assign_employee.users
+                    # )  # Add assigned employee
+                    # chat_group.group_member.add(user)
                     cache.set("last_assigned_index", next_index)
                 user.save()
                 send_congratulatory_email(
@@ -1231,7 +1231,7 @@ def add_agent(request):
                 fullname = str(firstname + lastname)
                 logged_in_user = request.user
                 last_assigned_index = cache.get("last_assigned_index") or 0
-                sales_team_employees = Employee.objects.filter(department="Sales")
+                sales_team_employees = CustomUser.objects.filter(user_type__in=[2, 3])
 
                 user.agent.type = type
                 user.agent.contact_no = contact
@@ -1248,15 +1248,15 @@ def add_agent(request):
                     ) % sales_team_employees.count()
                     user.agent.assign_employee = sales_team_employees[next_index]
                     cache.set("last_assigned_index", next_index)
-                    chat_group_name = f"{fullname} Group"
-                    chat_group = ChatGroup.objects.create(
-                        group_name=chat_group_name,
-                        create_by=logged_in_user,
-                    )
-                    chat_group.group_member.add(
-                        user.agent.assign_employee.users
-                    )  # Add assigned employee
-                    chat_group.group_member.add(user)
+                    # chat_group_name = f"{fullname} Group"
+                    # chat_group = ChatGroup.objects.create(
+                    #     group_name=chat_group_name,
+                    #     create_by=logged_in_user,
+                    # )
+                    # chat_group.group_member.add(
+                    #     user.agent.assign_employee.users
+                    # )  # Add assigned employee
+                    # chat_group.group_member.add(user)
 
                 user.save()
                 send_congratulatory_email(
@@ -1311,9 +1311,17 @@ class all_agent(LoginRequiredMixin, ListView):
             page = paginator.page(1)
         except EmptyPage:
             page = paginator.page(paginator.num_pages)
-
+        query_params = self.request.GET.copy()
+        if 'page' in query_params:
+            del query_params['page']
+        base_url = self.request.path + '?' + query_params.urlencode()
+        if query_params:
+            base_url += '&page='
+        else:
+            base_url += 'page='
         context['page_obj'] = page
         context['page'] = page.object_list  
+        context['base_url'] = base_url
         return context
 
 class Grid_agent(LoginRequiredMixin, ListView):
@@ -1528,8 +1536,18 @@ class all_outsource_agent(LoginRequiredMixin, ListView):
         except EmptyPage:
             page = paginator.page(paginator.num_pages)
 
+        query_params = self.request.GET.copy()
+        if 'page' in query_params:
+            del query_params['page']
+        base_url = self.request.path + '?' + query_params.urlencode()
+        if query_params:
+            base_url += '&page='
+        else:
+            base_url += 'page='
+
         context['page_obj'] = page
         context['page'] = page.object_list  
+        context['base_url'] = base_url
         return context
 
 class Grid_outsource_agent(LoginRequiredMixin, ListView):
@@ -2672,6 +2690,7 @@ from django.core.paginator import Paginator
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
+
 @login_required
 def admin_new_leads_details(request):
     excluded_statuses = ["Accept", "Case Initiated"]
@@ -2685,7 +2704,7 @@ def admin_new_leads_details(request):
     agent = get_agent()
     outsourcepartner = get_outsourcepartner()
 
-    search_query = request.GET.get('search', '')
+    search_query = request.GET.get('page', '')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
@@ -2705,7 +2724,7 @@ def admin_new_leads_details(request):
 
     enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
         
-    paginator = Paginator(enquiry_list, 10)
+    paginator = Paginator(enquiry_list, 1)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
@@ -5291,3 +5310,92 @@ class SettlementPackageListView(LoginRequiredMixin, ListView):
         context['page_obj'] = page
         context['page'] = page.object_list
         return context
+
+    
+
+def rm_search_view(request):
+    
+    query = request.GET.get("q", "")  
+    
+    rms = CustomUser.objects.filter(Q(user_type__in=["2", "3"]) & 
+    (Q(first_name__icontains=query) | Q(last_name__icontains=query))  
+    )  
+    # Format the response for Select2
+    results = [
+        {
+            "id": rm.id,
+            "text": f"{rm.first_name} {rm.last_name} - {rm.get_user_type_display()}",  
+        }
+        for rm in rms
+    ]
+
+    return JsonResponse({"results": results})
+
+
+def update_assigned_rm(request, id):
+    agent = get_object_or_404(Agent, id=id)
+    if request.method == "POST":
+        assign_rm = request.POST.get("rmIdInput")
+        page = request.POST.get("page", 1)
+        
+        if not assign_rm:
+            messages.error(request, "No RM selected.")
+            url = reverse("agent_list")
+            return HttpResponseRedirect(f"{url}?page={page}")
+
+        try:
+            rm = CustomUser.objects.get(id=assign_rm)
+            agent.assign_employee = rm
+            agent.save()
+            messages.success(request, "RM Assigned Successfully...")
+        except CustomUser.DoesNotExist:
+            messages.error(request, "RM does not exist.")
+        except ValueError:
+            messages.error(request, "Invalid RM ID.")
+
+        url = reverse("agent_list")
+        return HttpResponseRedirect(f"{url}?page={page}")
+    
+    
+def rm_op_search_view(request):
+    query = request.GET.get("q", "")  
+    
+    rms = CustomUser.objects.filter(Q(user_type__in=["2", "3"]) & 
+    (Q(first_name__icontains=query) | Q(last_name__icontains=query))  
+    )  
+    # Format the response for Select2
+    results = [
+        {
+            "id": rm.id,
+            "text": f"{rm.first_name} {rm.last_name} - {rm.get_user_type_display()}",  
+        }
+        for rm in rms
+    ]
+
+    return JsonResponse({"results": results})
+
+
+def update_assigned_rm_op(request, id):
+    op = get_object_or_404(OutSourcingAgent, id=id)
+    if request.method == "POST":
+        assign_rm_op = request.POST.get("rmOpIdInput")
+        page = request.POST.get("page", 1)
+        
+        if not assign_rm_op:
+            messages.error(request, "No RM OP selected.")
+            url = reverse("all_outsource_agent")
+            return HttpResponseRedirect(f"{url}?page={page}")
+            
+
+        try:
+            rm_op = CustomUser.objects.get(id=assign_rm_op)
+            op.assign_employee = rm_op  
+            op.save()
+            messages.success(request, "RM Assigned Successfully...")
+        except CustomUser.DoesNotExist:
+            messages.error(request, "RM does not exist.")
+        except ValueError:
+            messages.error(request, "Invalid RM ID.")
+
+        url = reverse("all_outsource_agent")
+        return HttpResponseRedirect(f"{url}?page={page}")

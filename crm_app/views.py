@@ -582,12 +582,12 @@ def single_Chat(request):
         base_template = "Employee/Base/base.html"
     elif user_type == "4":
         agnet_assign_employee = Agent.objects.get(users=user)
-        users = [agnet_assign_employee.assign_employee.users]
+        users = [agnet_assign_employee.assign_employee]
         print("asigg",agnet_assign_employee)
         base_template = "Agent/Base/base.html"
     elif user_type == "5":
         outsource_assign_employee = OutSourcingAgent.objects.get(users=user)
-        users = [outsource_assign_employee.assign_employee.users]
+        users = [outsource_assign_employee.assign_employee]
         base_template = "Agent/Base/base.html"
 
 

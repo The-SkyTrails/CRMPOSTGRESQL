@@ -95,7 +95,7 @@ class employee_dashboard(LoginRequiredMixin, TemplateView):
 
         agent_count = Agent.objects.filter(
             Q(registerdby=self.request.user)
-            | Q(assign_employee=self.request.user.employee)
+            | Q(assign_employee=self.request.user)
         ).count
        
 
@@ -1297,12 +1297,12 @@ def emp_add_agent(request):
                 user.outsourcingagent.profile_pic = files
                 user.outsourcingagent.registerdby = logged_in_user
                 user.outsourcingagent.assign_employee = logged_in_user.employee
-                chat_group_name = f"{fullname} Group"
-                chat_group = ChatGroup.objects.create(
-                    group_name=chat_group_name,
-                )
-                chat_group.group_member.add(user.outsourcingagent.assign_employee.users)
-                chat_group.group_member.add(user)
+                # chat_group_name = f"{fullname} Group"
+                # chat_group = ChatGroup.objects.create(
+                #     group_name=chat_group_name,
+                # )
+                # chat_group.group_member.add(user.outsourcingagent.assign_employee.users)
+                # chat_group.group_member.add(user)
 
                 user.save()
 
@@ -1350,12 +1350,12 @@ def emp_add_agent(request):
                 user.agent.profile_pic = files
                 user.agent.registerdby = logged_in_user
                 user.agent.assign_employee = logged_in_user.employee
-                chat_group_name = f"{fullname} Group"
-                chat_group = ChatGroup.objects.create(
-                    group_name=chat_group_name,
-                )
-                chat_group.group_member.add(user.agent.assign_employee.users)
-                chat_group.group_member.add(user)
+                # chat_group_name = f"{fullname} Group"
+                # chat_group = ChatGroup.objects.create(
+                #     group_name=chat_group_name,
+                # )
+                # chat_group.group_member.add(user.agent.assign_employee.users)
+                # chat_group.group_member.add(user)
                 user.save()
 
                 msg = f"New Agent Added({fullname})"
@@ -1394,14 +1394,14 @@ class emp_all_agent(ListView):
     context_object_name = "agent"
     paginate_by = 10
 
-    def get_queryset(self):
-        return Agent.objects.all().order_by("-id")
-
     # def get_queryset(self):
-    #     user = self.request.user.employee
-    #     return Agent.objects.filter(
-    #         Q(registerdby=self.request.user) | Q(assign_employee=user)
-    #     ).order_by("-id")
+    #     return Agent.objects.all().order_by("-id")
+
+    def get_queryset(self):
+        user = self.request.user
+        return Agent.objects.filter(
+            Q(registerdby=self.request.user) | Q(assign_employee=user)
+        ).order_by("-id")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1420,9 +1420,17 @@ class emp_all_agent(ListView):
             page = paginator.page(1)
         except EmptyPage:
             page = paginator.page(paginator.num_pages)
-
+        query_params = self.request.GET.copy()
+        if 'page' in query_params:
+            del query_params['page']
+        base_url = self.request.path + '?' + query_params.urlencode()
+        if query_params:
+            base_url += '&page='
+        else:
+            base_url += 'page='
         context['page_obj'] = page
-        context['page'] = page.object_list  
+        context['page'] = page.object_list 
+        context['base_url'] = base_url 
         
         return context
 
@@ -1624,9 +1632,9 @@ class emp_all_outsource_agent(ListView):
 
 
     def get_queryset(self):
-        user = self.request.user.employee
-        return OutSourcingAgent.objects.filter(assign_employee=user).order_by("-id")
-
+        user = self.request.user
+        return OutSourcingAgent.objects.filter(Q(registerdby=self.request.user) | Q(assign_employee=user)
+        ).order_by("-id")
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
@@ -1645,8 +1653,18 @@ class emp_all_outsource_agent(ListView):
         except EmptyPage:
             page = paginator.page(paginator.num_pages)
 
+        query_params = self.request.GET.copy()
+        if 'page' in query_params:
+            del query_params['page']
+        base_url = self.request.path + '?' + query_params.urlencode()
+        if query_params:
+            base_url += '&page='
+        else:
+            base_url += 'page='
         context['page_obj'] = page
-        context['page'] = page.object_list  
+        context['page'] = page.object_list 
+        context['base_url'] = base_url
+
 
         return context
 

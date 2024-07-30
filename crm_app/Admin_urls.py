@@ -320,6 +320,20 @@ urlpatterns = [
     path("SettlementPackageList/", SettlementPackageListView.as_view(), name="Settlement_Package_list"),
 
 
+    path("search/rms/", rm_search_view, name="rm_search"),
+    path(
+        "UpdateAssignrm/<int:id>",
+        update_assigned_rm,
+        name="update_assigned_rm",
+    ),
+    path("search/rms_op/", rm_op_search_view, name="rm_op_search"),
+    path(
+        "UpdateAssignrmop/<int:id>",
+        update_assigned_rm_op,
+        name="update_assigned_rm_op",
+    ),
+
+
 
     
 
