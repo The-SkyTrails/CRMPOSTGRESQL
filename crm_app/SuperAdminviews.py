@@ -27,7 +27,7 @@ def add_admin(request):
         department = request.POST.get("department")
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         password = request.POST.get("password")
         files = request.FILES.get("files")
@@ -130,7 +130,7 @@ def edit_admin(request, user_id):
         department = request.POST.get("department")
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         files = request.FILES.get("files")
 

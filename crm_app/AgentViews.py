@@ -752,7 +752,7 @@ def edit_enrolled_application(request, id):
         except ValueError:
             spouse_dob_obj5 = None
 
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         address = request.POST.get("address")
         city = request.POST.get("city")
@@ -1495,7 +1495,7 @@ def agent_PackageEnquiry1View(request):
         country = request.POST.get("country")
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         dob = request.POST.get("dob")
         gender = request.POST.get("gender")
@@ -1857,7 +1857,7 @@ def add_subagent(request):
   
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         password = request.POST.get("password")
         country = request.POST.get("country")
@@ -2141,7 +2141,7 @@ def agent_add_employee(request):
         country = request.POST.get("country")
         city = request.POST.get("city")
         state = request.POST.get("state")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         address = request.POST.get("address")
         zipcode = request.POST.get("zipcode")
         password = "123456"
@@ -2244,7 +2244,7 @@ def agent_emp_edit(request, pk):
         employee_id = request.POST.get("employee_id")
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         country = request.POST.get("country")
         state = request.POST.get("state")

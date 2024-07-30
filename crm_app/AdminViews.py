@@ -944,7 +944,7 @@ def add_employee(request):
         group_id = request.POST.get("group_id")
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         password = "123456"
         country = request.POST.get("country")
@@ -1078,7 +1078,7 @@ def employee_update_save(request):
         department = request.POST.get("department")
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         country = request.POST.get("country")
         state = request.POST.get("state")
@@ -1144,7 +1144,7 @@ def add_agent(request):
 
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         password = request.POST.get("password")
         country = request.POST.get("country")
@@ -1287,6 +1287,45 @@ def add_agent(request):
     return render(request, "Admin/Agent Management/addagent.html", context)
 
 
+# class all_agent(LoginRequiredMixin, ListView):
+#     model = Agent
+#     template_name = "Admin/Agent Management/agentlist.html"
+#     context_object_name = "agent"
+#     paginate_by = 10
+
+#     def get_queryset(self):
+#         return Agent.objects.all().order_by("-id")
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context["employee_queryset"] = Employee.objects.all()
+
+#         # Pagination logic
+#         agent_list = self.get_queryset()
+#         paginator = Paginator(agent_list, self.paginate_by)
+#         page_number = self.request.GET.get('page')
+
+#         try:
+#             page = paginator.page(page_number)
+#         except PageNotAnInteger:
+#             page = paginator.page(1)
+#         except EmptyPage:
+#             page = paginator.page(paginator.num_pages)
+#         query_params = self.request.GET.copy()
+#         if 'page' in query_params:
+#             del query_params['page']
+#         base_url = self.request.path + '?' + query_params.urlencode()
+#         if query_params:
+#             base_url += '&page='
+#         else:
+#             base_url += 'page='
+#         context['page_obj'] = page
+#         context['page'] = page.object_list  
+#         context['base_url'] = base_url
+#         return context
+
+
+
 class all_agent(LoginRequiredMixin, ListView):
     model = Agent
     template_name = "Admin/Agent Management/agentlist.html"
@@ -1294,7 +1333,17 @@ class all_agent(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Agent.objects.all().order_by("-id")
+        query = self.request.GET.get('query', '')
+        agents = Agent.objects.all().order_by("-id")
+
+        if query:
+            search_parts = query.split()
+            queries = Q()
+            for part in search_parts:
+                queries |= Q(first_name__icontains=part) | Q(last_name__icontains=part) | Q(agent_code__icontains=part)
+            agents = agents.filter(queries)
+
+        return agents
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1311,6 +1360,7 @@ class all_agent(LoginRequiredMixin, ListView):
             page = paginator.page(1)
         except EmptyPage:
             page = paginator.page(paginator.num_pages)
+
         query_params = self.request.GET.copy()
         if 'page' in query_params:
             del query_params['page']
@@ -1319,9 +1369,12 @@ class all_agent(LoginRequiredMixin, ListView):
             base_url += '&page='
         else:
             base_url += 'page='
+
         context['page_obj'] = page
-        context['page'] = page.object_list  
+        context['page'] = page.object_list
         context['base_url'] = base_url
+        context['query'] = self.request.GET.get('query', '')
+
         return context
 
 class Grid_agent(LoginRequiredMixin, ListView):
@@ -2307,7 +2360,7 @@ def PackageEnquiry1View(request):
         country = request.POST.get("country")
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         dob = request.POST.get("dob")
         gender = request.POST.get("gender")
@@ -3351,7 +3404,7 @@ def edit_enrolled_application(request, id):
         except ValueError:
             spouse_dob_obj5 = None
 
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         address = request.POST.get("address")
         city = request.POST.get("city")
@@ -3837,7 +3890,7 @@ def edit_profile(request):
     if request.method == "POST":
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         file = request.FILES.get("files")
 
@@ -4632,7 +4685,7 @@ def search_employee(request):
     if request.method == "POST":
         emp_code = request.POST.get("emp_code")
         name = request.POST.get("name")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact_no = request.POST.get("contact_no")
         branch = request.POST.get("branch")
         department = request.POST.get("department")

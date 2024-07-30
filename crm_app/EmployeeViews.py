@@ -1259,7 +1259,7 @@ def emp_add_agent(request):
 
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         password = request.POST.get("password")
         country = request.POST.get("country")
@@ -1972,7 +1972,7 @@ def emp_edit_enrolled_application(request, id):
         except ValueError:
             spouse_dob_obj5 = None
 
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         address = request.POST.get("address")
         city = request.POST.get("city")
@@ -3333,7 +3333,7 @@ def add_employee(request):
         group_id = request.POST.get("group_id")
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         password = "123456"
         country = request.POST.get("country")
@@ -3473,7 +3473,7 @@ def employee_update_save(request):
         department = request.POST.get("department")
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         country = request.POST.get("country")
         state = request.POST.get("state")
@@ -3697,7 +3697,7 @@ def empPackageEnquiryForm1(request):
         country = request.POST.get("country")
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         dob = request.POST.get("dob")
         gender = request.POST.get("gender")
@@ -4331,7 +4331,7 @@ def lead_emp_add_agent(request):
 
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact = request.POST.get("contact")
         password = request.POST.get("password")
         country = request.POST.get("country")

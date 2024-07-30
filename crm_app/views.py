@@ -45,7 +45,7 @@ def agent_signup(request):
         user_type = request.POST.get("type")
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
-        email = request.POST.get("email")
+        email = request.POST.get("email").lower()
         contact_no = request.POST.get("contact_no")
         password = request.POST.get("password")
 
