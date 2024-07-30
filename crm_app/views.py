@@ -635,3 +635,12 @@ def get_single_chat_messages(request):
 
     chat_content = loader.render_to_string("SingleChat/chat_content.html",context)
     return HttpResponse(chat_content)
+
+
+def session_status(request):
+    session_expiry = request.session.get_expiry_date()
+    if timezone.now() > session_expiry:
+        status = "expired"
+    else:
+        status = "active"
+    return JsonResponse({"status": status})

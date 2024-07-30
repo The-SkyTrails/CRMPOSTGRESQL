@@ -5,6 +5,23 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>The Skytrails</title>
+        <script>
+            function checkSession() {
+                fetch('/session-status/')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'expired') {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        window.location.reload();
+                    });
+            }
+    
+            setInterval(checkSession, 10000); 
+        </script>
 
         <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,300' rel='stylesheet' type='text/css'>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>

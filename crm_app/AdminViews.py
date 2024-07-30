@@ -2705,7 +2705,7 @@ def admin_new_leads_details(request):
 
     enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
         
-    paginator = Paginator(enquiry_list, 1)
+    paginator = Paginator(enquiry_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
@@ -3138,8 +3138,7 @@ def enrolled_Application(request):
     paginator = Paginator(enquiry_list, 5)
     page_number = request.GET.get('page')
     
-    paginator = Paginator(enquiry_list, 1)
-    page_number = request.GET.get('page')
+    
     page = paginator.get_page(page_number)
 
         
@@ -4745,8 +4744,7 @@ def admin_active_leads_details(request):
     paginator = Paginator(enquiry_list, 5)
     page_number = request.GET.get('page')
     
-    paginator = Paginator(enquiry_list, 1)
-    page_number = request.GET.get('page')
+    
     page = paginator.get_page(page_number)
 
 
