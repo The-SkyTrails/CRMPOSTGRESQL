@@ -317,7 +317,7 @@ class Agent(models.Model):
         upload_to="Agent/Profile Pic/", null=True, blank=True
     )
     assign_employee = models.ForeignKey(
-        Employee, on_delete=models.SET_NULL, null=True, blank=True , related_name="rm_user"
+        CustomUser, on_delete=models.SET_NULL, null=True, blank=True , related_name="rm_user"
     )
     # assign_employee = models.ForeignKey(
     #     CustomUser, on_delete=models.SET_NULL, null=True, blank=True , related_name="rm_user"
