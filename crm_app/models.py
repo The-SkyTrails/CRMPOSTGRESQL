@@ -316,12 +316,12 @@ class Agent(models.Model):
     profile_pic = models.ImageField(
         upload_to="Agent/Profile Pic/", null=True, blank=True
     )
+    # assign_employee = models.ForeignKey(
+    #     Employee, on_delete=models.SET_NULL, null=True, blank=True , related_name="rm_user"
+    # )
     assign_employee = models.ForeignKey(
         CustomUser, on_delete=models.SET_NULL, null=True, blank=True , related_name="rm_user"
     )
-    # assign_employee = models.ForeignKey(
-    #     CustomUser, on_delete=models.SET_NULL, null=True, blank=True , related_name="rm_user"
-    # )
 
     organization_name = models.CharField(max_length=100, null=True, blank=True)
     business_type = models.CharField(max_length=100, null=True, blank=True)
