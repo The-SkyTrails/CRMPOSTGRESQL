@@ -2777,7 +2777,7 @@ def admin_new_leads_details(request):
 
     enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
         
-    paginator = Paginator(enquiry_list, 1)
+    paginator = Paginator(enquiry_list, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
