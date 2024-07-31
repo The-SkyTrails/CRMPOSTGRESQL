@@ -1296,7 +1296,7 @@ def emp_add_agent(request):
                 user.outsourcingagent.zipcode = zipcode
                 user.outsourcingagent.profile_pic = files
                 user.outsourcingagent.registerdby = logged_in_user
-                user.outsourcingagent.assign_employee = logged_in_user.employee
+                user.outsourcingagent.assign_employee = logged_in_user
                 # chat_group_name = f"{fullname} Group"
                 # chat_group = ChatGroup.objects.create(
                 #     group_name=chat_group_name,
@@ -1349,7 +1349,7 @@ def emp_add_agent(request):
                 user.agent.zipcode = zipcode
                 user.agent.profile_pic = files
                 user.agent.registerdby = logged_in_user
-                user.agent.assign_employee = logged_in_user.employee
+                user.agent.assign_employee = logged_in_user
                 # chat_group_name = f"{fullname} Group"
                 # chat_group = ChatGroup.objects.create(
                 #     group_name=chat_group_name,
