@@ -1335,14 +1335,27 @@ class all_agent(LoginRequiredMixin, ListView):
     def get_queryset(self):
         query = self.request.GET.get('query', '')
         agents = Agent.objects.all().order_by("-id")
-
+        start_date = self.request.GET.get('start_date')
+        
+        end_date = self.request.GET.get('end_date')
+        queries = Q()
         if query:
             search_parts = query.split()
-            queries = Q()
+            
             for part in search_parts:
-                queries |= Q(first_name__icontains=part) | Q(last_name__icontains=part) | Q(agent_code__icontains=part)
-            agents = agents.filter(queries)
+                # queries |= Q(first_name__icontains=part) | Q(last_name__icontains=part) | Q(agent_code__icontains=part)
+                queries &= Q(users__first_name__icontains=part) | Q(users__last_name__icontains=part) | Q(contact_no__icontains=part) | Q(users__email__icontains=part)  | Q(registerdby__first_name__icontains=part) 
+            
+        
+        if start_date:
+            start_date = parse_date(start_date)
+            queries &= Q(registeron__date__gte=start_date)
+            
 
+        if end_date:
+            end_date = parse_date(end_date)
+            queries &= Q(registeron__date__lte=end_date)
+        agents = Agent.objects.filter(queries)
         return agents
 
     def get_context_data(self, **kwargs):
@@ -1370,10 +1383,15 @@ class all_agent(LoginRequiredMixin, ListView):
         else:
             base_url += 'page='
 
+       
+
         context['page_obj'] = page
         context['page'] = page.object_list
         context['base_url'] = base_url
         context['query'] = self.request.GET.get('query', '')
+        context['start_date'] = self.request.GET.get('start_date', '')
+        context['end_date'] = self.request.GET.get('end_date', '')
+        context['page_number'] = page_number
 
         return context
 
@@ -2742,8 +2760,6 @@ from django.core.paginator import Paginator
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-
-
 @login_required
 def admin_new_leads_details(request):
     excluded_statuses = ["Accept", "Case Initiated"]
@@ -2757,9 +2773,10 @@ def admin_new_leads_details(request):
     agent = get_agent()
     outsourcepartner = get_outsourcepartner()
 
-    search_query = request.GET.get('page', '')
+    search_query = request.GET.get('query', '')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
+    page_number = request.GET.get('page', '1')
 
     queries = Q(archive=False)
     if search_query:
@@ -2777,8 +2794,7 @@ def admin_new_leads_details(request):
 
     enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
         
-    paginator = Paginator(enquiry_list, 1)
-    page_number = request.GET.get('page')
+    paginator = Paginator(enquiry_list, 10)
     page = paginator.get_page(page_number)
 
     query_params = request.GET.copy()
@@ -2804,7 +2820,8 @@ def admin_new_leads_details(request):
         'base_url': base_url,
         'search_query': search_query,
         'start_date': start_date,
-        'end_date': end_date
+        'end_date': end_date,
+        'page_number': page_number
     }
     return render(request, "Admin/Enquiry/lead-details.html", context)
 
@@ -2833,28 +2850,11 @@ def update_assigned_agent(request, id):
         enquiry.save()
         messages.success(request, "Lead Assigned Successfully...")
         
-        page_number = request.POST.get('page', 1)
         
         redirect_to = request.POST.get("redirect_to")
-        if redirect_to == "active_leads":
-            url = reverse("admin_active_leads_details")
-        elif redirect_to == "latest_leads":
-            url = reverse("admin_latest_leads_details")
-        elif redirect_to == "enrolled_leads":
-            url = reverse("Enrolled_leads")
-        elif redirect_to == "inprocess_leads":
-            url = reverse("admin_inprocess_leads_details")
-        elif redirect_to == "appointment_leads":
-            url = reverse("admin_appointment_leads_details")
-        elif redirect_to == "delivered_leads":
-            url = reverse("admin_deleivered_leads_details")
-        elif redirect_to == "completed_leads":
-            url = reverse("admin_completed_leads_details")
-        else:
-            url = reverse("admin_new_leads_details")
+        redirect_url = redirect_to
         
-        # Append the page parameter to the URL
-        return HttpResponseRedirect(f"{url}?page={page_number}")
+        return redirect(redirect_url)
 
 @login_required
 def update_assigned_op(request, id):
@@ -2886,28 +2886,12 @@ def update_assigned_op(request, id):
 
         enquiry.save()
         messages.success(request, "Lead Assigned Successfully...")
-        page_number = request.POST.get('page', 1)
+        
         
         redirect_to = request.POST.get("redirect_to")
-        if redirect_to == "active_leads":
-            url = reverse("admin_active_leads_details")
-        elif redirect_to == "latest_leads":
-            url = reverse("admin_latest_leads_details")
-        elif redirect_to == "enrolled_leads":
-            url = reverse("Enrolled_leads")
-        elif redirect_to == "inprocess_leads":
-            url = reverse("admin_inprocess_leads_details")
-        elif redirect_to == "appointment_leads":
-            url = reverse("admin_appointment_leads_details")
-        elif redirect_to == "delivered_leads":
-            url = reverse("admin_deleivered_leads_details")
-        elif redirect_to == "completed_leads":
-            url = reverse("admin_completed_leads_details")
-        else:
-            url = reverse("admin_new_leads_details")
+        redirect_url = redirect_to
         
-        # Append the page parameter to the URL
-        return HttpResponseRedirect(f"{url}?page={page_number}")
+        return redirect(redirect_url)
 
 
 @login_required
@@ -3016,28 +3000,13 @@ def update_assigned_employee(request, id):
                 pass
         enquiry.save()
         messages.success(request, "Lead Assigned Successfully...")
-        page_number = request.POST.get('page', 1)
         
         redirect_to = request.POST.get("redirect_to")
-        if redirect_to == "active_leads":
-            url = reverse("admin_active_leads_details")
-        elif redirect_to == "latest_leads":
-            url = reverse("admin_latest_leads_details")
-        elif redirect_to == "enrolled_leads":
-            url = reverse("Enrolled_leads")
-        elif redirect_to == "inprocess_leads":
-            url = reverse("admin_inprocess_leads_details")
-        elif redirect_to == "appointment_leads":
-            url = reverse("admin_appointment_leads_details")
-        elif redirect_to == "delivered_leads":
-            url = reverse("admin_deleivered_leads_details")
-        elif redirect_to == "completed_leads":
-            url = reverse("admin_completed_leads_details")
-        else:
-            url = reverse("admin_new_leads_details")
+        redirect_url = redirect_to
         
-        # Append the page parameter to the URL
-        return HttpResponseRedirect(f"{url}?page={page_number}")
+        return redirect(redirect_url)
+    
+    
 @login_required
 def admin_grid_leads_details(request):
     enquiry = Enquiry.objects.all().order_by("-id")
@@ -3078,28 +3047,11 @@ def add_notes(request):
         except Enquiry.DoesNotExist:
             pass
 
-        page_number = request.POST.get('page', 1)
         
         redirect_to = request.POST.get("redirect_to")
-        if redirect_to == "active_leads":
-            url = reverse("admin_active_leads_details")
-        elif redirect_to == "latest_leads":
-            url = reverse("admin_latest_leads_details")
-        elif redirect_to == "enrolled_leads":
-            url = reverse("Enrolled_leads")
-        elif redirect_to == "inprocess_leads":
-            url = reverse("admin_inprocess_leads_details")
-        elif redirect_to == "appointment_leads":
-            url = reverse("admin_appointment_leads_details")
-        elif redirect_to == "delivered_leads":
-            url = reverse("admin_deleivered_leads_details")
-        elif redirect_to == "completed_leads":
-            url = reverse("admin_completed_leads_details")
-        else:
-            url = reverse("admin_new_leads_details")
+        redirect_url = redirect_to
         
-        # Append the page parameter to the URL
-        return HttpResponseRedirect(f"{url}?page={page_number}")
+        return redirect(redirect_url)
 
 ############################################### CHANGE PASSWORD ###########################################
 
@@ -3184,7 +3136,7 @@ def enrolled_Application(request):
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     enquiry = Enquiry.objects.filter(lead_status="Enrolled").order_by("-id")
 
-    search_query = request.GET.get('search', '')
+    search_query = request.GET.get('query', '')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
@@ -3999,6 +3951,9 @@ def chat_group_delete_group(request, id):
 
 # ----------------------------- Lead Updated ---------------------------
 
+
+from urllib.parse import urlencode
+
 def admin_lead_updated(request, id):
     if request.method == "POST":
         lead_status = request.POST.get("lead_status")
@@ -4007,29 +3962,11 @@ def admin_lead_updated(request, id):
         enquiry.save()
         messages.success(request, f"Lead {lead_status} Status Updated Successfully...")
 
-        # Get the current page number from POST or fallback to 1 if not present
-        page_number = request.POST.get('page', 1)
         
         redirect_to = request.POST.get("redirect_to")
-        if redirect_to == "active_leads":
-            url = reverse("admin_active_leads_details")
-        elif redirect_to == "latest_leads":
-            url = reverse("admin_latest_leads_details")
-        elif redirect_to == "enrolled_leads":
-            url = reverse("Enrolled_leads")
-        elif redirect_to == "inprocess_leads":
-            url = reverse("admin_inprocess_leads_details")
-        elif redirect_to == "appointment_leads":
-            url = reverse("admin_appointment_leads_details")
-        elif redirect_to == "delivered_leads":
-            url = reverse("admin_deleivered_leads_details")
-        elif redirect_to == "completed_leads":
-            url = reverse("admin_completed_leads_details")
-        else:
-            url = reverse("admin_new_leads_details")
+        redirect_url = redirect_to
         
-        # Append the page parameter to the URL
-        return HttpResponseRedirect(f"{url}?page={page_number}")
+        return redirect(redirect_url)
 ########################################## LEAD APPOINTMENT ########################################
 
 
@@ -4312,29 +4249,14 @@ def color_code(request, id):
         enquiry.color_code = color_code
         enquiry.save()
         messages.success(request, f"Lead Color {color_code} Updated Successfully...")
-        page_number = request.POST.get('page', 1)
-        
-        redirect_to = request.POST.get("redirect_to")
-        if redirect_to == "active_leads":
-            url = reverse("admin_active_leads_details")
-        elif redirect_to == "latest_leads":
-            url = reverse("admin_latest_leads_details")
-        elif redirect_to == "enrolled_leads":
-            url = reverse("Enrolled_leads")
-        elif redirect_to == "inprocess_leads":
-            url = reverse("admin_inprocess_leads_details")
-        elif redirect_to == "appointment_leads":
-            url = reverse("admin_appointment_leads_details")
-        elif redirect_to == "delivered_leads":
-            url = reverse("admin_deleivered_leads_details")
-        elif redirect_to == "completed_leads":
-            url = reverse("admin_completed_leads_details")
-        else:
-            url = reverse("admin_new_leads_details")
-        
-        # Append the page parameter to the URL
-        return HttpResponseRedirect(f"{url}?page={page_number}")
 
+        redirect_to = request.POST.get("redirect_to")
+        redirect_url = redirect_to
+        
+        return redirect(redirect_url)
+    
+    
+    
 def admin_appointment(request):
     all_events = Appointment.objects.all()
 
@@ -4681,7 +4603,12 @@ def search_enquiries(request):
 @login_required
 def search_employee(request):
     employee = Employee.objects.all().order_by("-id")
-
+    emp_code = ""
+    name = ""
+    email = ""
+    contact_no = ""
+    branch = ""
+    department = ""
     if request.method == "POST":
         emp_code = request.POST.get("emp_code")
         name = request.POST.get("name")
@@ -4723,7 +4650,7 @@ def search_employee(request):
             employee = employee.filter(filter_conditions)
 
     return render(
-        request, "Admin/Employee Management/Employeelist.html", {"page": employee}
+        request, "Admin/Employee Management/Employeelist.html", {"page": employee,"emp_code":emp_code,"name":name,"email":email,"contact_no":contact_no,"branch":branch,"department":department}
     )
 
 
@@ -4790,9 +4717,10 @@ def admin_active_leads_details(request):
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
 
 
-    search_query = request.GET.get('search', '')
+    search_query = request.GET.get('query', '')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
+    page_number = request.GET.get('page', '1')
 
     queries = Q(lead_status="Active") | Q(lead_status="PreEnrolled")
     if search_query:
@@ -4813,14 +4741,10 @@ def admin_active_leads_details(request):
 
     enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
 
-    paginator = Paginator(enquiry_list, 5)
-    page_number = request.GET.get('page')
+    paginator = Paginator(enquiry_list, 1)
     
     
     page = paginator.get_page(page_number)
-
-
-
     
     query_params = request.GET.copy()
     if 'page' in query_params:
@@ -4852,7 +4776,8 @@ def admin_active_leads_details(request):
         "base_url":base_url,
         "search_query":search_query,
         'start_date': start_date,
-        'end_date': end_date
+        'end_date': end_date,
+        'page_number': page_number
     }
     return render(request, "Admin/Enquiry/statusleads/activeleads.html", context)
 
@@ -4861,17 +4786,32 @@ def admin_active_leads_details(request):
 def admin_latest_leads_details(request):
     excluded_statuses = ["Accept", "Case Initiated"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
-    enquiry_list = Enquiry.objects.filter(lead_status="New Lead").order_by("-id")
     
-    paginator = Paginator(enquiry_list,10)
-    page_number = request.GET.get('page')
     
-    try:
-        page = paginator.page(page_number)
-    except PageNotAnInteger:
-        page = paginator.page(1)
-    except EmptyPage:
-        page = paginator.page(paginator.num_pages)
+    search_query = request.GET.get('query', '')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    page_number = request.GET.get('page', '1')
+    
+    queries = Q(lead_status="New Lead")
+    if search_query:
+        search_parts = search_query.split()
+        for part in search_parts:
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+    if start_date:
+        start_date = parse_date(start_date)
+        queries &= Q(registered_on__date__gte=start_date)
+
+    if end_date:
+        end_date = parse_date(end_date)
+        queries &= Q(registered_on__date__lte=end_date)
+        
+    
+    enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+    paginator = Paginator(enquiry_list,1)
+    page = paginator.get_page(page_number)
+    
         
     query_params = request.GET.copy()
     if 'page' in query_params:
@@ -4900,7 +4840,8 @@ def admin_latest_leads_details(request):
         "agent": agent,
         "outsourcepartner": outsourcepartner,
         "lead": lead,
-        "base_url":base_url
+        "base_url":base_url,
+        'page_number': page_number
     }
     return render(request, "Admin/Enquiry/statusleads/newleads.html", context)
 
@@ -4909,19 +4850,37 @@ def admin_latest_leads_details(request):
 def admin_inprocess_leads_details(request):
     excluded_statuses = ["Accept", "Case Initiated"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
-    enquiry_list = Enquiry.objects.filter(
-        Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit")
-    ).order_by("-id")
+    
+    search_query = request.GET.get('query', '')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    page_number = request.GET.get('page', '1')
+    
+    queries = Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit")
+    
+    
+    if search_query:
+        search_parts = search_query.split()
+        for part in search_parts:
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+    if start_date:
+        start_date = parse_date(start_date)
+        queries &= Q(registered_on__date__gte=start_date)
+
+    if end_date:
+        end_date = parse_date(end_date)
+        queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+    enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+
+    
     
     paginator = Paginator(enquiry_list,10)
-    page_number = request.GET.get('page')
-    
-    try:
-        page = paginator.page(page_number)
-    except PageNotAnInteger:
-        page = paginator.page(1)
-    except EmptyPage:
-        page = paginator.page(paginator.num_pages)
+    page = paginator.get_page(page_number)
         
     query_params = request.GET.copy()
     if 'page' in query_params:
@@ -4950,7 +4909,8 @@ def admin_inprocess_leads_details(request):
         "agent": agent,
         "outsourcepartner": outsourcepartner,
         "lead": lead,
-        "base_url":base_url
+        "base_url":base_url,
+        'page_number': page_number
     }
     return render(request, "Admin/Enquiry/statusleads/inprocessleads.html", context)
 
@@ -4959,19 +4919,34 @@ def admin_inprocess_leads_details(request):
 def admin_appointment_leads_details(request):
     excluded_statuses = ["Accept", "Case Initiated"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
-    enquiry_list = Enquiry.objects.filter(
-        Q(lead_status="Appointment") | Q(lead_status="Ready To Collection")
-    ).order_by("-id")
-
-    paginator = Paginator(enquiry_list, 5)
-    page_number = request.GET.get('page')
     
-    try:
-        page = paginator.page(page_number)
-    except PageNotAnInteger:
-        page = paginator.page(1)
-    except EmptyPage:
-        page = paginator.page(paginator.num_pages)
+    search_query = request.GET.get('query', '')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    page_number = request.GET.get('page', '1')
+    
+    queries = Q(lead_status="Appointment") | Q(lead_status="Ready To Collection")
+
+    if search_query:
+        search_parts = search_query.split()
+        for part in search_parts:
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+    if start_date:
+        start_date = parse_date(start_date)
+        queries &= Q(registered_on__date__gte=start_date)
+
+    if end_date:
+        end_date = parse_date(end_date)
+        queries &= Q(registered_on__date__lte=end_date)
+
+    enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+
+    paginator = Paginator(enquiry_list, 1)
+    
+    
+    page = paginator.get_page(page_number)
+
         
     query_params = request.GET.copy()
     if 'page' in query_params:
@@ -5000,7 +4975,8 @@ def admin_appointment_leads_details(request):
         "agent": agent,
         "outsourcepartner": outsourcepartner,
         "lead": lead,
-        "base_url":base_url
+        "base_url":base_url,
+        'page_number': page_number
     }
     return render(request, "Admin/Enquiry/statusleads/appointleads.html", context)
 
@@ -5009,17 +4985,35 @@ def admin_appointment_leads_details(request):
 def admin_deleivered_leads_details(request):
     excluded_statuses = ["Accept", "Case Initiated"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
-    enquiry_list = Enquiry.objects.filter(lead_status="Result").order_by("-id")
     
-    paginator = Paginator(enquiry_list, 5)
-    page_number = request.GET.get('page')
+    search_query = request.GET.get('query', '')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    page_number = request.GET.get('page', '1')
+
+    queries = Q(lead_status="Result")
+    if search_query:
+        search_parts = search_query.split()
+        for part in search_parts:
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+    if start_date:
+        start_date = parse_date(start_date)
+        queries &= Q(registered_on__date__gte=start_date)
+
+    if end_date:
+        end_date = parse_date(end_date)
+        queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+    enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+
+    paginator = Paginator(enquiry_list, 1)
     
-    try:
-        page = paginator.page(page_number)
-    except PageNotAnInteger:
-        page = paginator.page(1)
-    except EmptyPage:
-        page = paginator.page(paginator.num_pages)
+    
+    page = paginator.get_page(page_number)
         
     query_params = request.GET.copy()
     if 'page' in query_params:
@@ -5048,7 +5042,8 @@ def admin_deleivered_leads_details(request):
         "agent": agent,
         "outsourcepartner": outsourcepartner,
         "lead": lead,
-        "base_url":base_url
+        "base_url":base_url,
+        'page_number': page_number
     }
     return render(request, "Admin/Enquiry/statusleads/deleiveredleads.html", context)
 
@@ -5057,17 +5052,36 @@ def admin_deleivered_leads_details(request):
 def admin_completed_leads_details(request):
     excluded_statuses = ["Accept", "Case Initiated"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
-    enquiry_list = Enquiry.objects.filter(lead_status="Delivery").order_by("-id")
+
+    search_query = request.GET.get('query', '')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    page_number = request.GET.get('page', '1')
+
+    queries = Q(lead_status="Delivery")
+    if search_query:
+        search_parts = search_query.split()
+        for part in search_parts:
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+    if start_date:
+        start_date = parse_date(start_date)
+        queries &= Q(registered_on__date__gte=start_date)
+
+    if end_date:
+        end_date = parse_date(end_date)
+        queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+    enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+
+    paginator = Paginator(enquiry_list, 1)
     
-    paginator = Paginator(enquiry_list, 5)
-    page_number = request.GET.get('page')
     
-    try:
-        page = paginator.page(page_number)
-    except PageNotAnInteger:
-        page = paginator.page(1)
-    except EmptyPage:
-        page = paginator.page(paginator.num_pages)
+    page = paginator.get_page(page_number)
+    
         
     query_params = request.GET.copy()
     if 'page' in query_params:
@@ -5096,7 +5110,8 @@ def admin_completed_leads_details(request):
         "agent": agent,
         "outsourcepartner": outsourcepartner,
         "lead": lead,
-        "base_url":base_url
+        "base_url":base_url,
+        'page_number': page_number
     }
     return render(request, "Admin/Enquiry/statusleads/completeleads.html", context)
 

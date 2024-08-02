@@ -106,43 +106,44 @@
             <div class="row">
                 <div class="col-md-3">
                     <label class="custom-form-label">Emp Code</label>
-                    <input type="text" class="form-control" name="emp_code" id="emp_code" placeholder="Employee Code">
+                    <input type="text" class="form-control" name="emp_code" id="emp_code" placeholder="Employee Code" value="{{emp_code}}">
                 </div>
                 <div class="col-md-3">
                     <label class="custom-form-label">Name</label>
-                    <input type="text" class="form-control" name="name" id="name" placeholder="Name">
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Name" value="{{name}}">
                 </div>
                 <div class="col-md-3">
                     <label class="custom-form-label">Email Id</label>
-                    <input type="email" class="form-control" name="email" id="email" placeholder="Email Id">
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Email Id" value="{{email}}">
                 </div>
                 <div class="col-md-3">
                     <label class="custom-form-label">Contact No</label>
-                    <input type="text" class="form-control" name="contact_no" id="contact_no" placeholder="Contact No">
+                    <input type="text" class="form-control" name="contact_no" id="contact_no" placeholder="Contact No" value="{{contact_no}}">
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-3">
                     <label class="custom-form-label">Branch</label>
-                    <input type="text" class="form-control" name="branch" id="branch" placeholder="Branch Name">
+                    <input type="text" class="form-control" name="branch" id="branch" placeholder="Branch Name" value="{{branch}}">
                 </div>
                 <div class="col-md-3">
                     <label class="custom-form-label">Department</label>
                     <select name="department" id="department" class="form-select">
                         <option>Select</option>
-                        <option value="Presales">Presales</option>
-                        <option value="Assesment">Assesment</option>
-                        <option value="Sales">Sales</option>
-                        <option value="Documentation">Documentation</option>
-                        <option value="Visa Team">Visa Team</option>
-                        <option value="HR">HR</option>
-                        <option value="Developement Team">Developement Team</option>
-                        <option value="Design Team">Design Team</option>
-                        <option value="Account Team">Account Team</option>
+                        <option value="Presales" {% if department == "Presales" %}selected{% endif %}>Presales</option>
+                        <option value="Assesment" {% if department == "Assesment" %}selected{% endif %}>Assesment</option>
+                        <option value="Sales" {% if department == "Sales" %}selected{% endif %}>Sales</option>
+                        <option value="Documentation" {% if department == "Documentation" %}selected{% endif %}>Documentation</option>
+                        <option value="Visa Team" {% if department == "Visa Team" %}selected{% endif %}>Visa Team</option>
+                        <option value="HR" {% if department == "HR" %}selected{% endif %}>HR</option>
+                        <option value="Developement Team" {% if department == "Developement Team" %}selected{% endif %}>Developement Team</option>
+                        <option value="Design Team" {% if department == "Design Team" %}selected{% endif %}>Design Team</option>
+                        <option value="Account Team" {% if department == "Account Team" %}selected{% endif %}>Account Team</option>
                     </select>
                 </div>
                 <div class="col-md-3">
                   <button type="submit" class="btn btn-color" style="margin-top: 20px;">Search</button>
+                  <a href="{% url "emp_list" %}"><button type="button" class="btn btn-primary btn-sm" style="margin-top: 20px;">clear</button></a>
               </div>
 
                 
@@ -153,7 +154,7 @@
          
       <div class="table-container">
         <div class="table-responsive">
-          <table id="example" class="display">
+          <table id="" class="display">
             <thead>
               
               <tr>

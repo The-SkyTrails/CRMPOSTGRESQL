@@ -136,7 +136,7 @@
         </div>
 
     </div>
-    <form action="{% url "search_enquiries" %}" method="post">
+    <!-- <form action="{% url "search_enquiries" %}" method="post">
         {% csrf_token %}
         <div class="search">
             <div class="row">
@@ -207,10 +207,45 @@
                 </div>
             </div>
         </div>
-    </form>
+    </form> -->
+
+    <div style="display: flex; justify-content: space-between;">
+        <div>
+           <form method="GET" action="">
+              <div class="row">
+                  <div class="col-md-5">
+                      <label for="start_date" class="custom-form-label">Start Date:</label>
+                      <input type="date" class="form-control" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+                  </div>
+                  <div class="col-md-5">
+                      <label for="start_date" class="custom-form-label">End Date:</label>
+                      <input type="date" class="form-control" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+                  </div>
+                  <div class="col-md-2">
+                      <input type="hidden" name="page" value="{{ page.number }}">
+                      <input type="hidden" name="query" value="{{ search_query }}">
+                      <button type="submit" class="btn btn-color" style="margin-top: 25px;">Filter</button>
+                  </div>
+              </div>
+          </form>
+          
+          
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-2" style="gap: 5px; margin-top: 22px;">
+           <form method="GET" action="">
+              <input type="hidden" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+              <input type="hidden" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+              <input type="hidden" name="page" value="{{ page.number }}">
+              <input type="text" class="form-control" placeholder="search" name="query" value="{{ search_query }}">
+              <button type="submit" class="btn btn-sm btn-primary" style="margin-left: 5px;display:none;">Search</button>
+          </form>
+          <a href="{% url 'admin_inprocess_leads_details' %}"><button type="button" class="btn btn-sm btn-danger">Clear</button></a>
+          
+        </div>
+    </div>
     <div class="table-container">
         <div class="table-responsive">
-            <table id="example" class="display">
+            <table id="" class="display">
                 <thead>
                     <tr>
                         <th>SR NO</th>

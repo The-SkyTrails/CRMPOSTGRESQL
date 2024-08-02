@@ -2,8 +2,11 @@
     <div class="modal-dialog">
         <form action="{% url "admin_lead_updated" i.id %}" method="post">
             {% csrf_token %}
+            <input type="hidden" name="query" value="{{ search_query }}">
+            <input type="hidden" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+            <input type="hidden" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
             <input type="hidden" name="page" value="{{ page.number }}">
-            <input type="hidden" name="redirect_to" value="{% if request.path == '/ActiveLeads/' %}active_leads{% elif request.path == '/LatestLeads/' %}latest_leads{% elif request.path == '/InprocessLeads/' %}inprocess_leads{% elif request.path == '/AppointmentLeads/' %}appointment_leads{% elif request.path == '/DeliveredLeads/' %}delivered_leads{% elif request.path == '/CompletedLeads/' %}completed_leads{% elif request.path == '/EnrolledLeads/' %}enrolled_leads{% else %}new_leads{% endif %}">
+            <input type="hidden" name="redirect_to" value="{{request.get_full_path}}">
             <div class="modal-content">
                 <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Lead Update</h1>
@@ -66,38 +69,18 @@
     </div>
   </div>
 
-   <script>
-    // Function to set the value of redirect_to based on the current URL
-    function setRedirectTo(currentPath, modalId) {
-        var redirectInput = document.querySelector('#' + modalId + ' input[name="redirect_to"]');
-        if (currentPath.includes("/ActiveLeads/")) {
-            redirectInput.value = "active_leads";
-        } else if (currentPath.includes("/LatestLeads/")) {
-            redirectInput.value = "latest_leads";
-        } else if (currentPath.includes("/InprocessLeads/")) {
-            redirectInput.value = "inprocess_leads";
-        } else if (currentPath.includes("/AppointmentLeads/")) {
-            redirectInput.value = "appointment_leads";
-        } else if (currentPath.includes("/DeliveredLeads/")) {
-            redirectInput.value = "delivered_leads";
-        } else if (currentPath.includes("/CompletedLeads/")) {
-            redirectInput.value = "completed_leads";
-        } else if (currentPath.includes("/EnrolledLeads/")) {
-            redirectInput.value = "enrolled_leads";
-        } else {
-            redirectInput.value = "new_leads";
-        }
-    }
+  
+<script>
+    document.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Button that triggered the modal
+        var modal = event.target; // The modal itself
 
-    // Call the setRedirectTo function when each modal is shown
-    document.addEventListener("DOMContentLoaded", function () {
-        var modals = document.querySelectorAll('.modal');
-        modals.forEach(function(modal) {
-            modal.addEventListener('shown.bs.modal', function () {
-                var currentPath = window.location.pathname;
-                var modalId = modal.getAttribute('id');
-                setRedirectTo(currentPath, modalId);
-            });
-        });
+        // Set hidden fields with current search parameters
+        modal.querySelector('input[name="query"]').value = "{{ search_query }}";
+        modal.querySelector('input[name="start_date"]').value = "{{ start_date|date:'Y-m-d' }}";
+        modal.querySelector('input[name="end_date"]').value = "{{ end_date|date:'Y-m-d' }}";
+        modal.querySelector('input[name="page"]').value = "{{ page.number }}";
     });
 </script>
+
+
