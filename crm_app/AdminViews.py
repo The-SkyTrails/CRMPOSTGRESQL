@@ -5315,6 +5315,7 @@ class StudyPackageListView(LoginRequiredMixin, ListView):
         context['page'] = page.object_list
         return context
     
+    
 class InvestmentPackageListView(LoginRequiredMixin, ListView):
     model = Package
     template_name = "Admin/Product/investment_visa.html"
