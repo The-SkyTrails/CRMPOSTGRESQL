@@ -1477,28 +1477,97 @@ def emp_add_agent(request):
 
     return render(request, "Employee/Agent Management/addagent.html", context)
 
+# class emp_all_agent(ListView):
+#     model = Agent
+#     template_name = "Employee/Agent Management/agentlist.html"
+#     context_object_name = "agent"
+#     paginate_by = 10
+
+
+#     def get_queryset(self):
+#         user = self.request.user
+#         return Agent.objects.filter(
+#             Q(registerdby=self.request.user) | Q(assign_employee=user)
+#         ).order_by("-id")
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         user = self.request.user
+#         dep = user.employee.department
+#         context["employee_queryset"] = Employee.objects.all()
+#         context["dep"] = dep
+        
+#         agent_list = self.get_queryset()
+#         paginator = Paginator(agent_list, self.paginate_by)
+#         page_number = self.request.GET.get('page')
+
+#         try:
+#             page = paginator.page(page_number)
+#         except PageNotAnInteger:
+#             page = paginator.page(1)
+#         except EmptyPage:
+#             page = paginator.page(paginator.num_pages)
+#         query_params = self.request.GET.copy()
+#         if 'page' in query_params:
+#             del query_params['page']
+#         base_url = self.request.path + '?' + query_params.urlencode()
+#         if query_params:
+#             base_url += '&page='
+#         else:
+#             base_url += 'page='
+#         context['page_obj'] = page
+#         context['page'] = page.object_list 
+#         context['base_url'] = base_url 
+        
+#         return context
+
+
+
 class emp_all_agent(ListView):
     model = Agent
     template_name = "Employee/Agent Management/agentlist.html"
     context_object_name = "agent"
     paginate_by = 10
 
-    # def get_queryset(self):
-    #     return Agent.objects.all().order_by("-id")
-
     def get_queryset(self):
         user = self.request.user
-        return Agent.objects.filter(
-            Q(registerdby=self.request.user) | Q(assign_employee=user)
-        ).order_by("-id")
+        query = self.request.GET.get('query', '')
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+        
+        # Build the query for search
+        queries = Q(registerdby=user) | Q(assign_employee=user)
+        if query:
+            search_parts = query.split()
+            for part in search_parts:
+                queries &= (
+                    Q(users__first_name__icontains=part) |
+                    Q(users__last_name__icontains=part) |
+                    Q(contact_no__icontains=part) |
+                    Q(users__email__icontains=part) |
+                    Q(registerdby__first_name__icontains=part)
+                )
+        
+        # Apply date range filters if provided
+        if start_date:
+            start_date = parse_date(start_date)
+            queries &= Q(registeron__date__gte=start_date)
+        
+        if end_date:
+            end_date = parse_date(end_date)
+            queries &= Q(registeron__date__lte=end_date)
+
+        return Agent.objects.filter(queries).order_by("-id")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         dep = user.employee.department
+        
         context["employee_queryset"] = Employee.objects.all()
         context["dep"] = dep
         
+        # Pagination logic
         agent_list = self.get_queryset()
         paginator = Paginator(agent_list, self.paginate_by)
         page_number = self.request.GET.get('page')
@@ -1509,6 +1578,7 @@ class emp_all_agent(ListView):
             page = paginator.page(1)
         except EmptyPage:
             page = paginator.page(paginator.num_pages)
+
         query_params = self.request.GET.copy()
         if 'page' in query_params:
             del query_params['page']
@@ -1517,12 +1587,16 @@ class emp_all_agent(ListView):
             base_url += '&page='
         else:
             base_url += 'page='
-        context['page_obj'] = page
-        context['page'] = page.object_list 
-        context['base_url'] = base_url 
-        
-        return context
 
+        context['page_obj'] = page
+        context['page'] = page.object_list
+        context['base_url'] = base_url
+        context['query'] = self.request.GET.get('query', '')
+        context['start_date'] = self.request.GET.get('start_date', '')
+        context['end_date'] = self.request.GET.get('end_date', '')
+        context['page_number'] = page_number
+
+        return context
 class emp_allGrid_agent(ListView):
     model = Agent
     template_name = "Employee/Agent Management/agentgrid.html"
