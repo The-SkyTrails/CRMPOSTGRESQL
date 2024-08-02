@@ -3009,7 +3009,7 @@ def update_assigned_employee(request, id):
     
 @login_required
 def admin_grid_leads_details(request):
-    enquiry = Enquiry.objects.all().order_by("-id")
+    enquiry = Enquiry.objects.filter(archive=False).order_by("-id")
 
     context = {"enquiry": enquiry}
     return render(request, "Admin/Enquiry/lead-grid.html", context)
