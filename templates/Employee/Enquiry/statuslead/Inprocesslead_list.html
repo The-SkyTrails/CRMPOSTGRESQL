@@ -137,83 +137,45 @@
 
     </div>
 
-    <form action="{% url "Emp_search_enquiries" %}" method="post">
-        {% csrf_token %}
-        <div class="search">
-            <div class="row">
-                <div class="col-md-3">
-                    <label class="custom-form-label">Enquiry Id</label>
-                    <input type="text" class="form-control" name="enquiry_id" id="enquiry_id" placeholder="Enquiry Id">
-                </div>
-                <div class="col-md-3">
-                    <label class="custom-form-label">Name</label>
-                    <input type="text" class="form-control" name="name" id="name" placeholder="Name">
-                </div>
-                <div class="col-md-3">
-                    <label class="custom-form-label">Date Of Birth</label>
-                    <input type="date" class="form-control" name="date_of_birth" id="date_of_birth">
-                </div>
-                <div class="col-md-3">
-                    <label class="custom-form-label">Passport No</label>
-                    <input type="text" class="form-control" name="passport_no" id="passport_no" placeholder="Passport No">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3">
-                    <label class="custom-form-label">Product</label>
-                    <input type="text" class="form-control" name="package" id="package" placeholder="Product Name">
-                </div>
-                <div class="col-md-3">
-                    <label class="custom-form-label">Lead Status</label>
-                    <select name="lead_status" id="lead_status" class="form-select">
-                        <option>Select</option>
-                        <option value="New Lead">New Lead</option>
-                        <option value="Active">Active</option>
-                        <option value="PreEnrolled">PreEnrolled</option>
-                        <option value="Enrolled">Enrolled</option>
-                        <option value="Inprocess">Inprocess</option>
-                        <option value="Ready To Submit">Ready To Submit</option>
-                        <option value="Appointment">Appointment</option>
-                        <option value="Ready To Collection">Ready To Collection</option>
-                        <option value="Result">Result</option>
-                        <option value="Delivery">Delivery</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="custom-form-label">Colour</label>
-                    <select name="color_code" id="color_code" class="form-select">
-                        <option>Select</option>
-                        <option value="Grey">Grey</option>
-                        <option value="Blue">Blue</option>
-                        <option value="White">White</option>
-                        <option value="Red">Red</option>
-                        <option value="Green">Green</option>
-                        
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="custom-form-label">Visa Country</label>
-                    <input type="text" class="form-control" name="Visa_country" id="Visa_country" placeholder="Visa Country">
-                </div>
-
-                
-            </div>
-            <div class="row">
-                <div class="col-md-3">
-                    <label class="custom-form-label">Created By</label>
-                    <input type="text" class="form-control" name="created_by" id="created_by" placeholder="Created By">
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-color" style="margin-top: 20px;">Search</button>
-                </div>
-            </div>
+    <div style="display: flex; justify-content: space-between;">
+        <div>
+           <form method="GET" action="">
+              <div class="row">
+                  <div class="col-md-5">
+                      <label for="start_date" class="custom-form-label">Start Date:</label>
+                      <input type="date" class="form-control" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+                  </div>
+                  <div class="col-md-5">
+                      <label for="start_date" class="custom-form-label">End Date:</label>
+                      <input type="date" class="form-control" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+                  </div>
+                  <div class="col-md-2">
+                      <input type="hidden" name="page" value="{{ page.number }}">
+                      <input type="hidden" name="query" value="{{ search_query }}">
+                      <button type="submit" class="btn btn-color" style="margin-top: 25px;">Filter</button>
+                  </div>
+              </div>
+          </form>
+          
+          
         </div>
-    </form>
+        <div class="d-flex justify-content-between align-items-center mb-2" style="gap: 5px; margin-top: 22px;">
+           <form method="GET" action="">
+              <input type="hidden" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+              <input type="hidden" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+              <input type="hidden" name="page" value="{{ page.number }}">
+              <input type="text" class="form-control" placeholder="search" name="query" value="{{ search_query }}">
+              <button type="submit" class="btn btn-sm btn-primary" style="margin-left: 5px;display:none;">Search</button>
+          </form>
+          <a href="{% url 'employee_inprocesslead_list' %}"><button type="button" class="btn btn-sm btn-danger">Clear</button></a>
+          
+        </div>
+    </div>
 
 
     <div class="table-container">
         <div class="table-responsive">
-            <table id="example" class="display">
+            <table id="" class="display">
                 <thead>
                     <tr>
                         

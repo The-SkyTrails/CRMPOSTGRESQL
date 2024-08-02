@@ -4,6 +4,7 @@
       <div class="modal-content">
         <form action="{% url "agent_add_notes" %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+            <input type="hidden" name="redirect_to" value="{{request.get_full_path}}">
         <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">Add Notes</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -29,3 +30,17 @@
         </form>
    </div>
 </div>
+
+
+<script>
+    document.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Button that triggered the modal
+        var modal = event.target; // The modal itself
+
+        // Set hidden fields with current search parameters
+        modal.querySelector('input[name="query"]').value = "{{ search_query }}";
+        modal.querySelector('input[name="start_date"]').value = "{{ start_date|date:'Y-m-d' }}";
+        modal.querySelector('input[name="end_date"]').value = "{{ end_date|date:'Y-m-d' }}";
+        modal.querySelector('input[name="page"]').value = "{{ page.number }}";
+    });
+</script>

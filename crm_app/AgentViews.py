@@ -39,154 +39,10 @@ from .doubletick import whatsapp_signup_mes, product_add_mes
 from .Email.email_utils import send_congratulatory_email, send_package_email
 
 from django.core.paginator import Paginator
+from django.utils.dateparse import parse_date
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-# class agent_dashboard(LoginRequiredMixin, TemplateView):
-#     template_name = "Agent/Dashboard/dashboard.html"
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         enq_enrolled_count = 0
-#         enq_count = 0
-        
-
-#         leadaccept_count = Enquiry.objects.filter(
-#             Q(lead_status="Enrolled")
-#             | Q(lead_status="Inprocess")
-#             | Q(lead_status="Ready To Submit")
-#             | Q(lead_status="Appointment")
-#             | Q(lead_status="Ready To Collection")
-#             | Q(lead_status="Result")
-#             | Q(lead_status="Delivery"),
-#             created_by=self.request.user,
-#         ).count()
-#         context["leadaccept_count"] = leadaccept_count
-
-#         lead_count = Enquiry.objects.filter(created_by=self.request.user).count()
-#         context["lead_count"] = lead_count
-
-#         package = Package.objects.filter(approval = "Yes").order_by("-last_updated_on")[
-#             :10
-#         ]
-#         context["package"] = package
-
-#         # url = "https://back.theskytrails.com/skyTrails/packages/getAllcrm"
-#         # response = requests.get(url)
-#         # data = response.json()
-#         # webpackages = data["data"]["pakage"]
-
-#         # for webpackage in webpackages:
-#         #     webpackage["id"] = webpackage.pop("_id")
-#         #     context["webpackages"] = webpackages
-
-#         story = SuccessStory.objects.all()
-#         context["story"] = story
-        
-#         user = self.request.user
-#         faq_count = FAQ.objects.filter(user=user).count()
-#         context["faq_count"] = faq_count
-
-#         if user.user_type == "4":
-#             enrolled_monthly_counts = defaultdict(int)
-#             all_enquiries_monthly_counts = defaultdict(int)
-#             agent = Agent.objects.get(users=user)
-#             latest_news = News.objects.filter(agent__in=[True]).order_by("-created_at")[:10]
-
-#             enrolled_monthly_enquiries =  Enquiry.objects.filter(
-#                     Q(
-#                         lead_status="Enrolled",
-#                         assign_to_agent=user.agent,
-#                     )
-#                     | Q(lead_status="Enrolled", created_by=user)
-#                 )
-            
-#             all_monthly_enquiries =   Enquiry.objects.filter(
-#                     Q(assign_to_agent=user.agent) | Q(created_by=user)
-#                 )
-            
-#             for enquiry in enrolled_monthly_enquiries:
-#                 month_year = datetime(enquiry.registered_on.year, enquiry.registered_on.month, 1)
-#                 enrolled_monthly_counts[month_year] += 1
-
-#             for enquiry in all_monthly_enquiries:
-#                 month_year = datetime(enquiry.registered_on.year, enquiry.registered_on.month, 1)
-#                 all_enquiries_monthly_counts[month_year] += 1
-
-#             sorted_enrolled_counts = sorted(enrolled_monthly_counts.items())
-#             enrolled_months = [date.strftime("%B %Y") for date, _ in sorted_enrolled_counts]
-#             enrolled_counts = [count for _, count in sorted_enrolled_counts]
-            
-#             sorted_all_counts = sorted(all_enquiries_monthly_counts.items())
-#             all_months = [date.strftime("%B %Y") for date, _ in sorted_all_counts if date.year == datetime.now().year]  # Filter by current year
-#             all_counts = [count for _, count in sorted_all_counts if _.year == datetime.now().year]  # Filter by current year
-            
-#             enq_count = sum(all_counts)
-#             enq_enrolled_count = sum(enrolled_counts)
-
-#             context["agent"] = agent
-#             context["latest_news"] = latest_news
-#             context["enrolled_months"] = enrolled_months
-#             context["enrolled_counts"] = enrolled_counts
-#             context["all_months"] = all_months
-#             context["all_counts"] = all_counts
-#             context["enq_count"] = enq_count
-#             context["enq_enrolled_count"] = enq_enrolled_count
-
-
-
-#         if user.user_type == "5":
-#             outagent = OutSourcingAgent.objects.get(users=user)
-#             news = News.objects.filter(outsource_Agent__in=[True]).order_by("-created_at")[
-#                 :10
-#             ]
-
-#             todo = Todo.objects.filter(user=self.request.user).order_by("-id")
-
-#             enrolled_monthly_enquiries = Enquiry.objects.filter(
-#                     Q(
-#                         lead_status="Enrolled",
-#                         assign_to_outsourcingagent=user.outsourcingagent,
-#                     )
-#                     | Q(lead_status="Enrolled", created_by=user)
-#                 )
-            
-#             all_monthly_enquiries =   Enquiry.objects.filter(
-#                     Q(assign_to_outsourcingagent=user.outsourcingagent)
-#                     | Q(created_by=user)
-#                 )
-            
-#             for enquiry in enrolled_monthly_enquiries:
-#                 month_year = datetime(enquiry.registered_on.year, enquiry.registered_on.month, 1)
-#                 enrolled_monthly_counts[month_year] += 1
-
-#             for enquiry in all_monthly_enquiries:
-#                 month_year = datetime(enquiry.registered_on.year, enquiry.registered_on.month, 1)
-#                 all_enquiries_monthly_counts[month_year] += 1
-
-#             sorted_enrolled_counts = sorted(enrolled_monthly_counts.items())
-#             enrolled_months = [date.strftime("%B %Y") for date, _ in sorted_enrolled_counts]
-#             enrolled_counts = [count for _, count in sorted_enrolled_counts]
-            
-#             sorted_all_counts = sorted(all_enquiries_monthly_counts.items())
-#             all_months = [date.strftime("%B %Y") for date, _ in sorted_all_counts if date.year == datetime.now().year]  # Filter by current year
-#             all_counts = [count for _, count in sorted_all_counts if _.year == datetime.now().year]  # Filter by current year
-            
-#             enq_count = sum(all_counts)
-#             enq_enrolled_count = sum(enrolled_counts)
-#             context["agent"] = outagent
-#             context["latest_news"] = news
-#             context["enrolled_months"] = enrolled_months
-#             context["enrolled_counts"] = enrolled_counts
-#             context["all_months"] = all_months
-#             context["all_counts"] = all_counts
-#             context["enq_count"] = enq_count
-#             context["enq_enrolled_count"] = enq_enrolled_count
-            
-             
-#             context["todo"] = todo
-
-#         return context
 
 
 from collections import defaultdict
@@ -199,41 +55,28 @@ class agent_dashboard(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         enq_enrolled_count = 0
         enq_count = 0
-
-        leadaccept_count = Enquiry.objects.filter(
-            Q(lead_status="Enrolled")
-            | Q(lead_status="Inprocess")
-            | Q(lead_status="Ready To Submit")
-            | Q(lead_status="Appointment")
-            | Q(lead_status="Ready To Collection")
-            | Q(lead_status="Result")
-            | Q(lead_status="Delivery"),
-            archive = False,
-            created_by=self.request.user,
-        ).count()
         lead_count = 0
-        context["leadaccept_count"] = leadaccept_count
+        leadaccept_count = 0
+        
         if self.request.user.user_type == '4':
             
             lead_count = Enquiry.objects.filter( Q(created_by=self.request.user)
             | Q(assign_to_agent=self.request.user.agent),archive = False).count()
+            
+            
+            leadaccept_count = Enquiry.objects.filter(Q(assign_to_agent=self.request.user.agent) & Q(lead_status="Enrolled") | Q(lead_status="Appointment") | Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit") | Q(lead_status="Ready To Collection") | Q(lead_status="Result") | Q(lead_status="Delivery") |  Q(created_by=self.request.user) & Q(lead_status="Enrolled") | Q(lead_status="Appointment") | Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit") | Q(lead_status="Ready To Collection") | Q(lead_status="Result") | Q(lead_status="Delivery")).count()
+            
         if self.request.user.user_type == '5': 
-             lead_count = Enquiry.objects.filter( Q(created_by=self.request.user)
+            
+            lead_count = Enquiry.objects.filter( Q(created_by=self.request.user)
             | Q(assign_to_outsourcingagent=self.request.user.outsourcingagent),archive = False).count()
-
+             
+            leadaccept_count = Enquiry.objects.filter(Q(assign_to_outsourcingagent=self.request.user.outsourcingagent) & Q(lead_status="Enrolled") | Q(lead_status="Appointment") | Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit") | Q(lead_status="Ready To Collection") | Q(lead_status="Result") | Q(lead_status="Delivery") |  Q(created_by=self.request.user) & Q(lead_status="Enrolled") | Q(lead_status="Appointment") | Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit") | Q(lead_status="Ready To Collection") | Q(lead_status="Result") | Q(lead_status="Delivery")).count()
+            
         context["lead_count"] = lead_count
-
+        context["leadaccept_count"] = leadaccept_count
         package = Package.objects.filter(approval="Yes").order_by("-last_updated_on")[:10]
         context["package"] = package
-
-        # url = "https://back.theskytrails.com/skyTrails/packages/getAllcrm"
-        # response = requests.get(url)
-        # data = response.json()
-        # webpackages = data["data"]["pakage"]
-
-        # for webpackage in webpackages:
-        #     webpackage["id"] = webpackage.pop("_id")
-        #     context["webpackages"] = webpackages
 
         story = SuccessStory.objects.all()
         context["story"] = story
@@ -579,32 +422,88 @@ def agent_new_leads_details(request):
     faq_count = FAQ.objects.filter(user=user).count()
     user_type = user.user_type
     if user_type == "5":
-        enq_list = Enquiry.objects.filter(
-            Q(assign_to_outsourcingagent=user.outsourcingagent) | Q(created_by=user)
-        ).order_by("-id")
+       
+        search_query = request.GET.get('query', '')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        page_number = request.GET.get('page', '1')
+
+        queries = Q(assign_to_outsourcingagent=user.outsourcingagent) | Q(created_by=user)
+        if search_query:
+            search_parts = search_query.split()
+            for part in search_parts:
+                queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+        if start_date:
+            start_date = parse_date(start_date)
+            queries &= Q(registered_on__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+        enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
         paginator = Paginator(enq_list, 10)
-        page_number = request.GET.get('page')
         
-        try:
-            page = paginator.page(page_number)
-        except PageNotAnInteger:
-            page = paginator.page(1)
-        except EmptyPage:
-            page = paginator.page(paginator.num_pages)
+        
+        page = paginator.get_page(page_number)
+        query_params = request.GET.copy()
+        if 'page' in query_params:
+            del query_params['page']
+        base_url = request.path + '?' + query_params.urlencode()
+        if query_params:
+            base_url += '&page='
+        else:
+            base_url += 'page='
+
     elif user_type == "4":
-        enq_list = Enquiry.objects.filter(
-            Q(assign_to_agent=user.agent) | Q(created_by=user)
-        ).order_by("-id")
-        paginator = Paginator(enq_list, 10)
-        page_number = request.GET.get('page')
+       
+        search_query = request.GET.get('query', '')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        page_number = request.GET.get('page', '1')
+
+        queries = Q(assign_to_agent=user.agent) | Q(created_by=user)
+        if search_query:
+            search_parts = search_query.split()
+            for part in search_parts:
+                queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+        if start_date:
+            start_date = parse_date(start_date)
+            queries &= Q(registered_on__date__gte=start_date)
+
+        if end_date:
+            end_date = parse_date(end_date)
+            queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+        enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+        paginator = Paginator(enq_list, 1)
         
-        try:
-            page = paginator.page(page_number)
-        except PageNotAnInteger:
-            page = paginator.page(1)
-        except EmptyPage:
-            page = paginator.page(paginator.num_pages)
-    context = {"page": page, "faq_count": faq_count, "lead": lead}
+        
+        page = paginator.get_page(page_number)
+        query_params = request.GET.copy()
+        if 'page' in query_params:
+            del query_params['page']
+        base_url = request.path + '?' + query_params.urlencode()
+        if query_params:
+            base_url += '&page='
+        else:
+            base_url += 'page='
+
+    context = {"page": page, 
+               "faq_count": faq_count, 
+               "lead": lead , 
+               "base_url":base_url,
+               "page_number":page_number}
 
     return render(request, "Agent/Enquiry/lead-details.html", context)
 
@@ -643,7 +542,10 @@ def agent_add_notes(request):
         except Enquiry.DoesNotExist:
             pass
 
-    return redirect("agent_new_leads_details")
+    redirect_to = request.POST.get("redirect_to")
+    redirect_url = redirect_to
+    
+    return redirect(redirect_url)
 
 
 def resend(request, id):

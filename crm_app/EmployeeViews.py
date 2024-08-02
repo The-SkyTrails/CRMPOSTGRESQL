@@ -40,7 +40,7 @@ from .notifications import (
     send_notification_admin,
     create_admin_notification,
 )
-
+from django.utils.dateparse import parse_date
 from django.core.paginator import Paginator
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -655,18 +655,35 @@ def employee_lead_list(request):
             emp = user.employee
             dep = emp.department
             if dep == "Presales":
-                enq_list = Enquiry.objects.filter(
-                    Q(assign_to_employee=user.employee) | Q(created_by=user)
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_employee=user.employee) | Q(created_by=user)
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enquiry_list, 1)
+                
+                
+                page = paginator.get_page(page_number)
                     
                 query_params = request.GET.copy()
                 if 'page' in query_params:
@@ -678,18 +695,35 @@ def employee_lead_list(request):
                     base_url += 'page='
                     
             elif dep == "Sales":
-                enq_list = Enquiry.objects.filter(
-                    Q(assign_to_sales_employee=user.employee) | Q(created_by=user)
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_sales_employee=user.employee) | Q(created_by=user)
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                     
                 query_params = request.GET.copy()
                 if 'page' in query_params:
@@ -699,21 +733,38 @@ def employee_lead_list(request):
                     base_url += '&page='
                 else:
                     base_url += 'page='
+                
 
             elif dep == "Documentation":
-                enq_list = Enquiry.objects.filter(
-                    Q(assign_to_documentation_employee=user.employee)
-                    | Q(created_by=user)
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_documentation_employee=user.employee) | Q(created_by=user)
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enquiry_list, 1)
+                
+                
+                page = paginator.get_page(page_number)
                     
                 query_params = request.GET.copy()
                 if 'page' in query_params:
@@ -725,18 +776,35 @@ def employee_lead_list(request):
                     base_url += 'page='
                     
             elif dep == "Visa Team":
-                enq_list = Enquiry.objects.filter(
-                    Q(assign_to_visa_team_employee=user.employee) | Q(created_by=user)
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_visa_team_employee=user.employee) | Q(created_by=user)
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enquiry_list, 1)
+                
+                
+                page = paginator.get_page(page_number)
                     
                 query_params = request.GET.copy()
                 if 'page' in query_params:
@@ -748,18 +816,35 @@ def employee_lead_list(request):
                     base_url += 'page='
                     
             elif dep == "Assesment":
-                enq_list = Enquiry.objects.filter(
-                    Q(assign_to_assesment_employee=user.employee) | Q(created_by=user)
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_assesment_employee=user.employee) | Q(created_by=user)
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enquiry_list, 1)
+                
+                
+                page = paginator.get_page(page_number)
                     
                 query_params = request.GET.copy()
                 if 'page' in query_params:
@@ -770,16 +855,35 @@ def employee_lead_list(request):
                 else:
                     base_url += 'page='
             else:
-                enq_list = Enquiry.objects.filter(created_by=request.user)
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(created_by=request.user)
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enquiry_list, 1)
+                
+                
+                page = paginator.get_page(page_number)
                     
                 query_params = request.GET.copy()
                 if 'page' in query_params:
@@ -801,6 +905,7 @@ def employee_lead_list(request):
         "visa_team": visa_team,
         "lead": lead,
         "assesment_employee": assesment_employee,
+        'page_number': page_number
     }
 
     return render(request, "Employee/Enquiry/lead_list.html",context)
@@ -1223,26 +1328,10 @@ def emp_add_notes(request):
         except Enquiry.DoesNotExist:
             pass
 
-        page_number = request.POST.get('page', 1)
         redirect_to = request.POST.get("redirect_to")
-        if redirect_to == "active_leads":
-            url = reverse("employee_activelead_list")
-        elif redirect_to == "latest_leads":
-            url = reverse("employee_Latestlead_list")
-        elif redirect_to == "enrolled_leads":
-            url = reverse("employee_enrolled_lead")
-        elif redirect_to == "inprocess_leads":
-            url = reverse("employee_inprocesslead_list")
-        elif redirect_to == "appointment_leads":
-            url = reverse("employee_appointlead_list")
-        elif redirect_to == "delivered_leads":
-            url = reverse("employee_Resultlead_list")
-        elif redirect_to == "completed_leads":
-            url = reverse("employee_Deliverylead_list")
-        else:
-            url = reverse("employee_lead_list")
-            
-        return HttpResponseRedirect(f"{url}?page={page_number}")
+        redirect_url = redirect_to
+        
+        return redirect(redirect_url)
 # ------------------------------------------ AGent Details --------------------------
 
 
@@ -4694,70 +4783,266 @@ def employee_activelead_list(request):
             emp = user.employee
             dep = emp.department
             if dep == "Presales":
-                enq = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_employee=user.employee)
-                        & (Q(lead_status="Active") | Q(lead_status="PreEnrolled"))
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (Q(lead_status="Active") | Q(lead_status="PreEnrolled"))
-                    )
-                ).order_by("-id")
+                # enq_list = Enquiry.objects.filter(
+                #     (Q(assign_to_employee=user.employee) & (Q(lead_status="Enrolled")))
+                #     | (Q(created_by=user) & (Q(lead_status="Enrolled")))
+                # ).order_by("-id")
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_employee=user.employee) & Q(lead_status="Active") | Q(lead_status="PreEnrolled")| Q(created_by=user) & Q(lead_status="Active") | Q(lead_status="PreEnrolled")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Sales":
-                enq = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_sales_employee=user.employee)
-                        & (Q(lead_status="Active") | Q(lead_status="PreEnrolled"))
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (Q(lead_status="Active") | Q(lead_status="PreEnrolled"))
-                    )
-                ).order_by("-id")
+                # enq_list = Enquiry.objects.filter(
+                #     (
+                #         Q(assign_to_sales_employee=user.employee)
+                #         & (Q(lead_status="Enrolled"))
+                #     )
+                #     | (Q(created_by=user) & (Q(lead_status="Enrolled")))
+                # ).order_by("-id")
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_sales_employee=user.employee) & Q(lead_status="Active") | Q(lead_status="PreEnrolled")| Q(created_by=user) & Q(lead_status="Active") | Q(lead_status="PreEnrolled")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Documentation":
-                enq = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_documentation_employee=user.employee)
-                        & (Q(lead_status="Active") | Q(lead_status="PreEnrolled"))
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (Q(lead_status="Active") | Q(lead_status="PreEnrolled"))
-                    )
-                ).order_by("-id")
+                # enq_list = Enquiry.objects.filter(
+                #     (
+                #         Q(assign_to_documentation_employee=user.employee)
+                #         & (Q(lead_status="Enrolled"))
+                #     )
+                #     | (Q(created_by=user) & (Q(lead_status="Enrolled")))
+                # ).order_by("-id")
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_documentation_employee=user.employee) & Q(lead_status="Active") | Q(lead_status="PreEnrolled")| Q(created_by=user) & Q(lead_status="Active") | Q(lead_status="PreEnrolled")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Visa Team":
-                enq = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_visa_team_employee=user.employee)
-                        & (Q(lead_status="Active") | Q(lead_status="PreEnrolled"))
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (Q(lead_status="Active") | Q(lead_status="PreEnrolled"))
-                    )
-                ).order_by("-id")
+                # enq_list = Enquiry.objects.filter(
+                #     (
+                #         Q(assign_to_visa_team_employee=user.employee)
+                #         & (Q(lead_status="Enrolled"))
+                #     )
+                #     | (Q(created_by=user) & (Q(lead_status="Enrolled")))
+                # ).order_by("-id")
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_visa_team_employee=user.employee) & Q(lead_status="Active") | Q(lead_status="PreEnrolled")| Q(created_by=user) & Q(lead_status="Active") | Q(lead_status="PreEnrolled")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             elif dep == "Assesment":
-                enq = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_assesment_employee=user.employee)
-                        & (Q(lead_status="Active") | Q(lead_status="PreEnrolled"))
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (Q(lead_status="Active") | Q(lead_status="PreEnrolled"))
-                    )
-                ).order_by("-id")
+                # enq_list = Enquiry.objects.filter(
+                #     (
+                #         Q(assign_to_assesment_employee=user.employee)
+                #         & (Q(lead_status="Enrolled"))
+                #     )
+                #     | (Q(created_by=user) & (Q(lead_status="Enrolled")))
+                # ).order_by("-id")
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_assesment_employee=user.employee) & Q(lead_status="Active") | Q(lead_status="PreEnrolled")| Q(created_by=user) & Q(lead_status="Active") | Q(lead_status="PreEnrolled")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
             else:
-                enq = Enquiry.objects.filter(
-                    (
-                        Q(created_by=user)
-                        & (Q(lead_status="Active") | Q(lead_status="PreEnrolled"))
-                    )
-                ).order_by("-id")
+                # enq_list = Enquiry.objects.filter(
+                #     (Q(created_by=user) & (Q(lead_status="Enrolled")))
+                # ).order_by("-id")
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(created_by=user) & Q(lead_status="Active") | Q(lead_status="PreEnrolled")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
+                query_params = request.GET.copy()
+                if 'page' in query_params:
+                    del query_params['page']
+                base_url = request.path + '?' + query_params.urlencode()
+                if query_params:
+                    base_url += '&page='
+                else:
+                    base_url += 'page='
 
             context = {
-                "enq": enq,
+                "page": page,
+                "base_url":base_url,
                 "user": user,
                 "dep": dep,
                 "presales_employees": presales_employees,
@@ -4766,6 +5051,7 @@ def employee_activelead_list(request):
                 "visa_team": visa_team,
                 "lead": lead,
                 "assesment_employee": assesment_employee,
+                "page_number":page_number
             }
     return render(request, "Employee/Enquiry/statuslead/Activelead_list.html", context)
 
@@ -4786,19 +5072,35 @@ def employee_Enrolledlead_list(request):
             emp = user.employee
             dep = emp.department
             if dep == "Presales":
-                enq_list = Enquiry.objects.filter(
-                    (Q(assign_to_employee=user.employee) & (Q(lead_status="Enrolled")))
-                    | (Q(created_by=user) & (Q(lead_status="Enrolled")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_employee=user.employee) & Q(lead_status="Enrolled") | Q(created_by=user) & Q(lead_status="Enrolled") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -4808,22 +5110,35 @@ def employee_Enrolledlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Sales":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_sales_employee=user.employee)
-                        & (Q(lead_status="Enrolled"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="Enrolled")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_sales_employee=user.employee) & Q(lead_status="Enrolled") | Q(created_by=user) & Q(lead_status="Enrolled") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -4833,22 +5148,35 @@ def employee_Enrolledlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Documentation":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_documentation_employee=user.employee)
-                        & (Q(lead_status="Enrolled"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="Enrolled")))
-                ).order_by("-id")
+               
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_documentation_employee=user.employee) & Q(lead_status="Enrolled") | Q(created_by=user) & Q(lead_status="Enrolled") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
                 paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -4858,22 +5186,35 @@ def employee_Enrolledlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Visa Team":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_visa_team_employee=user.employee)
-                        & (Q(lead_status="Enrolled"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="Enrolled")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_visa_team_employee=user.employee) & Q(lead_status="Enrolled") | Q(created_by=user) & Q(lead_status="Enrolled") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -4883,22 +5224,35 @@ def employee_Enrolledlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Assesment":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_assesment_employee=user.employee)
-                        & (Q(lead_status="Enrolled"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="Enrolled")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_assesment_employee=user.employee) & Q(lead_status="Enrolled") | Q(created_by=user) & Q(lead_status="Enrolled") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -4908,18 +5262,35 @@ def employee_Enrolledlead_list(request):
                 else:
                     base_url += 'page='
             else:
-                enq_list = Enquiry.objects.filter(
-                    (Q(created_by=user) & (Q(lead_status="Enrolled")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(created_by=user) & Q(lead_status="Enrolled") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -4962,31 +5333,35 @@ def employee_inprocesslead_list(request):
             emp = user.employee
             dep = emp.department
             if dep == "Presales":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_employee=user.employee)
-                        & (
-                            Q(lead_status="Inprocess")
-                            | Q(lead_status="Ready To Submit")
-                        )
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (
-                            Q(lead_status="Inprocess")
-                            | Q(lead_status="Ready To Submit")
-                        )
-                    )
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_employee=user.employee) & Q(lead_status="Inprocess") | Q(lead_status="PreEnrolled")| Q(created_by=user) & Q(lead_status="Inprocess") | Q(lead_status="PreEnrolled")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -4996,31 +5371,35 @@ def employee_inprocesslead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Sales":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_sales_employee=user.employee)
-                        & (
-                            Q(lead_status="Inprocess")
-                            | Q(lead_status="Ready To Submit")
-                        )
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (
-                            Q(lead_status="Inprocess")
-                            | Q(lead_status="Ready To Submit")
-                        )
-                    )
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_sales_employee=user.employee) & Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit")| Q(created_by=user) & Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5030,31 +5409,35 @@ def employee_inprocesslead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Documentation":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_documentation_employee=user.employee)
-                        & (
-                            Q(lead_status="Inprocess")
-                            | Q(lead_status="Ready To Submit")
-                        )
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (
-                            Q(lead_status="Inprocess")
-                            | Q(lead_status="Ready To Submit")
-                        )
-                    )
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_documentation_employee=user.employee) & Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit")| Q(created_by=user) & Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5064,31 +5447,35 @@ def employee_inprocesslead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Visa Team":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_visa_team_employee=user.employee)
-                        & (
-                            Q(lead_status="Inprocess")
-                            | Q(lead_status="Ready To Submit")
-                        )
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (
-                            Q(lead_status="Inprocess")
-                            | Q(lead_status="Ready To Submit")
-                        )
-                    )
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_visa_team_employee=user.employee) & Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit")| Q(created_by=user) & Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5098,31 +5485,35 @@ def employee_inprocesslead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Assesment":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_assesment_employee=user.employee)
-                        & (
-                            Q(lead_status="Inprocess")
-                            | Q(lead_status="Ready To Submit")
-                        )
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (
-                            Q(lead_status="Inprocess")
-                            | Q(lead_status="Ready To Submit")
-                        )
-                    )
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_assesment_employee=user.employee) & Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit")| Q(created_by=user) & Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5132,24 +5523,35 @@ def employee_inprocesslead_list(request):
                 else:
                     base_url += 'page='
             else:
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(created_by=user)
-                        & (
-                            Q(lead_status="Inprocess")
-                            | Q(lead_status="Ready To Submit")
-                        )
-                    )
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(created_by=user) & Q(lead_status="Inprocess") | Q(lead_status="Ready To Submit")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5170,6 +5572,7 @@ def employee_inprocesslead_list(request):
                 "visa_team": visa_team,
                 "lead": lead,
                 "assesment_employee": assesment_employee,
+                "page_number":page_number
             }
     return render(
         request, "Employee/Enquiry/statuslead/Inprocesslead_list.html", context
@@ -5192,31 +5595,35 @@ def employee_appointlead_list(request):
             emp = user.employee
             dep = emp.department
             if dep == "Presales":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_employee=user.employee)
-                        & (
-                            Q(lead_status="Ready To Collection")
-                            | Q(lead_status="Appointment")
-                        )
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (
-                            Q(lead_status="Ready To Collection")
-                            | Q(lead_status="Appointment")
-                        )
-                    )
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_employee=user.employee) & Q(lead_status="Ready To Collection") | Q(lead_status="Appointment")| Q(created_by=user) & Q(lead_status="Ready To Collection") | Q(lead_status="Appointment")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5226,31 +5633,35 @@ def employee_appointlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Sales":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_sales_employee=user.employee)
-                        & (
-                            Q(lead_status="Ready To Collection")
-                            | Q(lead_status="Appointment")
-                        )
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (
-                            Q(lead_status="Ready To Collection")
-                            | Q(lead_status="Appointment")
-                        )
-                    )
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_sales_employee=user.employee) & Q(lead_status="Ready To Collection") | Q(lead_status="Appointment")| Q(created_by=user) & Q(lead_status="Ready To Collection") | Q(lead_status="Appointment")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5260,31 +5671,35 @@ def employee_appointlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Documentation":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_documentation_employee=user.employee)
-                        & (
-                            Q(lead_status="Ready To Collection")
-                            | Q(lead_status="Appointment")
-                        )
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (
-                            Q(lead_status="Ready To Collection")
-                            | Q(lead_status="Appointment")
-                        )
-                    )
-                ).order_by("-id")
+             
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_documentation_employee=user.employee) & Q(lead_status="Ready To Collection") | Q(lead_status="Appointment")| Q(created_by=user) & Q(lead_status="Ready To Collection") | Q(lead_status="Appointment")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
                 paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5294,31 +5709,35 @@ def employee_appointlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Visa Team":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_visa_team_employee=user.employee)
-                        & (
-                            Q(lead_status="Ready To Collection")
-                            | Q(lead_status="Appointment")
-                        )
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (
-                            Q(lead_status="Ready To Collection")
-                            | Q(lead_status="Appointment")
-                        )
-                    )
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_visa_team_employee=user.employee) & Q(lead_status="Ready To Collection") | Q(lead_status="Appointment")| Q(created_by=user) & Q(lead_status="Ready To Collection") | Q(lead_status="Appointment")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5328,31 +5747,35 @@ def employee_appointlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Assesment":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_assesment_employee=user.employee)
-                        & (
-                            Q(lead_status="Ready To Collection")
-                            | Q(lead_status="Appointment")
-                        )
-                    )
-                    | (
-                        Q(created_by=user)
-                        & (
-                            Q(lead_status="Ready To Collection")
-                            | Q(lead_status="Appointment")
-                        )
-                    )
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_assesment_employee=user.employee) & Q(lead_status="Ready To Collection") | Q(lead_status="Appointment")| Q(created_by=user) & Q(lead_status="Ready To Collection") | Q(lead_status="Appointment")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5362,24 +5785,35 @@ def employee_appointlead_list(request):
                 else:
                     base_url += 'page='
             else:
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(created_by=user)
-                        & (
-                            Q(lead_status="Ready To Collection")
-                            | Q(lead_status="Appointment")
-                        )
-                    )
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(created_by=user) & Q(lead_status="Ready To Collection") | Q(lead_status="Appointment")
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5400,6 +5834,7 @@ def employee_appointlead_list(request):
                 "visa_team": visa_team,
                 "lead": lead,
                 "assesment_employee": assesment_employee,
+                "page_number":page_number
             }
     return render(request, "Employee/Enquiry/statuslead/Appointlead_list.html", context)
 
@@ -5420,19 +5855,35 @@ def employee_Resultlead_list(request):
             emp = user.employee
             dep = emp.department
             if dep == "Presales":
-                enq_list = Enquiry.objects.filter(
-                    (Q(assign_to_employee=user.employee) & (Q(lead_status="Result")))
-                    | (Q(created_by=user) & (Q(lead_status="Result")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_employee=user.employee) & Q(lead_status="Result") | Q(created_by=user) & Q(lead_status="Result") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5442,22 +5893,35 @@ def employee_Resultlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Sales":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_sales_employee=user.employee)
-                        & (Q(lead_status="Result"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="Result")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_sales_employee=user.employee) & Q(lead_status="Result") | Q(created_by=user) & Q(lead_status="Result") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5467,22 +5931,35 @@ def employee_Resultlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Documentation":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_documentation_employee=user.employee)
-                        & (Q(lead_status="Result"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="Result")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_documentation_employee=user.employee) & Q(lead_status="Result") | Q(created_by=user) & Q(lead_status="Result") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5492,22 +5969,35 @@ def employee_Resultlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Visa Team":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_visa_team_employee=user.employee)
-                        & (Q(lead_status="Result"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="Result")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_visa_team_employee=user.employee) & Q(lead_status="Result") | Q(created_by=user) & Q(lead_status="Result") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5517,22 +6007,35 @@ def employee_Resultlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Assesment":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_assesment_employee=user.employee)
-                        & (Q(lead_status="Result"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="Result")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_assesment_employee=user.employee) & Q(lead_status="Result") | Q(created_by=user) & Q(lead_status="Result") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5542,18 +6045,35 @@ def employee_Resultlead_list(request):
                 else:
                     base_url += 'page='
             else:
-                enq_list = Enquiry.objects.filter(
-                    (Q(created_by=user) & (Q(lead_status="Result")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(created_by=user) & Q(lead_status="Result") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5574,6 +6094,7 @@ def employee_Resultlead_list(request):
                 "visa_team": visa_team,
                 "lead": lead,
                 "assesment_employee": assesment_employee,
+                "page_number":page_number
             }
     return render(request, "Employee/Enquiry/statuslead/Resultlead_list.html", context)
 
@@ -5594,19 +6115,35 @@ def employee_Deliverylead_list(request):
             emp = user.employee
             dep = emp.department
             if dep == "Presales":
-                enq_list = Enquiry.objects.filter(
-                    (Q(assign_to_employee=user.employee) & (Q(lead_status="Delivery")))
-                    | (Q(created_by=user) & (Q(lead_status="Delivery")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_employee=user.employee) & Q(lead_status="Delivery") | Q(created_by=user) & Q(lead_status="Delivery") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5616,22 +6153,35 @@ def employee_Deliverylead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Sales":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_sales_employee=user.employee)
-                        & (Q(lead_status="Delivery"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="Delivery")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_sales_employee=user.employee) & Q(lead_status="Delivery") | Q(created_by=user) & Q(lead_status="Delivery") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5641,22 +6191,35 @@ def employee_Deliverylead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Documentation":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_documentation_employee=user.employee)
-                        & (Q(lead_status="Delivery"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="Delivery")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_documentation_employee=user.employee) & Q(lead_status="Delivery") | Q(created_by=user) & Q(lead_status="Delivery") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5666,22 +6229,35 @@ def employee_Deliverylead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Visa Team":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_visa_team_employee=user.employee)
-                        & (Q(lead_status="Delivery"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="Delivery")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_visa_team_employee=user.employee) & Q(lead_status="Delivery") | Q(created_by=user) & Q(lead_status="Delivery") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5691,22 +6267,35 @@ def employee_Deliverylead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Assesment":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_assesment_employee=user.employee)
-                        & (Q(lead_status="Delivery"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="Delivery")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_assesment_employee=user.employee) & Q(lead_status="Delivery") | Q(created_by=user) & Q(lead_status="Delivery") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5716,18 +6305,35 @@ def employee_Deliverylead_list(request):
                 else:
                     base_url += 'page='
             else:
-                enq_list = Enquiry.objects.filter(
-                    (Q(created_by=user) & (Q(lead_status="Delivery")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(created_by=user) & Q(lead_status="Delivery") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5747,6 +6353,7 @@ def employee_Deliverylead_list(request):
                 "visa_team": visa_team,
                 "lead": lead,
                 "assesment_employee": assesment_employee,
+                "page_number":page_number
             }
     return render(
         request, "Employee/Enquiry/statuslead/Deliverylead_list.html", context
@@ -5769,19 +6376,35 @@ def employee_Latestlead_list(request):
             emp = user.employee
             dep = emp.department
             if dep == "Presales":
-                enq_list = Enquiry.objects.filter(
-                    (Q(assign_to_employee=user.employee) & (Q(lead_status="New Lead")))
-                    | (Q(created_by=user) & (Q(lead_status="New Lead")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_employee=user.employee) & Q(lead_status="New Lead") | Q(created_by=user) & Q(lead_status="New Lead") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5791,22 +6414,35 @@ def employee_Latestlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Sales":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_sales_employee=user.employee)
-                        & (Q(lead_status="New Lead"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="New Lead")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_sales_employee=user.employee) & Q(lead_status="New Lead") | Q(created_by=user) & Q(lead_status="New Lead") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5816,22 +6452,35 @@ def employee_Latestlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Documentation":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_documentation_employee=user.employee)
-                        & (Q(lead_status="New Lead"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="New Lead")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_documentation_employee=user.employee) & Q(lead_status="New Lead") | Q(created_by=user) & Q(lead_status="New Lead") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5841,22 +6490,35 @@ def employee_Latestlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Visa Team":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_visa_team_employee=user.employee)
-                        & (Q(lead_status="New Lead"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="New Lead")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_visa_team_employee=user.employee) & Q(lead_status="New Lead") | Q(created_by=user) & Q(lead_status="New Lead") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5866,22 +6528,35 @@ def employee_Latestlead_list(request):
                 else:
                     base_url += 'page='
             elif dep == "Assesment":
-                enq_list = Enquiry.objects.filter(
-                    (
-                        Q(assign_to_assesment_employee=user.employee)
-                        & (Q(lead_status="New Lead"))
-                    )
-                    | (Q(created_by=user) & (Q(lead_status="New Lead")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(assign_to_assesment_employee=user.employee) & Q(lead_status="New Lead") | Q(created_by=user) & Q(lead_status="New Lead") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5891,18 +6566,35 @@ def employee_Latestlead_list(request):
                 else:
                     base_url += 'page='
             else:
-                enq_list = Enquiry.objects.filter(
-                    (Q(created_by=user) & (Q(lead_status="New Lead")))
-                ).order_by("-id")
-                paginator = Paginator(enq_list, 10)
-                page_number = request.GET.get('page')
                 
-                try:
-                    page = paginator.page(page_number)
-                except PageNotAnInteger:
-                    page = paginator.page(1)
-                except EmptyPage:
-                    page = paginator.page(paginator.num_pages)
+                search_query = request.GET.get('query', '')
+                start_date = request.GET.get('start_date')
+                end_date = request.GET.get('end_date')
+                page_number = request.GET.get('page', '1')
+
+                queries = Q(created_by=user) & Q(lead_status="New Lead") 
+                if search_query:
+                    search_parts = search_query.split()
+                    for part in search_parts:
+                        queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+
+                if start_date:
+                    start_date = parse_date(start_date)
+                    queries &= Q(registered_on__date__gte=start_date)
+
+                if end_date:
+                    end_date = parse_date(end_date)
+                    queries &= Q(registered_on__date__lte=end_date)
+
+
+
+
+                enq_list = Enquiry.objects.filter(queries).order_by("-id")
+
+                paginator = Paginator(enq_list, 10)
+                
+                
+                page = paginator.get_page(page_number)
                 query_params = request.GET.copy()
                 if 'page' in query_params:
                     del query_params['page']
@@ -5923,6 +6615,7 @@ def employee_Latestlead_list(request):
                 "visa_team": visa_team,
                 "lead": lead,
                 "assesment_employee": assesment_employee,
+                "page_number":page_number
             }
     return render(request, "Employee/Enquiry/statuslead/Latestlead_list.html", context)
 
@@ -5970,26 +6663,10 @@ def update_assigned_employee(request, id):
         
         enquiry.save()
         messages.success(request, "Lead Assigned Successfully...")
-        page_number = request.POST.get('page', 1)
         redirect_to = request.POST.get("redirect_to")
-        if redirect_to == "active_leads":
-            url = reverse("employee_activelead_list")
-        elif redirect_to == "latest_leads":
-            url = reverse("employee_Latestlead_list")
-        elif redirect_to == "enrolled_leads":
-            url = reverse("employee_enrolled_lead")
-        elif redirect_to == "inprocess_leads":
-            url = reverse("employee_inprocesslead_list")
-        elif redirect_to == "appointment_leads":
-            url = reverse("employee_appointlead_list")
-        elif redirect_to == "delivered_leads":
-            url = reverse("employee_Resultlead_list")
-        elif redirect_to == "completed_leads":
-            url = reverse("employee_Deliverylead_list")
-        else:
-            url = reverse("employee_lead_list")
-            
-        return HttpResponseRedirect(f"{url}?page={page_number}")
+        redirect_url = redirect_to
+        
+        return redirect(redirect_url)
 
 
 def fetch_agents(request):

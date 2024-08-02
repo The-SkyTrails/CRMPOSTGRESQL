@@ -34,8 +34,7 @@
     <div class="modal-dialog">
         <form action="{% url "emp_update_assign_employee" i.id %}" method="post" autocomplete="off">
             {% csrf_token %}
-            <input type="hidden" name="page" value="{{ page.number }}">
-            <input type="hidden" name="redirect_to" value="{% if request.path == '/ActiveLead/List/' %}active_leads{% elif request.path == '/LatestLead/List/' %}latest_leads{% elif request.path == '/InProcessLead/List/' %}inprocess_leads{% elif request.path == '/AppointmentLead/List/' %}appointment_leads{% elif request.path == '/ResultLead/List/' %}delivered_leads{% elif request.path == '/DeliveryLead/List/' %}completed_leads{% elif request.path == '/EnrolledLead/List/' %}enrolled_leads{% else %}new_leads{% endif %}">
+            <input type="hidden" name="redirect_to" value="{{request.get_full_path}}">
             
             <div class="modal-content">
                 <div class="modal-header">
@@ -116,3 +115,16 @@
     });
 </script>
 
+
+<script>
+    document.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Button that triggered the modal
+        var modal = event.target; // The modal itself
+
+        // Set hidden fields with current search parameters
+        modal.querySelector('input[name="query"]').value = "{{ search_query }}";
+        modal.querySelector('input[name="start_date"]').value = "{{ start_date|date:'Y-m-d' }}";
+        modal.querySelector('input[name="end_date"]').value = "{{ end_date|date:'Y-m-d' }}";
+        modal.querySelector('input[name="page"]').value = "{{ page.number }}";
+    });
+</script>

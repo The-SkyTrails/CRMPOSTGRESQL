@@ -4,8 +4,7 @@
       <div class="modal-content">
         <form action="{% url "emp_add_notes" %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <input type="hidden" name="page" value="{{ page.number }}">
-            <input type="hidden" name="redirect_to" value="{% if request.path == '/ActiveLead/List/' %}active_leads{% elif request.path == '/LatestLead/List/' %}latest_leads{% elif request.path == '/InProcessLead/List/' %}inprocess_leads{% elif request.path == '/AppointmentLead/List/' %}appointment_leads{% elif request.path == '/ResultLead/List/' %}delivered_leads{% elif request.path == '/DeliveryLead/List/' %}completed_leads{% elif request.path == '/EnrolledLead/List/' %}enrolled_leads{% else %}new_leads{% endif %}">
+            <input type="hidden" name="redirect_to" value="{{request.get_full_path}}">
         <div class="modal-header">
             <h5 class="modal-title" id="exampleModalLabel">Add Notes</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -14,12 +13,12 @@
             <div class="notesmodal-body">
                 <div class="content">
                 <div class="header">
-                    <div class="title">Add Notes</div>
+                    <div class="custom-form-label">Add Notes</div>
                 </div>
-                <textarea name="notes" id="" cols="50" rows="5" placeholder="Write text here ..."></textarea>
+                <textarea class="form-control" name="notes" id="" cols="50" rows="5" placeholder="Write text here ..."></textarea>
                 
-                <div >
-                    <input type="file" id="fileInput" name="file">
+                <div style="margin-top: 5px;">
+                    <input class="form-control" type="file" id="fileInput" name="file">
                     <input type="text" value="{{i.id}}" name="enq_id" hidden>
                 </div>
                 </div>
@@ -35,37 +34,14 @@
 
 <!-- JavaScript code -->
 <script>
-    // Function to set the value of redirect_to based on the current URL
-    function setRedirectTo(currentPath, modalId) {
-        var redirectInput = document.querySelector('#' + modalId + ' input[name="redirect_to"]');
-        if (currentPath.includes("/ActiveLead/List/")) {
-            redirectInput.value = "active_leads";
-        } else if (currentPath.includes("/LatestLead/List/")) {
-            redirectInput.value = "latest_leads";
-        } else if (currentPath.includes("/InProcessLead/List/")) {
-            redirectInput.value = "inprocess_leads";
-        } else if (currentPath.includes("/AppointmentLead/List/")) {
-            redirectInput.value = "appointment_leads";
-        } else if (currentPath.includes("/ResultLead/List/")) {
-            redirectInput.value = "delivered_leads";
-        } else if (currentPath.includes("/DeliveryLead/List/")) {
-            redirectInput.value = "completed_leads";
-        } else if (currentPath.includes("/EnrolledLead/List/")) {
-            redirectInput.value = "enrolled_leads";
-        } else {
-            redirectInput.value = "new_leads";
-        }
-    }
+    document.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Button that triggered the modal
+        var modal = event.target; // The modal itself
 
-    // Call the setRedirectTo function when each modal is shown
-    document.addEventListener("DOMContentLoaded", function () {
-        var modals = document.querySelectorAll('.modal');
-        modals.forEach(function(modal) {
-            modal.addEventListener('shown.bs.modal', function () {
-                var currentPath = window.location.pathname;
-                var modalId = modal.getAttribute('id');
-                setRedirectTo(currentPath, modalId);
-            });
-        });
+        // Set hidden fields with current search parameters
+        modal.querySelector('input[name="query"]').value = "{{ search_query }}";
+        modal.querySelector('input[name="start_date"]').value = "{{ start_date|date:'Y-m-d' }}";
+        modal.querySelector('input[name="end_date"]').value = "{{ end_date|date:'Y-m-d' }}";
+        modal.querySelector('input[name="page"]').value = "{{ page.number }}";
     });
 </script>
