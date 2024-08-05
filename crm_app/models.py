@@ -71,6 +71,8 @@ FOLLOWUP_STATUS_CHOICES = (("Inprocess", "Inprocess"), ("Done", "Done"))
 TYPE_CHOICES = [("Appointment", "Appointment"), ("Contact Us", "Contact Us")]
 
 
+
+
 class CustomUser(AbstractUser):
     user_type_data = (
         ("1", "HOD"),

@@ -310,34 +310,60 @@
                      {% endif %}
                      <br>
                      {% if i.assign_to_employee %}
-                     <b>{{i.assign_to_employee.users.first_name }} {{i.assign_to_employee.users.last_name}}</b>
+                      <div class="add-notes-container answerclass" data-bs-toggle="modal"
+                        data-bs-target="#viewemployee-{{i.assign_to_employee.id}}">
+                        <div class="addnotes-label" style="color: #0E9F6E;">{{i.assign_to_employee.users.first_name }} {{i.assign_to_employee.users.last_name}}</div>
+                       
+                     </div>
+                     
                      ({{i.assign_to_employee.department}})
-                     {% else %}
+                     
                      {% endif %}
                      <br>
                      {% if i.assign_to_assesment_employee %}
-                     <b>{{i.assign_to_assesment_employee.users.first_name }} {{i.assign_to_assesment_employee.users.last_name}}</b>
+                    
+                     {% comment %} <b>{{i.assign_to_assesment_employee.users.first_name }} {{i.assign_to_assesment_employee.users.last_name}}</b> {% endcomment %}
+                     <div class="add-notes-container answerclass" data-bs-toggle="modal"
+                        data-bs-target="#viewemployee-{{i.assign_to_assesment_employee.id}}">
+                        <div class="addnotes-label" style="color: #0E9F6E;">{{i.assign_to_assesment_employee.users.first_name }} {{i.assign_to_assesment_employee.users.last_name}}</div>
+                       
+                     </div>
                      ({{i.assign_to_assesment_employee.department}})
-                     {% else %}
+                     
                      {% endif %}
                      <br>
                      {% if i.assign_to_sales_employee %}
-                     <b>{{i.assign_to_sales_employee.users.first_name }} {{i.assign_to_sales_employee.users.last_name}}</b>
+                     {% comment %} <b>{{i.assign_to_sales_employee.users.first_name }} {{i.assign_to_sales_employee.users.last_name}}</b> {% endcomment %}
+                      <div class="add-notes-container answerclass" data-bs-toggle="modal"
+                        data-bs-target="#viewemployee-{{i.assign_to_sales_employee.id}}">
+                        <div class="addnotes-label" style="color: #0E9F6E;">{{i.assign_to_sales_employee.users.first_name }} {{i.assign_to_sales_employee.users.last_name}}</div>
+                       
+                     </div>
                      ({{i.assign_to_sales_employee.department}})
-                     {% else %}
+                    
                      {% endif %}
                      <br>
                      {% if i.assign_to_documentation_employee %}
-                     <b>{{i.assign_to_documentation_employee.users.first_name }} {{i.assign_to_documentation_employee.users.last_name}}</b>
+                     {% comment %} <b>{{i.assign_to_documentation_employee.users.first_name }} {{i.assign_to_documentation_employee.users.last_name}}</b> {% endcomment %}
+                     <div class="add-notes-container answerclass" data-bs-toggle="modal"
+                        data-bs-target="#viewemployee-{{i.assign_to_documentation_employee.id}}">
+                        <div class="addnotes-label" style="color: #0E9F6E;">{{i.assign_to_documentation_employee.users.first_name }} {{i.assign_to_documentation_employee.users.last_name}}</div>
+                       
+                     </div>
                      ({{i.assign_to_documentation_employee.department}})
-                     {% else %}
+                     
                      {% endif %}
                      <br>
                      {% if i.assign_to_visa_team_employee %}
-                     <b>{{i.assign_to_visa_team_employee.users.first_name }} {{i.assign_to_visa_team_employee.users.last_name}}</b>
+                     {% comment %} <b>{{i.assign_to_visa_team_employee.users.first_name }} {{i.assign_to_visa_team_employee.users.last_name}}</b> {% endcomment %}
+                     <div class="add-notes-container answerclass" data-bs-toggle="modal"
+                        data-bs-target="#viewemployee-{{i.assign_to_visa_team_employee.id}}">
+                        <div class="addnotes-label" style="color: #0E9F6E;">{{i.assign_to_visa_team_employee.users.first_name }} {{i.assign_to_visa_team_employee.users.last_name}}</div>
+                       
+                     </div>
                      ({{i.assign_to_visa_team_employee.department}})
                      <br>
-                     {% else %}
+                     
                      {% endif %}
                   </td>
                   <td>
@@ -390,6 +416,7 @@
                      {% endif %}
                   </td>
                   <td>
+                    
                      <div class="add-notes-container answerclass" data-bs-toggle="modal"
                         data-bs-target="#addnotesModal-{{i.id}}">
                         <div class="addnotes-label ">Add notes</div>
@@ -401,6 +428,14 @@
                               stroke-linejoin="round" />
                         </svg>
                      </div>
+                     
+                     {% with i.notes_set.last as last_note %}
+                        {% if last_note %}
+                              {{ last_note.notes|truncatechars:10 }}
+                        {% else %}
+                              No notes available.
+                        {% endif %}
+                     {% endwith %}
                      <div class="add-notes-container answerclass" data-bs-toggle="modal"
                         data-bs-target="#viewallnotes-{{i.id}}">
                         <div class="addnotes-label" style="color: #0E9F6E;">View notes</div>
@@ -438,6 +473,11 @@
                         </div>
                      </div>
                   </td>
+                  {% include "Admin/Enquiry/view_assign_to_assesment_employee_modal.html" %}
+                  {% include "Admin/Enquiry/view_assign_to_presale_employee_modal.html" %}
+                  {% include "Admin/Enquiry/view_assign_to_sales_employee_modal.html" %}
+                  {% include "Admin/Enquiry/view_assign_to_documentation_employee_modal.html" %}
+                  {% include "Admin/Enquiry/view_assign_to_visa_employee_modal.html" %}
                </tr>
                {% endif %}
                {% include "Admin/Enquiry/add_notes_modal.html" %}
@@ -495,6 +535,7 @@
 </div>
 {% for i in page %}
 {% include "Admin/Enquiry/view_notes_modal.html" %}
+
 {% endfor %}
 {% for message in messages %}
 {% if message.tags == 'success' %}

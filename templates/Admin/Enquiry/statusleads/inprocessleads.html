@@ -424,6 +424,13 @@
 
 
                             </div>
+                            {% with i.notes_set.last as last_note %}
+                                {% if last_note %}
+                                    {{ last_note.notes|truncatechars:10  }}
+                                {% else %}
+                                    No notes available.
+                                {% endif %}
+                            {% endwith %}
                             <div class="add-notes-container answerclass" data-bs-toggle="modal"
                                 data-bs-target="#viewallnotes-{{i.id}}">
                                 <div class="addnotes-label" style="color: #0E9F6E;">View notes</div>

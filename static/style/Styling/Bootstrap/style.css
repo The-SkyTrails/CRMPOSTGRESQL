@@ -934,10 +934,10 @@ table.dataTable.no-footer {
 
 .add-notes-container {
   width: 130px;
-  padding: 16px;
+  /* padding: 16px;
   justify-content: flex-start;
   align-items: center;
-  gap: 12px;
+  gap: 12px; */
   display: inline-flex;
 }
 
