@@ -418,7 +418,7 @@
       <div class="container">
          <h4><b>SuccessStories</b></h4>
          <hr>
-         <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+         {% comment %} <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                {% for i in story %}
                <div class="carousel-item active" data-bs-interval="2000">
@@ -436,7 +436,63 @@
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
             </button>
-         </div>
+         </div> {% endcomment %}
+         {% comment %} <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+  <ol class="carousel-indicators">
+    <li data-target="#carouselExampleCaptions" data-slide-to="0" class="active"></li>
+    <li data-target="#carouselExampleCaptions" data-slide-to="1"></li>
+    <li data-target="#carouselExampleCaptions" data-slide-to="2"></li>
+  </ol>
+  <div class="carousel-inner">
+  {% for i in story %}
+    <div class="carousel-item active">
+      <img src="{{i.image.url}}" class="d-block w-100" alt="...">
+      <div class="carousel-caption d-none d-md-block">
+        <h5>First slide label</h5>
+        <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+      </div>
+    </div>
+    {% endfor %}
+   
+    
+  </div>
+  <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div> {% endcomment %}
+
+<div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+  <ol class="carousel-indicators">
+    {% for item in story %}
+      <li data-target="#carouselExampleCaptions" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></li>
+    {% endfor %}
+  </ol>
+  <div class="carousel-inner">
+    {% for item in story %}
+      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+        <img src="{{ item.image.url }}" class="d-block w-100" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+          <h5>{{ item.description }}</h5>
+          {% comment %} <p>{{ item.description }}</p> {% endcomment %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+
       </div>
    </div>
    <div class="left11 newsdiv">
@@ -451,6 +507,8 @@
       </div>
    </div>
 </div>
+
+
 {% comment %} <div class="div4">
    <div class="he" style="display: flex; justify-content:space-between;">
       <h4><b>Holiday Package</b></h4>
