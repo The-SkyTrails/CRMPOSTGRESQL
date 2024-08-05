@@ -300,13 +300,25 @@
                   <td>{{i.created_by}}</td>
                   <td>
                      {% if i.assign_to_outsourcingagent %}
-                     <b>{{i.assign_to_outsourcingagent.users}}</b>(OP)
-                     {% else %}
+                     {% comment %} <b>{{i.assign_to_outsourcingagent.users}}</b>(OP) {% endcomment %}
+                      <div class="add-notes-container answerclass" data-bs-toggle="modal"
+                        data-bs-target="#viewemployee-{{i.assign_to_outsourcingagent.id}}">
+                        <div class="addnotes-label" style="color: #0E9F6E;">{{i.assign_to_outsourcingagent.users.first_name }} {{i.assign_to_outsourcingagent.users.last_name}}</div>
+                       
+                     </div>
+                     (Outsource Agent)
+                     
                      {% endif %}
                      <br>
                      {% if i.assign_to_agent %}
-                     <b>{{i.assign_to_agent.users}}</b>(AGENT)
-                     {% else %}
+                     {% comment %} <b>{{i.assign_to_agent.users}}</b>(AGENT) {% endcomment %}
+                     <div class="add-notes-container answerclass" data-bs-toggle="modal"
+                        data-bs-target="#viewemployee-{{i.assign_to_agent.id}}">
+                        <div class="addnotes-label" style="color: #0E9F6E;">{{i.assign_to_agent.users.first_name }} {{i.assign_to_agent.users.last_name}}</div>
+                       
+                     </div>
+                     (Agent)
+
                      {% endif %}
                      <br>
                      {% if i.assign_to_employee %}
@@ -478,6 +490,8 @@
                   {% include "Admin/Enquiry/view_assign_to_sales_employee_modal.html" %}
                   {% include "Admin/Enquiry/view_assign_to_documentation_employee_modal.html" %}
                   {% include "Admin/Enquiry/view_assign_to_visa_employee_modal.html" %}
+                  {% include "Admin/Enquiry/view_assign_to_outsourcingagent_modal.html" %}
+                  {% include "Admin/Enquiry/view_assign_to_agent_modal.html" %}
                </tr>
                {% endif %}
                {% include "Admin/Enquiry/add_notes_modal.html" %}
