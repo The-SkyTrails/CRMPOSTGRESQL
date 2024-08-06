@@ -275,6 +275,10 @@ class VisasubCategoryForm(forms.ModelForm):
 
 
 class EnquiryForm1(forms.ModelForm):
+    refusal = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
     class Meta:
         model = Enquiry
         fields = [
@@ -287,6 +291,8 @@ class EnquiryForm1(forms.ModelForm):
             "Country",
             "passport_no",
             "assign_to_agent",
+            "refusal",
+            "refusal_country"
         ]
 
         widgets = {
@@ -309,6 +315,7 @@ class EnquiryForm1(forms.ModelForm):
                 attrs={"class": "form-control", "placeholder": "Enter Passport Number",'required': 'required'}
             ),
             "assign_to_agent": forms.Select(attrs={"class": "form-select"}),
+            "refusal_country":forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter All Refused Country"})
             # "assign_to_agent": ModelSelect2Widget(model=Agent, search_fields=['name__icontains'], attrs={"class": "form-select"}),
            
         }
@@ -670,6 +677,10 @@ class NewsForm(forms.ModelForm):
 
 
 class PreEnquiryForm1(forms.ModelForm):
+    refusal = forms.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
     class Meta:
         model = Enquiry
         fields = [
@@ -683,6 +694,8 @@ class PreEnquiryForm1(forms.ModelForm):
             "passport_no",
             "assign_to_agent",
             "lead_status",
+            "refusal",
+            "refusal_country"
         ]
 
         widgets = {
@@ -706,6 +719,7 @@ class PreEnquiryForm1(forms.ModelForm):
             ),
             "assign_to_agent": forms.Select(attrs={"class": "form-select"}),
             "lead_status": forms.Select(attrs={"class": "form-select"}),
+            "refusal_country":forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter All Refused Country"})
         }
 
     def __init__(self, *args, **kwargs):

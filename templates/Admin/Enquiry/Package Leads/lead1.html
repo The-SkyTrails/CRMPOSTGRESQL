@@ -181,6 +181,21 @@
                   <input type="text" class="form-control" name="passport_no" placeholder="Passport No">
               </div>  
           </div>
+
+          <div class="row formrow">
+            <div class="col-md-6">
+              <h5>If Yes Click Box</h5>
+              
+              <input type="checkbox" name="refusal" id="refusal" class="form-check-input">
+                <label for="exampleFormControlInput1" class="custom-form-label">Refused</label>
+            </div>
+            <div class="col-md-6 mb-2" id="refusal-country-field" style="display: none;">
+              <label for="exampleFormControlInput1" class="custom-form-label">Refused Country</label>
+              <input type="text" name="refusal_country" id="refusal_country" class="form-control" placeholder="Enter All Refused Country">
+          </div>
+
+             
+        </div>
       
           <div class="d-grid gap-2 d-md-flex justify-content-md-end">
               <button class="btn btn-color" type="submit">Save & Proceed
@@ -215,6 +230,25 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(error => console.error('Error fetching country list:', error));
 });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      var refusalCheckbox = document.querySelector('input[name="refusal"]');
+      var refusalCountryField = document.getElementById('refusal-country-field');
+
+      function toggleRefusalCountryField() {
+          if (refusalCheckbox.checked) {
+              refusalCountryField.style.display = 'block';
+          } else {
+              refusalCountryField.style.display = 'none';
+          }
+      }
+
+      toggleRefusalCountryField();
+
+      refusalCheckbox.addEventListener('change', toggleRefusalCountryField);
+  });
 </script>
 
 {% endblock main-content %}

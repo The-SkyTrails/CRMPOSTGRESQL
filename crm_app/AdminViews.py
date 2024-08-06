@@ -2192,6 +2192,8 @@ class Enquiry1View(LoginRequiredMixin, CreateView):
                 "Gender": form.cleaned_data["Gender"],
                 "Country": form.cleaned_data["Country"],
                 "passport_no": form.cleaned_data["passport_no"],
+                "refusal": form.cleaned_data["refusal"],
+                "refusal_country": form.cleaned_data["refusal_country"],
                 "assign_to_agent":agent_id
             }
             request.session["enquiry_form1"] = cleaned_data
@@ -2384,6 +2386,12 @@ def PackageEnquiry1View(request):
         gender = request.POST.get("gender")
         country = request.POST.get("country")
         passport_no = request.POST.get("passport_no")
+        refusal = request.POST.get("refusal")
+        if refusal == "on":
+            refusal = "True"
+        else :
+            refusal = "False"
+        refusal_country = request.POST.get("refusal_country")
 
         request.session["country"] = country
         request.session["first_name"] = first_name
@@ -2393,6 +2401,8 @@ def PackageEnquiry1View(request):
         request.session["dob"] = dob
         request.session["gender"] = gender
         request.session["passport_no"] = passport_no
+        request.session["refusal"] = refusal
+        request.session["refusal_country"] = refusal_country
         return redirect("packageenquiry_form2")
 
     context = {"country_choices": country_choices}
@@ -2500,7 +2510,7 @@ def PackageEnquiry3View(request):
     visa_country = VisaCountry.objects.get(id=visa_contry_id)
     visa_category = VisaCategory.objects.get(id=visa_category_id)
     dob = request.session.get("dob")
-
+    
     if request.method == "POST":
         visa_typ = request.POST.get("visa_type")
         source = request.POST.get("source")
@@ -2558,6 +2568,9 @@ def PackageEnquiry3View(request):
         spouse_passport5 = request.session.get("spouse_passport5")
         spouse_dob5 = request.session.get("spouse_dob5")
         spouse_relation5 = request.session.get("spouse_relation5")
+        refusal = request.session.get("refusal")
+        refusal_country = request.session.get("refusal_country")
+
 
         enq = Enquiry.objects.create(
             FirstName=first_name,
@@ -2598,6 +2611,8 @@ def PackageEnquiry3View(request):
             Package=package,
             Visa_country=visa_country,
             Visa_category=visa_category,
+            refusal=refusal,
+            refusal_country=refusal_country,
         )
         last_assigned_index = cache.get("last_assigned_index") or 0
         presales_team_employees = Employee.objects.filter(department="Presales")
@@ -3144,7 +3159,7 @@ def enrolled_Application(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -3276,6 +3291,7 @@ def edit_enrolled_application(request, id):
         firstname = request.POST.get("firstname")
         lastname = request.POST.get("lastname")
         dob = request.POST.get("dob")
+        
         try:
             dob_obj = datetime.strptime(dob, "%Y-%m-%d").date()
         except ValueError:
@@ -3325,6 +3341,12 @@ def edit_enrolled_application(request, id):
         spouse_passport5 = request.POST.get("spouse_passport5")
         spouse_dob5 = request.POST.get("spouse_dob5")
         spouse_relation5 = request.POST.get("spouse_relation5")
+        refusal = request.POST.get("refusal")
+        if refusal == "on":
+            refusal = "True"
+        else :
+            refusal = "False"
+        refusal_country = request.POST.get("refusal_country")
 
         try:
             spouse_dob_obj = datetime.strptime(spouse_dob, "%Y-%m-%d").date()
@@ -3464,6 +3486,8 @@ def edit_enrolled_application(request, id):
         if emergencyemail != "None":
             enquiry.emergency_email = emergencyemail
         enquiry.relation_With_applicant = applicantrelation
+        enquiry.refusal = refusal
+        enquiry.refusal_country = refusal_country
         enquiry.save()
 
         return redirect("education_summary", id=id)
@@ -4726,7 +4750,7 @@ def admin_active_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -4797,7 +4821,7 @@ def admin_latest_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -4862,7 +4886,7 @@ def admin_inprocess_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -4930,7 +4954,7 @@ def admin_appointment_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -4995,7 +5019,7 @@ def admin_deleivered_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -5062,7 +5086,7 @@ def admin_completed_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)

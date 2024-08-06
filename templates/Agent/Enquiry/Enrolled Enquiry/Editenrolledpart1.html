@@ -257,6 +257,23 @@
               </select>
               </div>
 
+              <div class="col-md-6">
+                <h5>If Yes Click Box</h5>
+                
+                <input type="checkbox" name="refusal" id="refusal" class="form-check-input" 
+               {% if enquiry.refusal == True %}checked {% else %}
+               {% endif %}>
+                  <label for="exampleFormControlInput1" class="custom-form-label">Refused</label>
+              </div>
+
+            </div>
+
+            <div class="row formrow"  id="refusal-country-field" style="display: none;">
+              
+              <div class="col-md-6 mb-2">
+                <label for="exampleFormControlInput1" class="custom-form-label">Refused Country</label>
+                <input type="text" name="refusal_country" id="refusal_country" class="form-control" placeholder="Enter All Refused Country" value="{{enquiry.refusal_country}}">
+            </div>
             </div>
 
             <div class="row formrow">
@@ -3039,4 +3056,23 @@
   }
 </script>
 
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      var refusalCheckbox = document.querySelector('input[name="refusal"]');
+      var refusalCountryField = document.getElementById('refusal-country-field');
+
+      function toggleRefusalCountryField() {
+          if (refusalCheckbox.checked) {
+              refusalCountryField.style.display = 'block';
+          } else {
+              refusalCountryField.style.display = 'none';
+          }
+      }
+
+      toggleRefusalCountryField();
+
+      refusalCheckbox.addEventListener('change', toggleRefusalCountryField);
+  });
+</script>
 {% endblock main-content %}

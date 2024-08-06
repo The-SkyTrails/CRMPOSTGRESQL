@@ -156,11 +156,30 @@
                   <label for="exampleFormControlInput1" class="custom-form-label">Passport Number</label>
                   {{form.passport_no}}
               </div>  
-              <div class="col-md-6 mb-2">
-                  <label for="exampleFormControlInput1" class="custom-form-label">Assign to Agent</label>
-                  <select id="agent-dropdown" name="agent" style="width:100%;height:100%;"></select>  <!-- Dropdown for dynamic search -->
-              </div>  
+
+               
           </div>
+          <div class="row formrow">
+              <div class="col-md-6">
+                <h5>If Yes Click Box</h5>
+                {{form.refusal}}
+                  <label for="exampleFormControlInput1" class="custom-form-label">Refused</label>
+              </div>
+              
+
+              <div class="col-md-6 mb-2">
+                <label for="exampleFormControlInput1" class="custom-form-label">Assign to Agent</label>
+                <select id="agent-dropdown" name="agent" style="width:100%;height:100%;"></select>
+            </div> 
+
+               
+          </div>
+          <div class="row formrow" id="refusal-country-field" style="display: none;">
+            <div class="col-md-6 mb-2">
+                <label for="exampleFormControlInput1" class="custom-form-label">Refused Country</label>
+                {{ form.refusal_country }}
+            </div>
+        </div>
       
           <div class="d-grid gap-2 d-md-flex justify-content-md-end">
               <button class="btn btn-color" type="submit">Save & Proceed
@@ -200,4 +219,23 @@
         });
 </script> 
 
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      var refusalCheckbox = document.querySelector('input[name="refusal"]');
+      var refusalCountryField = document.getElementById('refusal-country-field');
+
+      function toggleRefusalCountryField() {
+          if (refusalCheckbox.checked) {
+              refusalCountryField.style.display = 'block';
+          } else {
+              refusalCountryField.style.display = 'none';
+          }
+      }
+
+      toggleRefusalCountryField();
+
+      refusalCheckbox.addEventListener('change', toggleRefusalCountryField);
+  });
+</script>
 {% endblock main-content %}

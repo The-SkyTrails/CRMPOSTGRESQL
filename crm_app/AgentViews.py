@@ -206,6 +206,8 @@ class Enquiry1View(LoginRequiredMixin, CreateView):
                 "Gender": form.cleaned_data["Gender"],
                 "Country": form.cleaned_data["Country"],
                 "passport_no": form.cleaned_data["passport_no"],
+                "refusal": form.cleaned_data["refusal"],
+                "refusal_country": form.cleaned_data["refusal_country"],
             }
             request.session["agent_enquiry_form1"] = cleaned_data
             return redirect("agent_enquiry_form2")
@@ -623,6 +625,12 @@ def edit_enrolled_application(request, id):
         spouse_passport5 = request.POST.get("spouse_passport5")
         spouse_dob5 = request.POST.get("spouse_dob5")
         spouse_relation5 = request.POST.get("spouse_relation5")
+        refusal = request.POST.get("refusal")
+        if refusal == "on":
+            refusal = "True"
+        else :
+            refusal = "False"
+        refusal_country = request.POST.get("refusal_country")
 
         try:
             spouse_dob_obj = datetime.strptime(spouse_dob, "%Y-%m-%d").date()
@@ -762,6 +770,8 @@ def edit_enrolled_application(request, id):
         if emergencyemail != "None":
             enquiry.emergency_email = emergencyemail
         enquiry.relation_With_applicant = applicantrelation
+        enquiry.refusal = refusal
+        enquiry.refusal_country = refusal_country
         enquiry.save()
 
         return redirect("agent_education_summary", id=id)
@@ -1403,6 +1413,12 @@ def agent_PackageEnquiry1View(request):
         gender = request.POST.get("gender")
         country = request.POST.get("country")
         passport_no = request.POST.get("passport_no")
+        refusal = request.POST.get("refusal")
+        if refusal == "on":
+            refusal = "True"
+        else :
+            refusal = "False"
+        refusal_country = request.POST.get("refusal_country")
 
         request.session["country"] = country
         request.session["first_name"] = first_name
@@ -1412,6 +1428,8 @@ def agent_PackageEnquiry1View(request):
         request.session["dob"] = dob
         request.session["gender"] = gender
         request.session["passport_no"] = passport_no
+        request.session["refusal"] = refusal
+        request.session["refusal_country"] = refusal_country
         return redirect("agent_packageenquiry_form2")
 
     context = {"country_choices": country_choices}
@@ -1578,6 +1596,8 @@ def agent_PackageEnquiry3View(request):
         spouse_passport5 = request.session.get("spouse_passport5")
         spouse_dob5 = request.session.get("spouse_dob5")
         spouse_relation5 = request.session.get("spouse_relation5")
+        refusal = request.session.get("refusal")
+        refusal_country = request.session.get("refusal_country")
 
         enq = Enquiry.objects.create(
             FirstName=first_name,
@@ -1618,6 +1638,8 @@ def agent_PackageEnquiry3View(request):
             Package=package,
             Visa_country=visa_country,
             Visa_category=visa_category,
+            refusal=refusal,
+            refusal_country=refusal_country,
         )
 
         if spouse_email:

@@ -828,6 +828,8 @@ class Enquiry(models.Model):
     registered_on = models.DateTimeField(auto_now_add=True, auto_now=False)
     case_id = models.CharField(max_length=15, unique=True, editable=False)
     archive = models.BooleanField(default=False)
+    refusal = models.BooleanField(default=False)
+    refusal_country = models.CharField(max_length=2000,blank=True, null=True)
 
     # --------------------- Color ----------------------------
 
