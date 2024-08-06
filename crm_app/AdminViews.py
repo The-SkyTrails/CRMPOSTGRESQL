@@ -2782,7 +2782,7 @@ def admin_new_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -5173,7 +5173,63 @@ def outagent_search_view(request):
     return JsonResponse({"results": results})
 
 
+def add_passport_enquiry_view(request):
+    if request.method == "POST":
+        first_name = request.POST.get('firstName')
+        last_name = request.POST.get('lastName')
+        email = request.POST.get('email')
+        contact_number = request.POST.get('contactNumber')
+        gender = request.POST.get('gender')
+        dob = request.POST.get('dob')
+        passport_type = request.POST.get('type')
+        passport_number = request.POST.get('passportNumber')
+        issued_date = request.POST.get('issuedDate')
+        expiry_date = request.POST.get('expiryDate')
+        images = request.FILES.getlist('images')  # Correct method for multiple files
 
+        # Print for debugging purposes
+        print(f"first name: {first_name}\nlast name: {last_name}\nemail: {email}\ncontact: {contact_number}\n"
+              f"gender: {gender}\nDOB: {dob}\nPassport Type: {passport_type}\nPassport Number: {passport_number}\n"
+              f"Issue Date: {issued_date}\nExpiry Date: {expiry_date}\nImages: {images}")
+
+        # Prepare the payload for the POST request
+        payload = {
+            'firstName': first_name,
+            'lastName': last_name,
+            'email': email,
+            'contactNumber': contact_number,
+            'gender': gender,
+            'dob': dob,
+            'passportNumber': passport_number,
+            'issuedDate': issued_date,
+            'expiryDate': expiry_date,
+            'type': passport_type,
+        }
+
+        # Prepare the files dictionary for the images
+        files = [('images', (image.name, image.read(), image.content_type)) for image in images]
+
+        # Send the POST request to the API endpoint
+        response = requests.post(
+            'https://back.theskytrails.com/skyTrails/api/agent/passport/createPassportEnquiry',
+            data=payload,
+            files=files
+        )
+
+        # Print the response for debugging purposes
+        print(response.status_code)
+        print(response.text)
+
+        # Handle the response accordingly
+        if response.status_code == 200:
+            return redirect('passport_enq')
+            # Success handling (e.g., redirect, render success message, etc.)
+            pass
+        else:
+            # Error handling
+            pass
+
+    return render(request, 'Admin/PassportEnquiry/add_passport_enquiry.html')
 def passport_enquiry_view(request):
     url = "https://back.theskytrails.com/skyTrails/api/user/passport/getAllPassportEnquiry"
     response = requests.get(url)
@@ -5184,7 +5240,6 @@ def passport_enquiry_view(request):
     else:
         error_message = f"Failed to fetch data from API. Status code: {response.status_code}"
         return render(request, 'Admin/PassportEnquiry/passport_Enq.html', {'error_message': error_message})
-
 
 
 class HolidayPackageListView(LoginRequiredMixin, ListView):
