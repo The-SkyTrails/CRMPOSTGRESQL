@@ -5254,12 +5254,16 @@ def add_passport_enquiry_view(request):
             pass
 
     return render(request, 'Admin/PassportEnquiry/add_passport_enquiry.html')
+
 def passport_enquiry_view(request):
     url = "https://back.theskytrails.com/skyTrails/api/user/passport/getAllPassportEnquiry"
     response = requests.get(url)
+    print(response.text)
     
     if response.status_code == 200:
         data = response.json()
+        for item in data['result']:
+            item['id'] = item.pop('_id')
         return render(request, 'Admin/PassportEnquiry/passport_Enq.html', {'passport_data': data})
     else:
         error_message = f"Failed to fetch data from API. Status code: {response.status_code}"
