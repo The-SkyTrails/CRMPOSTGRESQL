@@ -5254,69 +5254,6 @@ def add_passport_enquiry_view(request):
             pass
 
     return render(request, 'Admin/PassportEnquiry/add_passport_enquiry.html')
-
-
-def edit_passport_enquiry_view(request,enquiryId):
-   
-    print("idddddddddd",enquiryId)
-   
-    return render(request,"Admin/PassportEnquiry/edit_passport_enquiry.html")
-
-# views.py
-
-
-from django.http import Http404
-
-# def edit_passport_enquiry_view(request, enquiryId):  # Use enquiryId to match the URL pattern
-#     # URL for fetching the specific passport enquiry details
-#     detail_url = f"https://back.theskytrails.com/skyTrails/api/user/passport/getPassportEnquiry/{enquiryId}"
-#     # URL for updating the passport enquiry
-#     update_url = "https://back.theskytrails.com/skyTrails/api/agent/passport/updatePassportEnquiry"
-
-#     # Fetch the existing data for the specified enquiry
-#     response = requests.get(detail_url)
-#     if response.status_code != 200:
-#         raise Http404("Passport Enquiry not found")
-
-#     enquiry_data = response.json()
-
-#     if request.method == "POST":
-#         # Extract data from the form
-#         first_name = request.POST.get('firstName')
-#         last_name = request.POST.get('lastName')
-#         email = request.POST.get('email')
-#         contact_number = request.POST.get('contactNumber')
-#         gender = request.POST.get('gender')
-#         dob = request.POST.get('dob')
-#         # Add other fields as necessary
-
-#         # Prepare the payload for the PUT request
-#         payload = {
-#             'enquiryId': enquiryId,  # Use enquiryId as per URL and API requirements
-#             'firstName': first_name,
-#             'lastName': last_name,
-#             'email': email,
-#             'contactNumber': contact_number,
-#             'gender': gender,
-#             'dob': dob,
-#             # Include other fields in the payload
-#         }
-
-#         # Send the PUT request to update the enquiry
-#         put_response = requests.put(update_url, json=payload)
-
-#         if put_response.status_code == 200:
-#             return redirect('passport_enq')  # Redirect to a success page or list view
-
-#         # Handle API update failure
-#         print(f"Failed to update: {put_response.status_code} - {put_response.text}")
-
-#     # return render(request, 'Admin/PassportEnquiry/edit_passport_enquiry.html', {'enquiry_data': enquiry_data})
-#     return render(request,"Admin/PassportEnquiry/edit_passport_enquiry.html")
-
-
-
-
 def passport_enquiry_view(request):
     url = "https://back.theskytrails.com/skyTrails/api/user/passport/getAllPassportEnquiry"
     response = requests.get(url)

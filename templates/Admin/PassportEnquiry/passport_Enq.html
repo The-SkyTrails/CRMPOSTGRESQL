@@ -80,14 +80,14 @@
                 <th>DOB</th>
                 <th>Age</th>
                 <th>Documents</th>
-                <th>Action</th>
+                {% comment %} <th>Action</th> {% endcomment %}
               </tr>
             </thead>
             <tbody>
               {% for i in passport_data.result %}
               <tr>
                 <td>{{forloop.counter}}</td>
-               <td>{{ i.id }}</td> 
+               {% comment %} <td>{{ i.id }}</td>  {% endcomment %}
                 <td>{{i.firstName }} </td>
                 <td>{{i.lastName}}</td>
                 <td>{{i.email}}</td>
@@ -103,7 +103,7 @@
                      <a href="{{ document_url }}" target="_blank">{{ document_url|filename }}</a><br>
                     {% endfor %}
                 </td>
-                <td><a href="{% url "edit_passport_enquiry_view" i.id %}"><button class="btn btn-sm btn-warning">Edit</button></a></td>
+                {% comment %} <td><a href="{% url "edit_passport_enquiry_view" i.id %}"><button class="btn btn-sm btn-warning">Edit</button></a></td> {% endcomment %}
               </tr>
               {% endfor %}
              

@@ -313,7 +313,7 @@ urlpatterns = [
 
     path("Passport/Enquiry", passport_enquiry_view, name="passport_enq"),
     path("Add/Passport/Enquiry", add_passport_enquiry_view, name="add_passport_enquiry_view"),
-    path("Edit/Passport/Enquiry/<str:enquiryId>", edit_passport_enquiry_view, name="edit_passport_enquiry_view"),
+    # path("Edit/Passport/Enquiry/<str:enquiryId>", edit_passport_enquiry_view, name="edit_passport_enquiry_view"),
     path("HolidayPackageList/", HolidayPackageListView.as_view(), name="Holiday_Package_list"),
     path("VisitorPackageList/", VisitorPackageListView.as_view(), name="Visitor_Package_list"),
     path("WorkPackageList/", WorkPackageListView.as_view(), name="Work_Package_list"),
