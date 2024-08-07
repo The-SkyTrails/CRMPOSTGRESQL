@@ -2761,7 +2761,7 @@ class profileview(TemplateView, LoginRequiredMixin):
         context = super().get_context_data(**kwargs)
         leads = Enquiry.objects.filter(created_by=self.request.user)
         # employee = Employee.objects.all()
-        agent = Agent.objects.filter(assign_employee=self.request.user.employee).count()
+        agent = Agent.objects.filter(assign_employee=self.request.user).count()
         # agent = Agent.objects.get(assign_employee__user=self.request.user)
 
         user = self.request.user

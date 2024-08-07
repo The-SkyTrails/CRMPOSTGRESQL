@@ -75,38 +75,42 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="custom-form-label label-with-margin">First Name</label>
-                    <input type="text" name="firstName" id="firstName" class="form-control border-left-0" placeholder="Enter First Name" required>
+                    <input type="text" name="firstName" id="firstName" class="form-control border-left-0" placeholder="Enter First Name" value="{{passport_data.result.firstName}}" required>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="custom-form-label label-with-margin">Last Name</label>
-                    <input type="text" name="lastName" id="lastName" class="form-control border-left-0" placeholder="Enter Last Name">
+                    <input type="text" name="lastName" id="lastName" class="form-control border-left-0" placeholder="Enter Last Name" value="{{passport_data.result.lastName}}">
                 </div>
             </div>
         </div>
         <div class="row formrow">
             <div class="col-md-6">
                 <label for="exampleFormControlInput1" class="custom-form-label">Email id</label>
-                <input type="text" name="email" id="email" class="form-control border-left-0" placeholder="Enter Email Id" required>
+                <input type="text" name="email" id="email" class="form-control border-left-0" placeholder="Enter Email Id" value="{{passport_data.result.email}}" required>
             </div>
             <div class="col-md-6">
+           
                 <label for="exampleFormControlInput1" class="custom-form-label">Contact Number </label>
-                <input type="text" name="contactNumber" id="contactNumber" class="form-control border-left-0" placeholder="Contact No" required>
+                <input type="text" name="contactNumber" id="contactNumber" class="form-control border-left-0" placeholder="Contact No" value="{{passport_data.result.contactNumber}}" required>
             </div>
         </div>
         <div class="row formrow">
             <div class="col-md-6">
                 <label for="exampleFormControlInput1" class="custom-form-label">Gender</label>
                 <select class="form-select" name="gender" id="gender">
-                    <option value="MALE">MALE</option>
-                    <option value="FEMALE">FEMALE</option>
-                    <option value="OTHER">OTHER</option>
+                    <option value="MALE" {% if passport_data.result.gender == 'MALE' %}selected{% endif %}>MALE</option>
+                    <option value="FEMALE" {% if passport_data.result.gender == "FEMALE" %}selected{% endif %}>FEMALE</option>
+                    <option value="OTHER" {% if passport_data.result.gender == 'OTHER' %}selected{% endif %}>OTHER</option>
                 </select>
             </div>
             <div class="col-md-6">
                 <label for="exampleFormControlInput1" class="custom-form-label">Date of Birth</label>
-                <input type="date" name="dob" id="dob" class="form-control border-left-0" required>
+              
+                {% comment %} <input type="date" name="dob" id="dob" class="form-control border-left-0" value="{{passport_data.result.dob|date:"M d, Y"}}" required> {% endcomment %}
+                <input type="date" name="dob" id="dob" class="form-control border-left-0" value="{{passport_data.result.dob}}" required>
+
             </div>
         </div>
         <div class="row formrow">
