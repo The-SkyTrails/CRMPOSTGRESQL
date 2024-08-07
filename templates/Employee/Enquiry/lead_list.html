@@ -216,8 +216,8 @@
                 <thead>
                     <tr>
                         
-                        <th>Action</th>
                         <th>Enquiry No</th>
+                        <th>Action</th>
                         <th>Name</th>
                         <th>DOB</th>
                         <th>Passport No</th>
@@ -244,16 +244,23 @@
                     {% for i in page  %}
                     {% if i.archive == False %}
                     <tr style="background-color: {% if dep == 'Documentation' or dep == 'Visa Team' %}{% if i.color_code == 'Grey' %}#efe5e5{% elif i.color_code == 'Blue' %}#89CFF0{% elif i.color_code == 'White' %}#FAF9F6{% elif i.color_code == 'Red' %}#ff9090{% elif i.color_code == 'Green' %}#9cc599{% endif %}{% else %}Transparent{% endif %};">
-
+                        <td data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight-{{i.id}}" aria-controls="offcanvasRight" style="cursor: pointer;">{{i.enquiry_number}}</td>
+                        {% include "Employee/Enquiry/lead_offcanvas_details.html" %}
                                <td>
-                            <a href="{% url "emp_edit_enrolled_application" i.id %}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                    viewBox="0 0 16 16" fill="none">
-                                    <path
-                                        d="M8.00004 3.33337C4.40804 3.33337 1.33337 6.89071 1.33337 8.00004C1.33337 9.16137 3.69737 12.6667 8.00004 12.6667C12.3027 12.6667 14.6667 9.16137 14.6667 8.00004C14.6667 6.89071 11.592 3.33337 8.00004 3.33337ZM8.00004 10C7.60448 10 7.2178 9.88274 6.8889 9.66298C6.56 9.44322 6.30366 9.13086 6.15228 8.76541C6.00091 8.39996 5.9613 7.99782 6.03847 7.60986C6.11564 7.2219 6.30612 6.86553 6.58583 6.58583C6.86553 6.30612 7.2219 6.11564 7.60986 6.03847C7.99782 5.9613 8.39996 6.00091 8.76541 6.15228C9.13086 6.30366 9.44322 6.56 9.66298 6.8889C9.88274 7.2178 10 7.60448 10 8.00004C10 8.53047 9.78933 9.03918 9.41426 9.41425C9.03918 9.78933 8.53047 10 8.00004 10Z"
-                                        fill="#1F2A37" />
-                                </svg></a>
+                            <a href="{% url "emp_edit_enrolled_application" i.id %}"><svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M16.3033 4.3032C16.5247 4.07397 16.7895 3.89114 17.0823 3.76536C17.3751 3.63957 17.6901 3.57337 18.0087 3.5706C18.3274 3.56783 18.6434 3.62855 18.9384 3.74923C19.2333 3.8699 19.5013 4.04811 19.7266 4.27345C19.952 4.49879 20.1302 4.76676 20.2509 5.06171C20.3715 5.35666 20.4323 5.67269 20.4295 5.99136C20.4267 6.31003 20.3605 6.62496 20.2347 6.91777C20.109 7.21058 19.9261 7.47541 19.6969 7.6968L18.7453 8.6484L15.3517 5.2548L16.3033 4.3032ZM13.6549 6.9516L3.6001 17.0064V20.4H6.9937L17.0497 10.3452L13.6537 6.9516H13.6549Z"
+                          fill="#1F2A37"
+                        />
+                      </svg></a>
                         </td>
-                        <td>{{i.enquiry_number}}</td>
+                        
                         <td>{{i.FirstName}} {{i.LastName}}</td>
                         <td>{{i.Dob}}</td>
                         <td>{{i.passport_no}}</td>
