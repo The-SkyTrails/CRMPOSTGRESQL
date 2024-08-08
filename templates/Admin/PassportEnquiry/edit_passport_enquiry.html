@@ -68,12 +68,13 @@
             </div>
 
 {% include "Admin/Base/messages.html" %}
-<form action="#" method="POST" enctype="multipart/form-data">
+<form action="{% url "update_passport_enquiry_view" %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="inputforms-container">
         <div class="row formrow">
             <div class="col-md-6">
                 <div class="form-group">
+                    <input type="text" value="{{enquiryId}}" name="enqID" hidden>
                     <label class="custom-form-label label-with-margin">First Name</label>
                     <input type="text" name="firstName" id="firstName" class="form-control border-left-0" placeholder="Enter First Name" value="{{passport_data.result.firstName}}" required>
                 </div>
@@ -117,14 +118,14 @@
             <div class="col-md-6">
                 <label for="exampleFormControlInput1" class="custom-form-label">Passport Type</label>
                 <select class="form-select" name="type" id="type">
-                    <option value="RENEW">RENEW</option>
-                    <option value="CREATE">CREATE</option>
+                    <option value="RENEW" {% if passport_data.result.type == "RENEW" %}selected{% endif %}>RENEW</option>
+                    <option value="CREATE" {% if passport_data.result.type == "CREATE" %}selected{% endif %}>CREATE</option>
                 </select>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="custom-form-label label-with-margin">Passport Number</label>
-                    <input type="text" name="passportNumber" id="passportNumber" class="form-control border-left-0" placeholder="Enter Passport Number">
+                    <input type="text" name="passportNumber" id="passportNumber" class="form-control border-left-0" value="{{passport_data.result.passportNumber}}" placeholder="Enter Passport Number">
                 </div>
             </div>
         </div>
@@ -132,24 +133,33 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="custom-form-label label-with-margin">Issue Date</label>
-                    <input type="date" name="issuedDate" id="issuedDate" class="form-control border-left-0">
+                    <input type="date" name="issuedDate" id="issuedDate" value="{{passport_data.result.issuedDate}}" class="form-control border-left-0">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="custom-form-label label-with-margin">Expiry Date</label>
-                    <input type="date" name="expiryDate" id="expiryDate" class="form-control border-left-0">
+                    <input type="date" name="expiryDate" id="expiryDate" value="{{passport_data.result.expiryDate}}" class="form-control border-left-0">
                 </div>
             </div>
         </div>
-        <div class="row formrow">
+        {% comment %} <div class="row formrow">
             <div class="col-md-12">
                 <div class="form-group">
-                    <label class="custom-form-label label-with-margin">Images</label>
-                    <input class="form-control" type="file" name="images" id="images" multiple>
+                    <label class="custom-form-label label-with-margin">Documents</label>
+                    {% if passport_data.result.document %}
+                        <ul>
+                            {% for doc_url in passport_data.result.document %}
+                                <li><a href="{{ doc_url }}" target="_blank">{{ doc_url }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No documents available.</p>
+                    {% endif %}
+                    <input class="form-control" type="file" name="images" id="images" value="{{passport_data.result.document}}" multiple>
                 </div>
             </div>
-        </div>
+        </div> {% endcomment %}
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <button class="btn btn-color" type="submit">Save
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 20 21" fill="none">

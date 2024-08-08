@@ -107,7 +107,7 @@
 
                 // Create a new WebSocket connection
                 chatSocket = new WebSocket(
-                    'wss://' + window.location.host + '/ws/chat/single/' + userId + '/'
+                    'ws://' + window.location.host + '/ws/chat/single/' + userId + '/'
                 );
 
                 // WebSocket event handlers
@@ -120,7 +120,8 @@
                     console.log("msg by",msg_by)
 
                     if (msg_by == user) {
-                        $('#chat-messages .messages ul').append('<li class="replies"><p>' + message + '</p></li>');
+                        $('#chat-messages .messages ul').append('<li class="replies"><img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" /><p>' + message + '</p></li>');
+                        //$('#chat-messages .messages ul').append('<li class="replies"><p>' + message + '</p></li>');
                     } else {
                         $('#chat-messages .messages ul').append('<li class="sent"><p>' + message + '</p></li>');
                     }

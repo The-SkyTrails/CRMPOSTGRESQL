@@ -314,6 +314,8 @@ urlpatterns = [
     path("Passport/Enquiry", passport_enquiry_view, name="passport_enq"),
     path("Add/Passport/Enquiry", add_passport_enquiry_view, name="add_passport_enquiry_view"),
     path("Edit/Passport/Enquiry/<str:enquiryId>", edit_passport_enquiry_view, name="edit_passport_enquiry_view"),
+    path("Update/Passport/Enquiry/", update_passport_enquiry_view, name="update_passport_enquiry_view"),
+    path("Delete/Passport/Enquiry/<str:enquiryId>/", delete_passport_enquiry_view, name="delete_passport_enquiry_view"),
     path("HolidayPackageList/", HolidayPackageListView.as_view(), name="Holiday_Package_list"),
     path("VisitorPackageList/", VisitorPackageListView.as_view(), name="Visitor_Package_list"),
     path("WorkPackageList/", WorkPackageListView.as_view(), name="Work_Package_list"),
@@ -334,6 +336,11 @@ urlpatterns = [
         update_assigned_rm_op,
         name="update_assigned_rm_op",
     ),
+    path('export-lead-data/', export_lead_data, name='export_lead_data'),
+
+
+    path("bulk_message_list/", add_bulk_message, name="bulk_message_list"),
+    path("bulk_message_Delete/<int:id>/", delete_bulk_message, name="bulk_message_Delete"),
 
 
 

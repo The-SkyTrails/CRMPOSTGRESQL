@@ -71,7 +71,10 @@
             <thead>
               <tr>
                 <th>S.NO.</th>
-                {% comment %} <th>ID</th> {% endcomment %}
+                <th>ID</th>
+                <th>Passport No</th>
+                <th>Issue Date</th>
+                <th>Expiry Date</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>
@@ -87,7 +90,10 @@
               {% for i in passport_data.result %}
               <tr>
                 <td>{{forloop.counter}}</td>
-               {% comment %} <td>{{ i.id }}</td>  {% endcomment %}
+               <td>{{ i.id }}</td> 
+                <td>{{i.passportNumber}}</td>
+                <td>{{i.issuedDate}}</td>
+                <td>{{i.expiryDate}}</td>
                 <td>{{i.firstName }} </td>
                 <td>{{i.lastName}}</td>
                 <td>{{i.email}}</td>
@@ -103,7 +109,18 @@
                      <a href="{{ document_url }}" target="_blank">{{ document_url|filename }}</a><br>
                     {% endfor %}
                 </td>
-                <td><a href="{% url "edit_passport_enquiry_view" i.id %}"><button class="btn btn-sm btn-warning">Edit</button></a></td>
+                <td>
+                {% comment %} <a href="{% url "edit_passport_enquiry_view" i.id %}"><button class="btn btn-sm btn-warning">Edit</button></a> {% endcomment %}
+                <div class="d-flex justify-content-between">
+                  <a href="{% url 'edit_passport_enquiry_view' i.id %}">
+                      <button class="btn btn-sm btn-warning">Edit</button>
+                  </a>
+                  <a style="padding-left:5px;" href="{% url 'delete_passport_enquiry_view' i.id %}">
+                      <button class="btn btn-sm btn-danger">Delte</button>
+                  </a>
+                </div>
+                
+                </td>
               </tr>
               {% endfor %}
              

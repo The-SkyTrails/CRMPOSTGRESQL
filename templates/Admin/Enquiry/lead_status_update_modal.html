@@ -30,25 +30,22 @@
                         PreEnrolled(Sales)
                         {% elif lead.0 == "Enrolled" %}
                         Enrolled(Documentation)
-                        {% elif lead.0 == "Enrolled" %}
-                        Enrolled(Documentation)
                         {% elif lead.0 == "Inprocess" %}
                         Inprocess(Visa Team)
                         {% elif lead.0 == "Ready To Submit" %}
                         Ready To Submit(Visa Team)
                         {% elif lead.0 == "Appointment" %}
                         Appointment(Visa Team)
-                        {% elif lead.0 == "Ready To Collection" %}
-                        Ready To Collection(Visa Team)
+                        {% elif lead.0 == "Result Awaited" %}
+                        Result Awaited(Visa Team)
                         {% elif lead.0 == "Result" %}
                         Result(Visa Team)
-                        {% elif lead.0 == "Delivery" %}
-                        Delivery(Visa Team)
-                        {% elif lead.0 == "Delivery" %}
-                        Delivery(Visa Team)
-                        {% elif lead.0 == "Reject" %}
-                        Reject
-
+                        {% elif lead.0 == "Approved" %}
+                        Approved(Visa Team)
+                        {% elif lead.0 == "Refuse" %}
+                        Refuse(Visa Team)
+                        {% elif lead.0 == "Ready To Collection" %}
+                        Ready To Collection(Visa Team)
                         {% endif %}
                     </option>
                     

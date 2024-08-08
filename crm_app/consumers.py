@@ -6,6 +6,7 @@ from asgiref.sync import sync_to_async
 from .models import CustomUser
 # ------------------------- Single chat added -------------------
 
+from django.utils import timezone
 
 class SingleChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -41,6 +42,8 @@ class SingleChatConsumer(AsyncWebsocketConsumer):
             receive_by=self.other_user,
             message=message
         )
+
+        
        
         await self.channel_layer.group_send(
             self.room_group_name,

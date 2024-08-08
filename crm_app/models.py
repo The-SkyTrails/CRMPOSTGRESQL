@@ -637,7 +637,6 @@ source = [
     ("Others", "Others"),
 ]
 
-
 leads_status = [
     ("New Lead", "New Lead"),
     ("Accept", "Accept"),
@@ -647,11 +646,12 @@ leads_status = [
     ("Inprocess", "Inprocess"),
     ("Ready To Submit", "Ready To Submit"),
     ("Appointment", "Appointment"),
-    ("Ready To Collection", "Ready To Collection"),
+    ("Result Awaited", "Result Awaited"),
     ("Result", "Result"),
-    ("Delivery", "Delivery"),
+    ("Approved", "Approved"),
+    ("Refuse", "Refuse"),
     ("Reject", "Reject"),
-    ("Case Initiated", "Case Initiated"),
+    ("Ready To Collection", "Ready To Collection"),
 ]
 
 
@@ -1218,6 +1218,12 @@ def session_deleted_handler(sender, instance, **kwargs):
 #     # Reconnect the signal
 #     pre_delete.connect(delete_custom_user, sender=Employee)
 
+
+class BulkMessage(models.Model):
+    image = models.ImageField(upload_to="BulkMessage/image/")
+    message = models.TextField()
+    added_by = models.ForeignKey(CustomUser,on_delete=models.SET_NULL,blank=True, null=True)
+    added_at = models.DateTimeField(auto_now=True)
 
 @receiver(post_save, sender=CustomUser)
 def create_admin_profile(sender, instance, created, **kwargs):

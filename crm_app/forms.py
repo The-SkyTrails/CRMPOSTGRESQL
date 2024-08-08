@@ -738,3 +738,12 @@ class PreEnquiryForm1(forms.ModelForm):
             for value, label in leads_status
             if value not in excluded_statuses
         ]
+
+class BulkMessageForm(forms.ModelForm):
+    class Meta:
+        model = BulkMessage
+        fields = ["image", "message"]
+        widgets = {
+            "image": forms.FileInput(attrs={"class": "form-control"}),
+            "message": forms.Textarea(attrs={"class": "form-control",'required': 'required'}),
+        }

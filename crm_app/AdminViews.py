@@ -147,13 +147,11 @@ class admin_dashboard(LoginRequiredMixin, TemplateView):
         
        
 
-        leadappoint_count = Enquiry.objects.filter(
-            Q(lead_status="Appointment") | Q(lead_status="Ready To Collection"),archive = False
-        ).count()
+        leadappoint_count = Enquiry.objects.filter(lead_status="Appointment" ,archive = False).count()
 
         
 
-        completed_count = Enquiry.objects.filter(lead_status="Delivery",archive = False).count()
+        completed_count = Enquiry.objects.filter(lead_status="Ready To Collection",archive = False).count()
         
 
         leadpending_count = Enquiry.objects.filter(
@@ -165,7 +163,7 @@ class admin_dashboard(LoginRequiredMixin, TemplateView):
 
         leadnew_count = Enquiry.objects.filter(lead_status="New Lead", archive = False).count()
         
-        leadresult_count = Enquiry.objects.filter(lead_status="Result",archive = False).count()
+        leadresult_count = Enquiry.objects.filter(lead_status="Approved",archive = False).count()
 
         package = Package.objects.filter(approval="Yes").order_by("-last_updated_on")[
             :10
@@ -2777,7 +2775,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @login_required
 def admin_new_leads_details(request):
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept","Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
 
     presales_employees = get_presale_employee()
@@ -3147,7 +3145,7 @@ class ArchiveListView(LoginRequiredMixin, ListView):
 
 @login_required
 def enrolled_Application(request):
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept","Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     enquiry = Enquiry.objects.filter(lead_status="Enrolled").order_by("-id")
 
@@ -3230,7 +3228,7 @@ class enrolledGrid_Application(LoginRequiredMixin, ListView):
             | Q(lead_status="Appointment")
             | Q(lead_status="Ready To Collection")
             | Q(lead_status="Result")
-            | Q(lead_status="Delivery")
+            | Q(lead_status="Approved")
         ).order_by("-id")
 
     def get_context_data(self, **kwargs):
@@ -3915,7 +3913,7 @@ def leadupated(request, id):
             enquiry.lead_status = "Result"  # Documentation team
             enquiry.save()
         elif lead == "Result":
-            enquiry.lead_status = "Delivery"  # Documentation team
+            enquiry.lead_status = "Approved"  # Documentation team
             enquiry.save()
 
     return redirect("admin_new_leads_details")
@@ -4536,7 +4534,7 @@ def get_file_extension(content_type):
 @login_required
 def search_enquiries(request):
     enquiry = Enquiry.objects.all().order_by("-id")
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept","Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     presales_employees = get_presale_employee()
     sales_employees = get_sale_employee()
@@ -4737,7 +4735,7 @@ def package_pdf(request, id):
 
 @login_required
 def admin_active_leads_details(request):
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept","Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
 
 
@@ -4808,7 +4806,7 @@ def admin_active_leads_details(request):
 
 @login_required
 def admin_latest_leads_details(request):
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept","Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     
     
@@ -4872,7 +4870,7 @@ def admin_latest_leads_details(request):
 
 @login_required
 def admin_inprocess_leads_details(request):
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept","Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     
     search_query = request.GET.get('query', '')
@@ -4941,7 +4939,7 @@ def admin_inprocess_leads_details(request):
 
 @login_required
 def admin_appointment_leads_details(request):
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept","Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     
     search_query = request.GET.get('query', '')
@@ -5007,7 +5005,7 @@ def admin_appointment_leads_details(request):
 
 @login_required
 def admin_deleivered_leads_details(request):
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept","Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     
     search_query = request.GET.get('query', '')
@@ -5015,7 +5013,7 @@ def admin_deleivered_leads_details(request):
     end_date = request.GET.get('end_date')
     page_number = request.GET.get('page', '1')
 
-    queries = Q(lead_status="Result")
+    queries = Q(lead_status="Approved")
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
@@ -5074,7 +5072,7 @@ def admin_deleivered_leads_details(request):
 
 @login_required
 def admin_completed_leads_details(request):
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept","Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
 
     search_query = request.GET.get('query', '')
@@ -5082,7 +5080,7 @@ def admin_completed_leads_details(request):
     end_date = request.GET.get('end_date')
     page_number = request.GET.get('page', '1')
 
-    queries = Q(lead_status="Delivery")
+    queries = Q(lead_status="Ready To Collection")
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
@@ -5323,7 +5321,7 @@ def edit_passport_enquiry_view(request,enquiryId):
         
     
     
-    return render(request,'Admin/PassportEnquiry/edit_passport_enquiry.html',{'passport_data': data})
+    return render(request,'Admin/PassportEnquiry/edit_passport_enquiry.html',{'passport_data': data,'enquiryId':enquiryId})
 
 
 def passport_enquiry_view(request):
@@ -5341,6 +5339,89 @@ def passport_enquiry_view(request):
         return render(request, 'Admin/PassportEnquiry/passport_Enq.html', {'error_message': error_message})
 
 
+def update_passport_enquiry_view(request):
+    if request.method == "POST":
+        print("calling update passport..............")
+        enqID = request.POST.get('enqID')
+        first_name = request.POST.get('firstName')
+        last_name = request.POST.get('lastName')
+        email = request.POST.get('email')
+        contact_number = request.POST.get('contactNumber')
+        gender = request.POST.get('gender')
+        dob = request.POST.get('dob')
+        passport_type = request.POST.get('type')
+        passport_number = request.POST.get('passportNumber')
+        issued_date = request.POST.get('issuedDate')
+        expiry_date = request.POST.get('expiryDate')
+        images = request.FILES.getlist('images')  # Get the list of uploaded files
+
+        # Print for debugging purposes
+        print(f"Enquiry ID:{enqID}\nfirst name: {first_name}\nlast name: {last_name}\nemail: {email}\ncontact: {contact_number}\n"
+              f"gender: {gender}\nDOB: {dob}\nPassport Type: {passport_type}\nPassport Number: {passport_number}\n"
+              f"Issue Date: {issued_date}\nExpiry Date: {expiry_date}\nImages: {list(images)}")
+
+        payload = {
+            'enquiryId': enqID,
+            'firstName': first_name,
+            'lastName': last_name,
+            'email': email,
+            'contactNumber': contact_number,
+            'gender': gender,
+            'dob': dob,
+            'passportNumber': passport_number,
+            'issuedDate': issued_date,
+            'expiryDate': expiry_date,
+            'type': passport_type,
+        }
+
+        files = [('images', (image.name, image.read(), image.content_type)) for image in images]
+
+        headers = {
+            'Content-Type': 'application/json',
+        }
+
+        try:
+            response = requests.put(
+                'https://back.theskytrails.com/skyTrails/api/agent/passport/updatePassportEnquiry',
+                json=payload,
+                files=files,
+                headers=headers
+            )
+
+            # Print the response for debugging purposes
+            print(response.status_code)
+            print(response.text)
+            messages.success(request, "updated successfully")
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred: {e}")
+
+    return redirect('passport_enq')
+
+
+def delete_passport_enquiry_view(request,enquiryId):
+    url=f"https://back.theskytrails.com/skyTrails/app/passport/deletePassportEnquiry/?queryId={enquiryId}"
+    try:
+        # Make a DELETE request to the API
+        response = requests.delete(url)
+        
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Optionally, print or log the success response
+            messages.success(request, "Deletion successful.")
+            print("Deletion successful:", response.json())
+        else:
+            messages.error(request, f"Failed to delete. Status code: {response.status_code}, Response: {response.text}")
+            # Handle the error response
+            print(f"Failed to delete. Status code: {response.status_code}, Response: {response.text}")
+    
+    except requests.exceptions.RequestException as e:
+        messages.error(request, f"An error occurred: {e}")
+        # Handle any exceptions that occur during the request
+        print(f"An error occurred: {e}")
+
+    # Redirect to the 'passport_enq' view after deletion
+   
+    return redirect('passport_enq')
 class HolidayPackageListView(LoginRequiredMixin, ListView):
     model = Package
     template_name = "Admin/Product/holiday_visa.html"
@@ -5622,3 +5703,112 @@ def update_assigned_rm_op(request, id):
 
         url = reverse("all_outsource_agent")
         return HttpResponseRedirect(f"{url}?page={page}")
+
+
+import csv
+ 
+def export_lead_data(request):
+    leads = Enquiry.objects.all()
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="lead_data.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow([
+        'Enquiry Number',
+        'FirstName',
+        'LastName',
+        'Email',
+        'Contact',
+        'Address',
+        'Passport No',
+        'Dob',
+        'Gender',
+        'Marital Status',
+        'Visa Country',
+        'Visa Category',
+        'Visa Subcategory',
+        'Visa Type',
+        'Product',
+          
+    ])
+
+
+    for lead in leads:
+        writer.writerow([
+            lead.enquiry_number,
+            lead.FirstName if lead.FirstName else '',
+            lead.LastName if lead.LastName else '',
+            lead.email if lead.email else '',
+            lead.contact,
+            lead.address,
+            lead.passport_no if lead.passport_no else '',
+            lead.Dob if lead.Dob else '',
+            lead.Gender,
+            lead.marital_status,
+            lead.Visa_country.country if lead.Visa_country else '',
+            lead.Visa_category.category if lead.Visa_category else '',
+            lead.Visa_category.subcategory if lead.Visa_category else '',
+            lead.Visa_type,
+            lead.Package.title if lead.Package else '',
+        ])
+
+    return response
+
+
+@login_required
+def add_bulk_message(request):
+    bulk_message = BulkMessage.objects.all().order_by("-id")
+    form = BulkMessageForm(request.POST , request.FILES or None)
+
+    if form.is_valid():
+        user = request.user
+        form.instance.added_by = user
+        bulk_message_instance = form.save()
+        aisensy_api_url = "https://backend.aisensy.com/campaign/t1/api/v2"
+        api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1Zjk4M2ZmZTMxNWI1NDVjZDQ1Nzk3ZSIsIm5hbWUiOiJ0aGVza3l0cmFpbCA4NDEzIiwiYXBwTmFtZSI6IkFpU2Vuc3kiLCJjbGllbnRJZCI6IjY1Zjk4M2ZmZTMxNWI1NDVjZDQ1Nzk3NCIsImFjdGl2ZVBsYW4iOiJCQVNJQ19NT05USExZIiwiaWF0IjoxNzEwODUxMDcxfQ.XnS_3uclP8c0J6drYjBCAQmbE6bHxGuD2IAGPaS4N9Y"
+        user_types = ["2", "3", "4", "5", "6"]
+
+        attachment_url = request.build_absolute_uri(bulk_message_instance.image.url) 
+        message_content = bulk_message_instance.message
+
+        for user_type in user_types:
+            users = CustomUser.objects.filter(user_type=user_type)
+            for user in users:
+                contact = get_contact_number(user) 
+
+                payload = {
+                    "apiKey": api_key,
+                    "campaignName": "app_promo_visa",
+                    "destination": contact,
+                    "userName": "Theskytrail 8413",
+                    "templateParams": [message_content],
+                    "source": "new-landing-page form",
+                    "media": {
+                        "url": attachment_url,
+                        "filename": bulk_message_instance.image.name
+                    },
+                    "buttons": [],
+                    "carouselCards": [],
+                    "location": {}
+                }
+
+                response = requests.post(aisensy_api_url, json=payload)
+                if response.status_code == 200:
+                    print("WhatsApp message sent successfully!")
+                else:
+                    print("Failed to send WhatsApp message:", response.text)
+
+        messages.success(request, "Bulk Messages sent successfully")
+        return HttpResponseRedirect(reverse("bulk_message_list"))
+
+    context = {"form": form, "bulk_message": bulk_message}
+    return render(request, "Admin/BulkMessage/bulkmessage.html", context)
+
+
+@login_required
+def delete_bulk_message(request, id):
+    blukmessage = BulkMessage.objects.get(id=id)
+    blukmessage.delete()
+    messages.success(request, "Bulk Messages deleted successfully..")
+    return HttpResponseRedirect(reverse("bulk_message_list"))
