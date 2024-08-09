@@ -3750,6 +3750,9 @@ def enrolled_delete_docfile(request, id):
 
 @login_required
 def admin_logout(request):
+    user = request.user
+    user.is_logged_in = False
+    user.save()
     logout(request)
     return redirect("/")
 

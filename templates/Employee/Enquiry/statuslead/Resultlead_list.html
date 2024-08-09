@@ -235,11 +235,12 @@
                         <th>Update</th>
                        
                         <th>LEAD status</th>
+                        <th>Update status</th>
                         <th>NOTES</th>
                         <th>Appointment</th>
                         <th>Appointment Status</th>
-                        <th>approval status</th>
-                        <th>RESEND</th>
+                        {% comment %} <th>approval status</th>
+                        <th>RESEND</th> {% endcomment %}
 
 
                     </tr>
@@ -247,7 +248,7 @@
                 <tbody>
                     {% for i in page  %}
                     {% if i.archive == False %}
-                    <tr style="background-color: {% if dep == 'Documentation' or dep == 'Visa Team' %}{% if i.color_code == 'Grey' %}#efe5e5{% elif i.color_code == 'Blue' %}#89CFF0{% elif i.color_code == 'White' %}#FAF9F6{% elif i.color_code == 'Red' %}#ff9090{% elif i.color_code == 'Green' %}#9cc599{% endif %}{% else %}Transparent{% endif %};">
+                    <tr class="custom-tr" style="background-color: {% if dep == 'Documentation' or dep == 'Visa Team' %}{% if i.color_code == 'Grey' %}#efe5e5{% elif i.color_code == 'Blue' %}#89CFF0{% elif i.color_code == 'White' %}#FAF9F6{% elif i.color_code == 'Red' %}#ff9090{% elif i.color_code == 'Green' %}#9cc599{% endif %}{% else %}Transparent{% endif %};">
                             <td data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight-{{i.id}}" aria-controls="offcanvasRight" style="cursor: pointer;">{{i.enquiry_number}}</td>
                         {% include "Employee/Enquiry/lead_offcanvas_details.html" %}
                                <td>
@@ -335,47 +336,14 @@
 
                               {% include "Employee/Enquiry/assigned_to_employee_modal.html" %}
                         </td>
-                        
+                       <td>
+                            <span class="badge rounded-pill1">{{i.lead_status}}</span>                  
+                        </td>
                         <td>
-                            
-                            {% if i.lead_status == "Active" %}
-                            <span class="badge rounded-pill1">Active</span>
-                            {% elif i.lead_status == "New Lead"  %}
-                            <span class="badge text-bg-primary">New Lead</span>
-                            {% elif i.lead_status == "Reject" %}
-                            <span class="badge text-bg-danger">Reject</span>
-                            {% elif i.lead_status == "PreEnrolled" %}
-                            <span class="badge text-bg-warning">PreEnrolled</span>
-                            {% elif i.lead_status == "Enrolled" %}
-                            <span class="badge text-bg-dark">Enrolled</span>
-                            {% elif i.lead_status == "Inprocess" %}
-                            <span class="badge text-bg-info">Inprocess</span>
-                            
-                            {% elif i.lead_status == "Ready To Submit" %}
-                            <span class="badge text-bg-success">Ready To Submit</span>
-                            
-                            
-                            {% elif i.lead_status == "Appointment" %}
-                            <span class="badge text-bg-primary">Appointment</span>
-                            
-                            
-                            {% elif i.lead_status == "Ready To Collection" %}
-                            <span class="badge text-bg-warning">Ready To Collection</span>
-                            
-                            
-                            {% elif i.lead_status == "Result" %}
-                            <span class="badge text-bg-info">Result</span>
-                            
-                            
-                            {% elif i.lead_status == "Delivery" %}
-                            <span class="badge text-bg-success">Delivery</span>
-                            
-                            
-                            {% elif i.lead_status == "Case Initiated" %}
-                            <span class="badge text-bg-warning">Case Initiated</span>
-                            
-                            {% endif %}
-                            
+                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#leadstatusupdateModal-{{i.id}}">
+                                Update
+                                </button>
+                                {% include "Employee/Enquiry/lead_status_update_modal.html" %}  
                         </td>
                         <td>
 
@@ -460,7 +428,7 @@
                          {% endif %}
                         </td>
 
-                        <td>
+                        {% comment %} <td>
                             <div class="buttons-container">
                             
                                 {% if dep == "Presales" %}
@@ -604,7 +572,7 @@
                             <button class="btn btn-warning" disabled>Documentation Department</button>
                             {% elif i.lead_status == "PreEnrolled" %}
                             <button class="btn btn-warning" disabled>Waiting..</button>
-                            {% comment %} <a href="{% url "preenrolled_save" i.id %}"><Button class="btn btn-warning">Resendddddd</Button></a> {% endcomment %}
+                            
                             {% else %}
                             <Button class="btn btn-warning" disabled>Visa Department</Button>
                             
@@ -640,7 +608,7 @@
                                    
 
                             </div>
-                        </td>
+                        </td> {% endcomment %}
                     </tr>
 
                     {% include "Employee/Enquiry/add_appointment_lead_modal.html" %}

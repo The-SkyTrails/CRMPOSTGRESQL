@@ -605,18 +605,24 @@ def single_Chat(request):
 
 def get_single_chat_messages(request):
     user_id = request.GET.get("user_id")
+   
     
     other_user_id = CustomUser.objects.get(id=user_id)
     user = request.user
     user_id = request.user.id
-    print("iddd",user)
-    
+   
+    ChatMessage.objects.filter(
+        message_by=other_user_id, receive_by=user, is_seen=False
+    ).update(is_seen=True)
+
+   
     
     msg_all = ChatMessage.objects.filter(
         Q(message_by=user, receive_by=other_user_id) | 
         Q(message_by=other_user_id, receive_by=user)
     ).order_by('msg_time')
 
+   
     print("message all",msg_all)
 
     # receiver_msg = ChatMessage.objects.filter(receive_by=user)

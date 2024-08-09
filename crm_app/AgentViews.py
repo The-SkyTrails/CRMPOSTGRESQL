@@ -418,7 +418,7 @@ def delete_docfile(request, id):
 
 def agent_new_leads_details(request):
     user = request.user
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept", "reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
 
     faq_count = FAQ.objects.filter(user=user).count()

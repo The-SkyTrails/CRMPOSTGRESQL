@@ -277,7 +277,7 @@
                 <tbody>
                     {% for i in page %}
                     {% if i.archive == False %}
-                    <tr style="background-color: {% i<td data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight-{{i.id}}" aria-controls="offcanvasRight" style="cursor: pointer;">{{forloop.counter}}</td>
+                    <tr class="custom-tr" style="background-color: {% i<td data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight-{{i.id}}" aria-controls="offcanvasRight" style="cursor: pointer;">{{forloop.counter}}</td>
                   {% include "Admin/Enquiry/lead_offcanvas_details.html" %}<td>{{forloop.counter}}</td>
                         <td>
                             <a href="{% url "edit_enrolled_application" i.id %}">

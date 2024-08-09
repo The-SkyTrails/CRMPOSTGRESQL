@@ -643,7 +643,7 @@ def emp_delete_docfile(request, id):
 @login_required
 def employee_lead_list(request):
     user = request.user
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept", "Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     presales_employees = get_presale_employee()
     sales_employees = get_sale_employee()
@@ -682,7 +682,7 @@ def employee_lead_list(request):
 
                 enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
 
-                paginator = Paginator(enquiry_list, 1)
+                paginator = Paginator(enquiry_list, 10)
                 
                 
                 page = paginator.get_page(page_number)
@@ -763,7 +763,7 @@ def employee_lead_list(request):
 
                 enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
 
-                paginator = Paginator(enquiry_list, 1)
+                paginator = Paginator(enquiry_list, 10)
                 
                 
                 page = paginator.get_page(page_number)
@@ -803,7 +803,7 @@ def employee_lead_list(request):
 
                 enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
 
-                paginator = Paginator(enquiry_list, 1)
+                paginator = Paginator(enquiry_list, 10)
                 
                 
                 page = paginator.get_page(page_number)
@@ -843,7 +843,7 @@ def employee_lead_list(request):
 
                 enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
 
-                paginator = Paginator(enquiry_list, 1)
+                paginator = Paginator(enquiry_list, 10)
                 
                 
                 page = paginator.get_page(page_number)
@@ -882,7 +882,7 @@ def employee_lead_list(request):
 
                 enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
 
-                paginator = Paginator(enquiry_list, 1)
+                paginator = Paginator(enquiry_list, 10)
                 
                 
                 page = paginator.get_page(page_number)
@@ -4868,7 +4868,7 @@ class emp_PreEnquiry3View(LoginRequiredMixin, CreateView):
 @login_required
 def employee_activelead_list(request):
     user = request.user
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept", "Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     presales_employees = get_presale_employee()
     sales_employees = get_sale_employee()
@@ -5157,7 +5157,7 @@ def employee_activelead_list(request):
 @login_required
 def employee_Enrolledlead_list(request):
     user = request.user
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept", "Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     presales_employees = get_presale_employee()
     sales_employees = get_sale_employee()
@@ -5418,7 +5418,7 @@ def employee_Enrolledlead_list(request):
 @login_required
 def employee_inprocesslead_list(request):
     user = request.user
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept", "Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     presales_employees = get_presale_employee()
     sales_employees = get_sale_employee()
@@ -5680,7 +5680,7 @@ def employee_inprocesslead_list(request):
 @login_required
 def employee_appointlead_list(request):
     user = request.user
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept", "Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     presales_employees = get_presale_employee()
     sales_employees = get_sale_employee()
@@ -5940,7 +5940,7 @@ def employee_appointlead_list(request):
 @login_required
 def employee_Resultlead_list(request):
     user = request.user
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept", "Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     presales_employees = get_presale_employee()
     sales_employees = get_sale_employee()
@@ -5959,7 +5959,7 @@ def employee_Resultlead_list(request):
                 end_date = request.GET.get('end_date')
                 page_number = request.GET.get('page', '1')
 
-                queries = Q(assign_to_employee=user.employee) & Q(lead_status="Result") | Q(created_by=user) & Q(lead_status="Result") 
+                queries = Q(assign_to_employee=user.employee) & Q(lead_status="Approved") | Q(created_by=user) & Q(lead_status="Approved") 
                 if search_query:
                     search_parts = search_query.split()
                     for part in search_parts:
@@ -5997,7 +5997,7 @@ def employee_Resultlead_list(request):
                 end_date = request.GET.get('end_date')
                 page_number = request.GET.get('page', '1')
 
-                queries = Q(assign_to_sales_employee=user.employee) & Q(lead_status="Result") | Q(created_by=user) & Q(lead_status="Result") 
+                queries = Q(assign_to_sales_employee=user.employee) & Q(lead_status="Approved") | Q(created_by=user) & Q(lead_status="Approved") 
                 if search_query:
                     search_parts = search_query.split()
                     for part in search_parts:
@@ -6035,7 +6035,7 @@ def employee_Resultlead_list(request):
                 end_date = request.GET.get('end_date')
                 page_number = request.GET.get('page', '1')
 
-                queries = Q(assign_to_documentation_employee=user.employee) & Q(lead_status="Result") | Q(created_by=user) & Q(lead_status="Result") 
+                queries = Q(assign_to_documentation_employee=user.employee) & Q(lead_status="Approved") | Q(created_by=user) & Q(lead_status="Approved") 
                 if search_query:
                     search_parts = search_query.split()
                     for part in search_parts:
@@ -6073,7 +6073,7 @@ def employee_Resultlead_list(request):
                 end_date = request.GET.get('end_date')
                 page_number = request.GET.get('page', '1')
 
-                queries = Q(assign_to_visa_team_employee=user.employee) & Q(lead_status="Result") | Q(created_by=user) & Q(lead_status="Result") 
+                queries = Q(assign_to_visa_team_employee=user.employee) & Q(lead_status="Approved") | Q(created_by=user) & Q(lead_status="Approved") 
                 if search_query:
                     search_parts = search_query.split()
                     for part in search_parts:
@@ -6111,7 +6111,7 @@ def employee_Resultlead_list(request):
                 end_date = request.GET.get('end_date')
                 page_number = request.GET.get('page', '1')
 
-                queries = Q(assign_to_assesment_employee=user.employee) & Q(lead_status="Result") | Q(created_by=user) & Q(lead_status="Result") 
+                queries = Q(assign_to_assesment_employee=user.employee) & Q(lead_status="Approved") | Q(created_by=user) & Q(lead_status="Approved") 
                 if search_query:
                     search_parts = search_query.split()
                     for part in search_parts:
@@ -6149,7 +6149,7 @@ def employee_Resultlead_list(request):
                 end_date = request.GET.get('end_date')
                 page_number = request.GET.get('page', '1')
 
-                queries = Q(created_by=user) & Q(lead_status="Result") 
+                queries = Q(created_by=user) & Q(lead_status="Approved") 
                 if search_query:
                     search_parts = search_query.split()
                     for part in search_parts:
@@ -6200,7 +6200,7 @@ def employee_Resultlead_list(request):
 @login_required
 def employee_Deliverylead_list(request):
     user = request.user
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept", "Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     presales_employees = get_presale_employee()
     sales_employees = get_sale_employee()
@@ -6219,7 +6219,7 @@ def employee_Deliverylead_list(request):
                 end_date = request.GET.get('end_date')
                 page_number = request.GET.get('page', '1')
 
-                queries = Q(assign_to_employee=user.employee) & Q(lead_status="Delivery") | Q(created_by=user) & Q(lead_status="Delivery") 
+                queries = Q(assign_to_employee=user.employee) & Q(lead_status="Ready To Collection") | Q(created_by=user) & Q(lead_status="Ready To Collection") 
                 if search_query:
                     search_parts = search_query.split()
                     for part in search_parts:
@@ -6257,7 +6257,7 @@ def employee_Deliverylead_list(request):
                 end_date = request.GET.get('end_date')
                 page_number = request.GET.get('page', '1')
 
-                queries = Q(assign_to_sales_employee=user.employee) & Q(lead_status="Delivery") | Q(created_by=user) & Q(lead_status="Delivery") 
+                queries = Q(assign_to_sales_employee=user.employee) & Q(lead_status="Ready To Collection") | Q(created_by=user) & Q(lead_status="Ready To Collection") 
                 if search_query:
                     search_parts = search_query.split()
                     for part in search_parts:
@@ -6295,7 +6295,7 @@ def employee_Deliverylead_list(request):
                 end_date = request.GET.get('end_date')
                 page_number = request.GET.get('page', '1')
 
-                queries = Q(assign_to_documentation_employee=user.employee) & Q(lead_status="Delivery") | Q(created_by=user) & Q(lead_status="Delivery") 
+                queries = Q(assign_to_documentation_employee=user.employee) & Q(lead_status="Ready To Collection") | Q(created_by=user) & Q(lead_status="Ready To Collection") 
                 if search_query:
                     search_parts = search_query.split()
                     for part in search_parts:
@@ -6333,7 +6333,7 @@ def employee_Deliverylead_list(request):
                 end_date = request.GET.get('end_date')
                 page_number = request.GET.get('page', '1')
 
-                queries = Q(assign_to_visa_team_employee=user.employee) & Q(lead_status="Delivery") | Q(created_by=user) & Q(lead_status="Delivery") 
+                queries = Q(assign_to_visa_team_employee=user.employee) & Q(lead_status="Ready To Collection") | Q(created_by=user) & Q(lead_status="Ready To Collection") 
                 if search_query:
                     search_parts = search_query.split()
                     for part in search_parts:
@@ -6371,7 +6371,7 @@ def employee_Deliverylead_list(request):
                 end_date = request.GET.get('end_date')
                 page_number = request.GET.get('page', '1')
 
-                queries = Q(assign_to_assesment_employee=user.employee) & Q(lead_status="Delivery") | Q(created_by=user) & Q(lead_status="Delivery") 
+                queries = Q(assign_to_assesment_employee=user.employee) & Q(lead_status="Ready To Collection") | Q(created_by=user) & Q(lead_status="Ready To Collection") 
                 if search_query:
                     search_parts = search_query.split()
                     for part in search_parts:
@@ -6409,7 +6409,7 @@ def employee_Deliverylead_list(request):
                 end_date = request.GET.get('end_date')
                 page_number = request.GET.get('page', '1')
 
-                queries = Q(created_by=user) & Q(lead_status="Delivery") 
+                queries = Q(created_by=user) & Q(lead_status="Ready To Collection") 
                 if search_query:
                     search_parts = search_query.split()
                     for part in search_parts:
@@ -6461,7 +6461,7 @@ def employee_Deliverylead_list(request):
 @login_required
 def employee_Latestlead_list(request):
     user = request.user
-    excluded_statuses = ["Accept", "Case Initiated"]
+    excluded_statuses = ["Accept", "Reject"]
     lead = [status for status in leads_status if status[0] not in excluded_statuses]
     presales_employees = get_presale_employee()
     sales_employees = get_sale_employee()
@@ -6717,8 +6717,6 @@ def employee_Latestlead_list(request):
             }
     return render(request, "Employee/Enquiry/statuslead/Latestlead_list.html", context)
 
-
-@login_required
 def update_assigned_employee(request, id):
     enquiry = Enquiry.objects.get(id=id)
     if request.method == "POST":
@@ -6728,14 +6726,19 @@ def update_assigned_employee(request, id):
             emp = Employee.objects.get(id=assign_to_employee)
             if emp.department == "Presales":
                 enquiry.assign_to_employee = emp
+                enquiry.lead_status = "New Lead"
             elif emp.department == "Assesment":
                 enquiry.assign_to_assesment_employee = emp
+                enquiry.lead_status = "Active"
             if emp.department == "Sales":
                 enquiry.assign_to_sales_employee = emp
+                enquiry.lead_status = "PreEnrolled"
             if emp.department == "Documentation":
                 enquiry.assign_to_documentation_employee = emp
+                enquiry.lead_status = "Enrolled"
             if emp.department == "Visa Team":
                 enquiry.assign_to_visa_team_employee = emp
+                enquiry.lead_status = "Inprocess"
             employee_id = emp.id
             create_notification(emp, "New Lead Assign Added")
 
@@ -6767,6 +6770,20 @@ def update_assigned_employee(request, id):
         return redirect(redirect_url)
 
 
+def emp_lead_updated(request, id):
+    if request.method == "POST":
+        lead_status = request.POST.get("lead_status")
+        enquiry = Enquiry.objects.get(id=id)
+        enquiry.lead_status = lead_status
+        enquiry.save()
+        messages.success(request, f"Lead {lead_status} Status Updated Successfully...")
+
+        
+        redirect_to = request.POST.get("redirect_to")
+        redirect_url = redirect_to
+        
+        return redirect(redirect_url)
+    
 def fetch_agents(request):
     search_term = request.GET.get('searchTerm', '')
     agents = Agent.objects.filter(users__first_name__icontains=search_term)

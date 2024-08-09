@@ -18,7 +18,7 @@ def start():
     scheduler.add_jobstore(DjangoJobStore(),"default")
     scheduler.add_job(backup_every_one_hour,'interval',hours=24,jobstore='default',id="backup_every_one_hour",replace_existing=True)
     
-    # scheduler.add_job(delete_old_job_executions,'interval',seconds=10,jobstore='default',id="delete_old_job_executions",replace_existing=True)
+    scheduler.add_job(delete_old_job_executions,'interval',hours=24,jobstore='default',id="delete_old_job_executions",replace_existing=True)
 
     try:
         scheduler.start()

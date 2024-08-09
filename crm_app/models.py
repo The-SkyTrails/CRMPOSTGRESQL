@@ -1139,6 +1139,7 @@ class ChatMessage(models.Model):
         blank=True,
     )
     msg_time = models.DateTimeField(auto_now=True)
+    is_seen = models.BooleanField(default=False)
 
 
 class SuccessStory(models.Model):

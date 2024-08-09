@@ -340,4 +340,5 @@ urlpatterns = [
     path("StudyPackageList/", StudyPackageListView.as_view(), name="Employee_StudyPackage_list"),
     path("InvestmentPackageList/", InvestmentPackageListView.as_view(), name="Employee_InvestmentPackage_list"),
     path("SettlementPackageList/", SettlementPackageListView.as_view(), name="Employee_SettlementPackage_list"),
+    path("UpdateStatus/<int:id>",emp_lead_updated,name="emp_lead_updated"),
 ]

@@ -1,4 +1,5 @@
 {% extends base_template %}
+{% load static %}
 {% block link %}
 <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,300' rel='stylesheet' type='text/css'>
 {% endblock link %}
@@ -96,6 +97,37 @@
 
 
 <script>
+
+  function timeAgo(timestamp) {
+      const now = new Date();
+      const messageTime = new Date(timestamp);
+      const seconds = Math.floor((now - messageTime) / 1000);
+
+      const intervals = {
+          year: 31536000,
+          month: 2592000,
+          week: 604800,
+          day: 86400,
+          hour: 3600,
+          minute: 60,
+          second: 1,
+      };
+
+      for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+          const interval = Math.floor(seconds / secondsInUnit);
+
+          if (interval >= 1) {
+              return interval + " " + (interval === 1 ? unit : unit + "s") + " ago";
+          }
+      }
+
+      return "just now";
+  }
+
+</script>
+
+
+<script>
         $(document).ready(function () {
             let chatSocket;
 
@@ -115,15 +147,17 @@
                     const data = JSON.parse(e.data);
                     const message = data['message'];
                     const msg_by = data['msg_by'];
+                    const timestamp = data['timestamp'];
                     const user = "{{ usersid|escapejs }}";
+                    const timeAgoText = timeAgo(timestamp);
                     console.log("userssssssssssssss",user)
                     console.log("msg by",msg_by)
 
                     if (msg_by == user) {
-                        $('#chat-messages .messages ul').append('<li class="replies"><img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" /><p>' + message + '</p></li>');
+                        $('#chat-messages .messages ul').append('<li class="replies"><p>' + message +  '<span class="message-meta">'+ timeAgoText +'<img src="{% static 'visa/images/check.png' %}" alt="Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;"/></span></p></li>');
                         //$('#chat-messages .messages ul').append('<li class="replies"><p>' + message + '</p></li>');
                     } else {
-                        $('#chat-messages .messages ul').append('<li class="sent"><p>' + message + '</p></li>');
+                        $('#chat-messages .messages ul').append('<li class="sent"><p>' + message + '<span class="message-meta">'+ timeAgoText + '</p></li>');
                     }
                 };
 

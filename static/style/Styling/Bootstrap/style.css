@@ -4203,3 +4203,8 @@ color: #4B5563;
     width: 20px;
    
 }
+
+.custom-tr {
+  background-color: transparent;
+  border-bottom: 1px solid grey;
+}
