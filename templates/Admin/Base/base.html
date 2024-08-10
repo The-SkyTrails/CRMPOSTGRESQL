@@ -330,6 +330,12 @@
     </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+    window.addEventListener('beforeunload', function(event) {
+        console.log("Window is closing, working...");
+        // Optionally, send a request to the server or perform other actions
+    });
+</script>
 
 
 

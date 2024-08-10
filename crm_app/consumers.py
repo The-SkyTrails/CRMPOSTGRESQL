@@ -20,48 +20,195 @@ class SingleChatConsumer(AsyncWebsocketConsumer):
         self.room_name = f'{min(self.user_id, self.other_user_id)}_{max(self.user_id, self.other_user_id)}'
         self.room_group_name = f'chat_{self.room_name}'
 
+       
+
         await self.channel_layer.group_add(
             self.room_group_name,
-            self.channel_name
+            self.channel_name,
+            
         )
 
+        
+
         await self.accept()
+       
+        print("websocket connected.....")
+
+
+        
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
+        print("websocket disconnected",close_code)
+
+    # async def receive(self, text_data):
+    #     text_data_json = json.loads(text_data)
+    #     message = text_data_json['message']
+        
+    #     await sync_to_async(ChatMessage.objects.create)(
+    #         message_by=self.user,
+    #         receive_by=self.other_user,
+    #         message=message
+    #     )
+
+        
+       
+    #     await self.channel_layer.group_send(
+    #         self.room_group_name,
+    #         {
+    #             'type': 'chat_message',
+    #             'message': message,
+    #             'message_by': self.user_id
+    #         }
+    #     )
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
+        print("message",message)
         
-        await sync_to_async(ChatMessage.objects.create)(
+        # Create the message with is_seen=False by default
+        chat_message = await sync_to_async(ChatMessage.objects.create)(
             message_by=self.user,
             receive_by=self.other_user,
-            message=message
+            message=message,
+            is_seen=False  # Initially, the message is not seen
         )
 
+        # await self.mark_messages_as_seen()
         
-       
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type': 'chat_message',
                 'message': message,
-                'message_by': self.user_id
+                'message_by': self.user_id,
+                'is_seen': False,  # This will be false until the recipient sees it
             }
         )
+
+
 
     async def chat_message(self, event):
         message = event['message']
         msg_by = event['message_by']
+        is_seen = event.get('is_seen', False)
+        print("okkkkkkkkkkkkggggggggg.......",message)
         
         await self.send(text_data=json.dumps({
             'message': message,
             'msg_by': msg_by,
+            'is_seen': is_seen,
         }))
+        
+    
+    async def mark_messages_as_seen(self):
+        """Mark unseen messages as seen when the user connects"""
+        # Mark messages as seen
+        await sync_to_async(ChatMessage.objects.filter(
+            message_by=self.other_user,
+            receive_by=self.user,
+            is_seen=False
+        ).update)(is_seen=True)
+
+        # Notify the other user that their messages have been seen
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'message': '',  # Optional: Only send if needed to trigger an update
+                'message_by': self.user_id,
+                'is_seen': True,  # Mark the messages as seen
+            }
+        )
+
+# class SingleChatConsumer(AsyncWebsocketConsumer):
+# #     async def connect(self):
+# #         self.user_id = self.scope["user"].id
+# #         self.user = self.scope["user"]
+# #         self.other_user_id = self.scope['url_route']['kwargs']['other_user_id']
+# #         self.other_user = await sync_to_async(CustomUser.objects.get)(id=self.other_user_id)
+        
+# #         self.room_name = f'{min(self.user_id, self.other_user_id)}_{max(self.user_id, self.other_user_id)}'
+# #         self.room_group_name = f'chat_{self.room_name}'
+
+# #         # Mark unread messages as seen when the user connects
+# #         await self.mark_messages_as_seen()
+
+# #         # Join the room group
+# #         await self.channel_layer.group_add(
+# #             self.room_group_name,
+# #             self.channel_name,
+# #         )
+
+# #         # Accept the WebSocket connection
+# #         await self.accept()
+# #         print("websocket connected.........")
+
+# #     async def disconnect(self, close_code):
+# #         # Leave the room group
+# #         await self.channel_layer.group_discard(
+# #             self.room_group_name,
+# #             self.channel_name
+# #         )
+# #         print("websocket disconnected...",close_code)
+
+# #     async def receive(self, text_data):
+# #         text_data_json = json.loads(text_data)
+# #         message = text_data_json['message']
+        
+# #         # Create the message with is_seen=False by default
+# #         chat_message = await sync_to_async(ChatMessage.objects.create)(
+# #             message_by=self.user,
+# #             receive_by=self.other_user,
+# #             message=message,
+# #             is_seen=False  # Initially, the message is not seen
+# #         )
+        
+# #         # Send the message to the room group
+# #         await self.channel_layer.group_send(
+# #             self.room_group_name,
+# #             {
+# #                 'type': 'chat_message',
+# #                 'message': message,
+# #                 'message_by': self.user_id,
+# #                 'is_seen': False,  # This will be false until the recipient sees it
+# #             }
+# #         )
+
+# #     async def chat_message(self, event):
+# #         message = event['message']
+# #         msg_by = event['message_by']
+# #         is_seen = event.get('is_seen', False)
+        
+# #         # Send message to WebSocket
+# #         await self.send(text_data=json.dumps({
+# #             'message': message,
+# #             'msg_by': msg_by,
+# #             'is_seen': is_seen,
+# #         }))
+
+# #     async def mark_messages_as_seen(self):
+# #         """Mark unseen messages as seen when the user connects"""
+# #         await sync_to_async(ChatMessage.objects.filter(
+# #             message_by=self.other_user,
+# #             receive_by=self.user,
+# #             is_seen=False
+# #         ).update)(is_seen=True)
+        
+# #         # Notify the other user that their messages have been seen
+# #         await self.channel_layer.group_send(
+# #             self.room_group_name,
+# #             {
+# #                 'type': 'chat_message',
+# #                 'message': '',  # Optional: Only send if needed to trigger an update
+# #                 'message_by': self.user_id,
+# #                 'is_seen': True,  # Mark the messages as seen
+# #             }
+# #         )
 
 
 # ------------------------------------- END SINGLE CHAT ------------------

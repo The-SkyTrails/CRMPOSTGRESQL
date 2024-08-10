@@ -1199,13 +1199,18 @@ class Notification(models.Model):
 
 @receiver(pre_delete, sender=Session)
 def session_deleted_handler(sender, instance, **kwargs):
+    print("Session deletion detected")
     user_id = instance.get_decoded().get("_auth_user_id")
-    try:
-        user = CustomUser.objects.get(id=user_id)
-        user.is_logged_in = False
-        user.save()
-    except CustomUser.DoesNotExist:
-        pass
+    if user_id:
+        print("Session timed out, working...")
+        try:
+            user = CustomUser.objects.get(id=user_id)
+            user.is_logged_in = False
+            user.save()
+            print("Signal processed: user logged in status updated.")
+        except CustomUser.DoesNotExist:
+            print("User not found for session.")
+
 
 
 # @receiver(pre_delete, sender=Employee)
@@ -1225,6 +1230,7 @@ class BulkMessage(models.Model):
     message = models.TextField()
     added_by = models.ForeignKey(CustomUser,on_delete=models.SET_NULL,blank=True, null=True)
     added_at = models.DateTimeField(auto_now=True)
+
 
 @receiver(post_save, sender=CustomUser)
 def create_admin_profile(sender, instance, created, **kwargs):

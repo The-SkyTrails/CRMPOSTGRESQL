@@ -31,17 +31,21 @@
       
 
       
-       <li class="replies">
-          {% comment %} <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" /> {% endcomment %}
-          <p>{{i.message}}
-            <span class="message-meta">
-               {{i.msg_time|naturaltime}}
-               <img src="{% static 'visa/images/check.png' %}" alt="Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;"
-                />
-             </span>
-          </p>
-         
-       </li> 
+<li class="replies">
+   <p>{{ i.message }}
+      <span class="message-meta">
+            {{ i.msg_time|naturaltime }}
+            {% if i.is_seen %}
+               <img src="{% static 'visa/images/doublecheck.jpg' %}" alt="Double Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;" />
+            {% else %}
+               <img src="{% static 'visa/images/check.png' %}" alt="Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;" />
+            {% endif %}
+      </span>
+   </p>
+</li>
+
+
+
        {% endif %}
        {% endfor %}
        {% endif %}

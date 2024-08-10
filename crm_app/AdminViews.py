@@ -114,13 +114,13 @@ from datetime import datetime  # Import datetime directly
 #         return context
 
 
-
-
 class admin_dashboard(LoginRequiredMixin, TemplateView):
     template_name = "Admin/Dashboard/dashboard.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+
 
         enq_count = 0
         enq_enrolled_count = 0
@@ -2795,7 +2795,8 @@ def admin_new_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part) | (Q(assign_to_agent__users__first_name__icontains=part) |  # Both First Name
+     Q(assign_to_agent__users__last_name__icontains=part)) | (Q(assign_to_outsourcingagent__users__first_name__icontains=part) |  Q(assign_to_outsourcingagent__users__last_name__icontains=part)) |   Q(Dob__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -3752,6 +3753,7 @@ def enrolled_delete_docfile(request, id):
 def admin_logout(request):
     user = request.user
     user.is_logged_in = False
+    print("tesingggggggggggg for logout.....................")
     user.save()
     logout(request)
     return redirect("/")
@@ -5773,6 +5775,7 @@ def add_bulk_message(request):
         user_types = ["2", "3", "4", "5", "6"]
 
         attachment_url = request.build_absolute_uri(bulk_message_instance.image.url) 
+       
         message_content = bulk_message_instance.message
 
         for user_type in user_types:
@@ -5781,22 +5784,32 @@ def add_bulk_message(request):
                 contact = get_contact_number(user) 
 
                 payload = {
-                    "apiKey": api_key,
-                    "campaignName": "app_promo_visa",
+                    
+                    "apiKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1Zjk4M2ZmZTMxNWI1NDVjZDQ1Nzk3ZSIsIm5hbWUiOiJ0aGVza3l0cmFpbCA4NDEzIiwiYXBwTmFtZSI6IkFpU2Vuc3kiLCJjbGllbnRJZCI6IjY1Zjk4M2ZmZTMxNWI1NDVjZDQ1Nzk3NCIsImFjdGl2ZVBsYW4iOiJCQVNJQ19NT05USExZIiwiaWF0IjoxNzEwODUxMDcxfQ.XnS_3uclP8c0J6drYjBCAQmbE6bHxGuD2IAGPaS4N9Y",
+                    "campaignName": "Updates",
                     "destination": contact,
-                    "userName": "Theskytrail 8413",
-                    "templateParams": [message_content],
+                    "userName": "theskytrail 8413",
+                    "templateParams": [
+                        message_content
+                    ],
                     "source": "new-landing-page form",
                     "media": {
                         "url": attachment_url,
-                        "filename": bulk_message_instance.image.name
+                        "filename": "sample_media"
                     },
                     "buttons": [],
                     "carouselCards": [],
                     "location": {}
                 }
 
-                response = requests.post(aisensy_api_url, json=payload)
+                        # Headers
+                headers = {
+                    "Content-Type": "application/json"
+                }
+
+
+
+                response = requests.post(aisensy_api_url, json=payload,headers=headers)
                 if response.status_code == 200:
                     print("WhatsApp message sent successfully!")
                 else:
@@ -5807,6 +5820,7 @@ def add_bulk_message(request):
 
     context = {"form": form, "bulk_message": bulk_message}
     return render(request, "Admin/BulkMessage/bulkmessage.html", context)
+
 
 
 @login_required

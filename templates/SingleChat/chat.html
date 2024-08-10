@@ -126,7 +126,7 @@
 
 </script>
 
-
+{% comment %} 
 <script>
         $(document).ready(function () {
             let chatSocket;
@@ -147,11 +147,13 @@
                     const data = JSON.parse(e.data);
                     const message = data['message'];
                     const msg_by = data['msg_by'];
+                    const is_seen = data['is_seen'];
                     const timestamp = data['timestamp'];
                     const user = "{{ usersid|escapejs }}";
                     const timeAgoText = timeAgo(timestamp);
                     console.log("userssssssssssssss",user)
                     console.log("msg by",msg_by)
+                    console.log("hellooo ggg",is_seen)
 
                     if (msg_by == user) {
                         $('#chat-messages .messages ul').append('<li class="replies"><p>' + message +  '<span class="message-meta">'+ timeAgoText +'<img src="{% static 'visa/images/check.png' %}" alt="Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;"/></span></p></li>');
@@ -216,6 +218,134 @@
               }
             })
         });
+</script>
+ {% endcomment %}
+<script>
+    $(document).ready(function () {
+        let chatSocket;
+
+        function connectToWebSocket(userId) {
+            if (chatSocket) {
+                chatSocket.close();
+            }
+
+            chatSocket = new WebSocket(
+                'ws://' + window.location.host + '/ws/chat/single/' + userId + '/'
+            );
+
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                const message = data['message'];
+                const msg_by = data['msg_by'];
+                const is_seen = data['is_seen'];
+                const timestamp = data['timestamp'] || new Date().toISOString();  // Fallback to current time if timestamp is missing
+                const user = "{{ usersid|escapejs }}";
+                const timeAgoText = timeAgo(timestamp);
+
+                let messageElement;
+
+                if (msg_by == user) {
+                    messageElement = `
+                        <li class="replies">
+                            <p>${message}
+                                <span class="message-meta">
+                                    ${timeAgoText}
+                                    ${is_seen ? 
+                                        '<img src="{% static 'visa/images/doublecheck.jpg' %}" alt="Double Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;" />' :
+                                        '<img src="{% static 'visa/images/check.png' %}" alt="Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;" />'
+                                    }
+                                </span>
+                            </p>
+                        </li>
+                    `;
+                } else {
+                    messageElement = `
+                        <li class="sent">
+                            <p>${message}
+                                <span class="message-meta">
+                                    ${timeAgoText}
+                                </span>
+                            </p>
+                        </li>
+                    `;
+                }
+
+                // Append or update the message
+                $('#chat-messages .messages ul').append(messageElement);
+                $('#chat-messages .messages').scrollTop($('#chat-messages .messages')[0].scrollHeight);  // Scroll to bottom
+            };
+
+            chatSocket.onclose = function(e) {
+                console.error('Chat socket closed unexpectedly');
+            };
+
+            chatSocket.onerror = function(e) {
+                console.error('Chat socket error:', e);
+            };
+        }
+
+        $('.chat-group-link').click(function () {
+            const userId = $(this).data('user-id');
+
+            if (!$(this).closest('.contact').hasClass('active')) {
+                $('.contact').removeClass('active');
+                $(this).closest('.contact').addClass('active');
+                loadGroupChat(userId);
+                connectToWebSocket(userId);
+            }
+        });
+
+        function loadGroupChat(userId) {
+            $.ajax({
+                url: `/get_single_chat_messages/?user_id=${userId}`,
+                success: function (data) {
+                    $('#chat-messages').html(data);
+                    $('#chat-messages .messages').scrollTop($('#chat-messages .messages')[0].scrollHeight);  // Scroll to bottom
+                }
+            });
+        }
+
+        $('#chat-messages').on('click', '.submit', function () {
+            const messageInputDom = $('.message-input input');
+            const message = messageInputDom.val();
+            if (message) {
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                }));
+                messageInputDom.val('');
+            }
+        });
+
+        $('#chat-messages').on('keydown', '.message-input input', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const messageInputDom = $('.message-input input');
+                const message = messageInputDom.val();
+                if (message) {
+                    chatSocket.send(JSON.stringify({
+                        'message': message,
+                    }));
+                    messageInputDom.val('');
+                }
+            }
+        });
+
+        function timeAgo(timestamp) {
+            const time = new Date(timestamp);
+            const now = new Date();
+            const diff = Math.floor((now - time) / 1000); // Difference in seconds
+
+            if (diff < 60) {
+                return `${diff} seconds ago`;
+            } else if (diff < 3600) {
+                return `${Math.floor(diff / 60)} minutes ago`;
+            } else if (diff < 86400) {
+                return `${Math.floor(diff / 3600)} hours ago`;
+            } else {
+                return `${Math.floor(diff / 86400)} days ago`;
+            }
+        }
+    });
 </script>
 
 

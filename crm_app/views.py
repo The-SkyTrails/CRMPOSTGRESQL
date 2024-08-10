@@ -603,43 +603,67 @@ def single_Chat(request):
     return render(request,'SingleChat/chat.html',context)
 
 
-def get_single_chat_messages(request):
-    user_id = request.GET.get("user_id")
+# def get_single_chat_messages(request):
+#     user_id = request.GET.get("user_id")
    
     
+#     other_user_id = CustomUser.objects.get(id=user_id)
+#     user = request.user
+#     user_id = request.user.id
+   
+#     ChatMessage.objects.filter(
+#         message_by=other_user_id, receive_by=user, is_seen=False
+#     ).update(is_seen=True)
+
+   
+    
+#     msg_all = ChatMessage.objects.filter(
+#         Q(message_by=user, receive_by=other_user_id) | 
+#         Q(message_by=other_user_id, receive_by=user)
+#     ).order_by('msg_time')
+
+   
+#     print("message all",msg_all)
+
+#     # receiver_msg = ChatMessage.objects.filter(receive_by=user)
+    
+    
+    
+#     context = {
+#         'other_user_id': other_user_id,
+#         'user': user,
+#         'msg_All': msg_all,
+#         'user_id': user_id,
+        
+#     }
+
+   
+
+#     chat_content = loader.render_to_string("SingleChat/chat_content.html",context)
+#     return HttpResponse(chat_content)
+
+def get_single_chat_messages(request):
+    user_id = request.GET.get("user_id")
     other_user_id = CustomUser.objects.get(id=user_id)
     user = request.user
-    user_id = request.user.id
-   
+
+    # Mark all unseen messages as seen
     ChatMessage.objects.filter(
         message_by=other_user_id, receive_by=user, is_seen=False
     ).update(is_seen=True)
 
-   
-    
     msg_all = ChatMessage.objects.filter(
         Q(message_by=user, receive_by=other_user_id) | 
         Q(message_by=other_user_id, receive_by=user)
     ).order_by('msg_time')
 
-   
-    print("message all",msg_all)
-
-    # receiver_msg = ChatMessage.objects.filter(receive_by=user)
-    
-    
-    
     context = {
         'other_user_id': other_user_id,
         'user': user,
         'msg_All': msg_all,
-        'user_id': user_id,
-        
     }
 
-   
-
-    chat_content = loader.render_to_string("SingleChat/chat_content.html",context)
+    chat_content = loader.render_to_string("SingleChat/chat_content.html", context)
     return HttpResponse(chat_content)
 
 
