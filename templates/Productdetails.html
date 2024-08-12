@@ -57,9 +57,9 @@
 
     <section>
         {% if package.image %}
-        <img src="{{package.image.url}}" alt="img" style="height:400px;">
+        <img src="{{package.image.url}}" alt="img" style="height:400px; display: block; margin: 0 auto;">
         {% else %}
-        <img src="https://github.com/Radhika57/CRM-EMAIL-IMAGES/blob/main/rohit%20sir%20mail%20image.jpg?raw=true" alt="img">
+        <img src="https://github.com/Radhika57/CRM-EMAIL-IMAGES/blob/main/rohit%20sir%20mail%20image.jpg?raw=true" alt="img" style="display: block; margin: 0 auto;">
         {% endif %}
         <h2>{{package.title}}</h2>
         <p>Description : <b>{{package.description}}</b></p>
