@@ -144,6 +144,9 @@ urlpatterns = [
     path("PackageList/", PackageListView.as_view(), name="Package_list"),
     path("PackageEdit/<int:pk>", editPackage.as_view(), name="editPackage"),
     path("packages/<int:pk>/", PackageDetailView.as_view(), name="package_detail"),
+    
+
+
     path("packages/<int:id>/apply/", PackageApplyView, name="package_apply"),
     path("package/delete/<int:id>/", delete_package, name="delete_package"),
     path("LoginLogs", loginlog.as_view(), name="loginlog"),

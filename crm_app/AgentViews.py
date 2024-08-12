@@ -1543,6 +1543,7 @@ def agent_PackageEnquiry3View(request):
         visa_typ = request.POST.get("visa_type")
         source = request.POST.get("source")
         reference = request.POST.get("reference")
+        visa_amount = request.POST.get("visa_amount")
 
         # ----------------------- Enquiry Detailss ------------------
         country = request.session.get("country")
@@ -1634,6 +1635,7 @@ def agent_PackageEnquiry3View(request):
             spouse_relation5=spouse_relation5,
             Source=source,
             Reference=reference,
+            visa_amount=visa_amount,
             Visa_type=visa_typ,
             Package=package,
             Visa_country=visa_country,

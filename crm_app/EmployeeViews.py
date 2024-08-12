@@ -915,6 +915,13 @@ def employee_lead_list(request):
 @login_required
 def employee_lead_grid(request):
     user = request.user
+    excluded_statuses = ["Accept","Reject"]
+    lead = [status for status in leads_status if status[0] not in excluded_statuses]
+    presales_employees = get_presale_employee()
+    sales_employees = get_sale_employee()
+    documentation_employees = get_documentation_team_employee()
+    visa_team = get_visa_team_employee()
+    assesment_employee = get_assesment_employee()
 
     if user.is_authenticated:
         if user.user_type == "3":
@@ -944,10 +951,16 @@ def employee_lead_grid(request):
                 ).order_by("-id")
             else:
                 enq = Enquiry.objects.filter(created_by=request.user)
-            context = {"enq": enq, "user": user, "dep": dep}
+            context = {"enq": enq, "user": user, "dep": dep,
+                       "presales_employees": presales_employees,
+                        "sales_employees": sales_employees,
+                        "documentation_employees": documentation_employees,
+                        "visa_team": visa_team,
+                        "lead": lead,
+                        "assesment_employee": assesment_employee,
+                       }
     return render(request, "Employee/Enquiry/lead-grid.html", context)
-
-
+    
 def employee_enrolled_grid(request):
     user = request.user
 
@@ -4004,6 +4017,7 @@ def emp_PackageEnquiry3View(request):
         visa_typ = request.POST.get("visa_type")
         source = request.POST.get("source")
         reference = request.POST.get("reference")
+        visa_amount = request.POST.get("visa_amount")
 
         # ----------------------- Enquiry Detailss ------------------
         country = request.session.get("country")
@@ -4095,6 +4109,7 @@ def emp_PackageEnquiry3View(request):
             spouse_relation5=spouse_relation5,
             Source=source,
             Reference=reference,
+            visa_amount=visa_amount,
             Visa_type=visa_typ,
             Package=package,
             Visa_country=visa_country,
@@ -7083,3 +7098,106 @@ class SettlementPackageListView(LoginRequiredMixin, ListView):
         context["dep"] = dep
 
         return context
+
+
+
+@login_required
+def emp_add_bulk_message(request):
+    bulk_message = BulkMessage.objects.filter(added_by=request.user).order_by("-id")
+    form = BulkMessageForm(request.POST, request.FILES or None)
+
+    if form.is_valid():
+        user = request.user
+        form.instance.added_by = user
+        bulk_message_instance = form.save()
+        aisensy_api_url = "https://backend.aisensy.com/campaign/t1/api/v2"
+        api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1Zjk4M2ZmZTMxNWI1NDVjZDQ1Nzk3ZSIsIm5hbWUiOiJ0aGVza3l0cmFpbCA4NDEzIiwiYXBwTmFtZSI6IkFpU2Vuc3kiLCJjbGllbnRJZCI6IjY1Zjk4M2ZmZTMxNWI1NDVjZDQ1Nzk3NCIsImFjdGl2ZVBsYW4iOiJCQVNJQ19NT05USExZIiwiaWF0IjoxNzEwODUxMDcxfQ.XnS_3uclP8c0J6drYjBCAQmbE6bHxGuD2IAGPaS4N9Y" 
+
+        sample1 = bulk_message_instance.message
+        attachment_url = request.build_absolute_uri(bulk_message_instance.image.url)
+
+        agents = Agent.objects.filter(assign_employee=user)
+        outsourcing_agents = OutSourcingAgent.objects.filter(assign_employee=user)
+
+        for agent in agents:
+            contact = agent.contact_no
+
+            if not contact.startswith("91"):
+                contact = "91" + contact
+
+            payload = {
+                "apiKey": api_key,
+                "campaignName": "Updates",
+                "destination": contact,  
+                "userName": "Theskytrail 8413",
+                "templateParams": [sample1],
+                "source": "new-landing-page form",
+                "media": {
+                    "url": attachment_url,
+                    "filename": bulk_message_instance.image.file.name
+                },
+                "buttons": [],
+                "carouselCards": [],
+                "location": {}
+            }
+
+            response = requests.post(aisensy_api_url, json=payload)
+
+            if response.status_code == 200:
+                print("WhatsApp message sent successfully!")
+            else:
+                print("Failed to send WhatsApp message:", response.text)
+
+        for outsourcing_agent in outsourcing_agents:
+            contact = outsourcing_agent.contact_no
+
+            if not contact.startswith("91"):
+                contact = "91" + contact
+
+            payload = {
+                "apiKey": api_key,
+                "campaignName": "Updates",
+                "destination": contact,  
+                "userName": "Theskytrail 8413",
+                "templateParams": [sample1],
+                "source": "new-landing-page form",
+                "media": {
+                    "url": attachment_url,
+                    "filename": bulk_message_instance.image.file.name
+                },
+                "buttons": [],
+                "carouselCards": [],
+                "location": {}
+            }
+            
+            headers = {"Content-Type": "application/json"}
+
+            response = requests.post(aisensy_api_url, json=payload,headers=headers)
+
+            if response.status_code == 200:
+                print("WhatsApp message sent successfully!")
+            else:
+                print("Failed to send WhatsApp message:", response.text)
+
+        messages.success(request, "Bulk Messages sent successfully")
+        return HttpResponseRedirect(reverse("emp_bulk_message_list"))
+
+    context = {"form": form, "bulk_message": bulk_message}
+    return render(request, "Employee/BulkMessage/bulkmessage.html", context)
+
+
+
+
+@login_required
+def emp_delete_bulk_message(request, id):
+    blukmessage = BulkMessage.objects.get(id=id)
+    blukmessage.delete()
+    messages.success(request, "Bulk Messages deleted successfully..")
+    return HttpResponseRedirect(reverse("emp_bulk_message_list"))
+
+
+def get_contact_number(self, user):
+        if user.user_type == "5":
+            return OutSourcingAgent.objects.get(users=user).contact_no
+        elif user.user_type == "4":
+            return Agent.objects.get(users=user).contact_no

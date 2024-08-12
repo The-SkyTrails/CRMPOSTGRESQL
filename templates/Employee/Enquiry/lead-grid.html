@@ -1,6 +1,7 @@
 {% extends "Employee/Base/base.html" %}
 {% block main-content %}
 
+
 <div class="form-container">
   <div class="custom-container">
     <div class="icon-container">
@@ -75,7 +76,7 @@
         </svg>Enrolled Leads
       </div></a>
     </div>
-    <div class="tabsBox">
+    <!-- <div class="tabsBox">
       <a href="{% url "employee_lead_list" %}"> 
       <div class="GridtabsOne">
        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"
@@ -121,7 +122,7 @@
         </svg>Grid View
       </div>
     </a>
-    </div>
+    </div> -->
 
   </div>
 
@@ -130,6 +131,7 @@
     <div class="col-md-3">
     <a href="{% url "emp_edit_enrolled_application" i.id %}">
       <div class="info-container">
+        <div data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight-{{i.id}}" aria-controls="offcanvasRight" style="cursor: pointer;">
         <div class="user-info">
           <div class="user-avatar">
             <div class="avatar-content">{{i.generate_initials}}</div>
@@ -162,120 +164,30 @@
             <p>{{i.Package}}</p>
           </div>
         </div>
-
+        {% include "Employee/Enquiry/lead_offcanvas_details.html" %}
+      </div>
         <div class="action-buttons">
-          <!-- <div class="accepts-button"> -->
-            <div class="buttons-content">
-              {% if dep == "Presales" %}
-                                    {% if i.lead_status == "PreEnrolled" %}
-                                        <Button class="btn btn-success" disabled>Accept</Button>
-                                 
-                                    {% elif i.lead_status == "Reject" %}
-                                        <button class="btn btn-danger" disabled>Reject</button>
-                                    
-                                 
-                                    {% elif i.lead_status == "Enrolled" %}
-                                        <Button class="btn btn-success" disabled>Accept</Button>
-                                    
-                                 
-                                    {% elif i.lead_status == "Inprocess" %}
-                                        <Button class="btn btn-success" disabled>Accept</Button>
-                                    
-                                 
-                                    {% elif i.lead_status == "Ready To Submit" %}
-                                        <Button class="btn btn-success" disabled>Accept</Button>
-                                    
-                                 
-                                    {% elif i.lead_status == "Appointment" %}
-                                        <Button class="btn btn-success" disabled>Accept</Button>
-                                    
-                                 
-                                    {% elif i.lead_status == "Ready To Collection" %}
-                                        <Button class="btn btn-success" disabled>Accept</Button>
-                                    
-                                 
-                                    {% elif i.lead_status == "Result" %}
-                                        <Button class="btn btn-success" disabled>Accept</Button>
-                                    
-                                 
-                                    {% elif i.lead_status == "Delivery" %}
-                                        <Button class="btn btn-success" disabled>Accept</Button>
-                                    
-                                    {% else %}
+          <a href="{% url "emp_edit_enrolled_application" i.id %}"><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <path
+              d="M16.3033 4.3032C16.5247 4.07397 16.7895 3.89114 17.0823 3.76536C17.3751 3.63957 17.6901 3.57337 18.0087 3.5706C18.3274 3.56783 18.6434 3.62855 18.9384 3.74923C19.2333 3.8699 19.5013 4.04811 19.7266 4.27345C19.952 4.49879 20.1302 4.76676 20.2509 5.06171C20.3715 5.35666 20.4323 5.67269 20.4295 5.99136C20.4267 6.31003 20.3605 6.62496 20.2347 6.91777C20.109 7.21058 19.9261 7.47541 19.6969 7.6968L18.7453 8.6484L15.3517 5.2548L16.3033 4.3032ZM13.6549 6.9516L3.6001 17.0064V20.4H6.9937L17.0497 10.3452L13.6537 6.9516H13.6549Z"
+              fill="#1F2A37"
+            />
+          </svg></a>
+        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#leadstatusupdateModal-{{i.id}}">
+          Update
+          </button>
+          {% include "Employee/Enquiry/lead_status_update_modal.html" %}  
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#employeeeModal-{{i.id}}">
+            Assigned
+          </button>
 
-                                        <a href="{% url "preenrolled_save" i.id %}"><button class="btn btn-success btn-sm" style="width:98px;">Accept</button></a>
-                                        <a href="{% url "reject_save" i.id %}"><button class="btn btn-danger btn-sm" style="width:98px; margin-top:2px">Reject</button></a>
-                                    {% endif %}
-                                    
-                                {% endif %}
-
-
-                                
-                               
-                            
-                                {% if dep == "Sales" %}
-                                    {% if i.lead_status == "PreEnrolled" %}
-                                         
-                                        <a href="{% url "enrolled_save" i.id %}"><button class="btn btn-success btn-sm" style="width:98px;">Accept</button></a>
-                                        <a href="{% url "reject_save" i.id %}"><button class="btn btn-danger btn-sm" style="width:98px; margin-top:2px">Reject</button></a>
-                                 
-                                    {% elif i.lead_status == "Reject" %}
-                                        <button class="btn btn-danger" disabled>Reject</button>
-                                    {% elif i.lead_status == "Active" %}
-                                        <button class="btn btn-warning btn-sm" disabled>Pending...</button>
-                                    {% else %}
-                                        <Button class="btn btn-success" disabled>Accept</Button> 
-
-                                        
-                                    {% endif %}
-                                    
-                                {% endif %}
-                               
-                                {% if dep == "Documentation" %}
-                                    {% if i.lead_status == "Enrolled" %}
-                                         
-                                        <a href="{% url "enprocess_save" i.id %}"><button class="btn btn-success btn-sm" style="width:98px;">Accept</button></a>
-                                        <a href="{% url "reject_save" i.id %}"><button class="btn btn-danger btn-sm" style="width:98px; margin-top:2px">Reject</button></a>
-                                 
-                                    {% elif i.lead_status == "Reject" %}
-                                        <button class="btn btn-danger" disabled>Reject</button>
-                                    {% elif i.lead_status == "Active" %}
-                                        <button class="btn btn-warning btn-sm" disabled>Pending...</button>
-                                    {% else %}
-                                        <Button class="btn btn-success" disabled>Accept</Button> 
-
-                                        
-                                    {% endif %}
-                                    
-                                {% endif %}
-                               
-
-                                {% if dep == "Visa Team" %}
-                                    {% if i.lead_status == "Inprocess" %}
-                                         
-                                        <a href="{% url "ready_to_submit_save" i.id %}"><button class="btn btn-primary btn-sm" style="width:98px;">Ready To Submit</button></a>
-                                        <a href="{% url "reject_save" i.id %}"><button class="btn btn-danger btn-sm" style="width:98px; margin-top:2px">Reject</button></a>
-                                 
-                                    {% elif i.lead_status == "Reject" %}
-                                        <button class="btn btn-danger" disabled>Reject</button>
-                                    {% elif i.lead_status == "Ready To Submit" %}
-                                    <a href="{% url "appointment_save" i.id %}"><button class="btn btn-primary btn-sm" style="width:98px;">Appointment</button></a>
-                                    {% elif i.lead_status == "Appointment" %}
-                                    <a href="{% url "ready_to_collection_save" i.id %}"><button class="btn btn-dark btn-sm" style="width:98px;">Appointment</button></a>
-                                    {% elif i.lead_status == "Ready To Collection" %}
-                                    <a href="{% url "result_save" i.id %}"><button class="btn btn-warning btn-sm" style="width:98px;">Result</button></a>
-                                    {% elif i.lead_status == "Result" %}
-                                    <a href="{% url "delivery_Save" i.id %}"><button class="btn btn-success btn-sm" style="width:98px;">Result</button></a>
-                                    {% else %}
-                                    <button class="btn btn-primary" disabled>Delivery</button>
-
-                                        
-                                    {% endif %}
-                                    
-                                {% endif %}
-                               
-            </div>
-          <!-- </div> -->
+          {% include "Employee/Enquiry/assigned_to_employee_modal.html" %}
         </div>
       </div>
       </a>
@@ -285,5 +197,6 @@
   </div>
 
 </div>
+
 
 {% endblock main-content %}

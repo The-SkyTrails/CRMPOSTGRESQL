@@ -985,7 +985,7 @@ table.dataTable.no-footer {
 .info-container {
   margin-top: 20px;
   padding: 8px 10px;
-  background: #EDEBFE;
+  background: #a0c4dd;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
@@ -1099,9 +1099,9 @@ table.dataTable.no-footer {
   padding-bottom: 8px;
   border-top: 1px #E5E7EB solid;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   gap: 10px;
-  align-items: center;
+  /* align-items: center; */
 }
 
 .buttons-content {

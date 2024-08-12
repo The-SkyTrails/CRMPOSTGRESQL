@@ -341,4 +341,6 @@ urlpatterns = [
     path("InvestmentPackageList/", InvestmentPackageListView.as_view(), name="Employee_InvestmentPackage_list"),
     path("SettlementPackageList/", SettlementPackageListView.as_view(), name="Employee_SettlementPackage_list"),
     path("UpdateStatus/<int:id>",emp_lead_updated,name="emp_lead_updated"),
+    path("bulk_message_list/", emp_add_bulk_message, name="emp_bulk_message_list"),
+    path("bulk_message_Delete/<int:id>/", emp_delete_bulk_message, name="emp_bulk_message_Delete"),
 ]

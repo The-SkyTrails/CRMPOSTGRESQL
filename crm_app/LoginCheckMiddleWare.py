@@ -12,6 +12,7 @@ class LoginCheckMiddleWare(MiddlewareMixin):
             "single_Chat",
             "get_single_chat_messages",
             "get_group_chat_messages",
+            "Packageshare"
         ]:
             return None
         if user.is_authenticated:

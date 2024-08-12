@@ -674,3 +674,27 @@ def session_status(request):
     else:
         status = "active"
     return JsonResponse({"status": status})
+
+
+
+from .models import Package
+from django.views.generic import (
+    CreateView,
+    ListView,
+    UpdateView,
+    DetailView,
+    TemplateView,
+)
+
+# class Packageshare(DetailView):
+#     model = Package
+#     template_name = "Productdetails.html"
+#     context_object_name = "package"
+
+
+def Packageshare(request,pk):
+    package = Package.objects.get(id=pk)
+    context = {
+        'package':package
+        }
+    return render(request,'Productdetails.html',context)

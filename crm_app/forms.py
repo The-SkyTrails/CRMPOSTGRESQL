@@ -569,6 +569,7 @@ class EnquiryForm3(forms.ModelForm):
             "Package",
             "Source",
             "Reference",
+            "visa_amount"
         ]
 
         widgets = {
@@ -582,6 +583,9 @@ class EnquiryForm3(forms.ModelForm):
             ),
             "Reference": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter Reference Name"}
+            ),
+            "visa_amount": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": "Enter Visa Amount"}
             ),
         }
 

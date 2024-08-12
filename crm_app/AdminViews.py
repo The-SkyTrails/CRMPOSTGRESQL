@@ -2513,6 +2513,7 @@ def PackageEnquiry3View(request):
         visa_typ = request.POST.get("visa_type")
         source = request.POST.get("source")
         reference = request.POST.get("reference")
+        visa_amount = request.POST.get("visa_amount")
 
         # ----------------------- Enquiry Detailss ------------------
         country = request.session.get("country")
@@ -2605,6 +2606,7 @@ def PackageEnquiry3View(request):
             spouse_relation5=spouse_relation5,
             Source=source,
             Reference=reference,
+            visa_amount=visa_amount,
             Visa_type=visa_typ,
             Package=package,
             Visa_country=visa_country,
@@ -3023,11 +3025,24 @@ def update_assigned_employee(request, id):
     
 @login_required
 def admin_grid_leads_details(request):
-    enquiry = Enquiry.objects.filter(archive=False).order_by("-id")
+    excluded_statuses = ["Accept","Reject"]
+    lead = [status for status in leads_status if status[0] not in excluded_statuses]
+    presales_employees = get_presale_employee()
+    sales_employees = get_sale_employee()
+    documentation_employees = get_documentation_team_employee()
+    visa_team = get_visa_team_employee()
+    assesment_employee = get_assesment_employee()
+    enquiry = Enquiry.objects.all().order_by("-id")
 
-    context = {"enquiry": enquiry}
+    context = {"enquiry": enquiry,
+               "lead":lead,
+               "presales_employees":presales_employees,
+               "sales_employees":sales_employees,
+               "documentation_employees":documentation_employees,
+               "visa_team":visa_team,
+               "assesment_employee":assesment_employee
+               }
     return render(request, "Admin/Enquiry/lead-grid.html", context)
-
 
 def get_public_ip():
     try:
@@ -3158,7 +3173,9 @@ def enrolled_Application(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            # queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part) | (Q(assign_to_agent__users__first_name__icontains=part) |  # Both First Name                                                                                                                                                                                                                                                                                                                                                              
+            Q(assign_to_agent__users__last_name__icontains=part)) | (Q(assign_to_outsourcingagent__users__first_name__icontains=part) |  Q(assign_to_outsourcingagent__users__last_name__icontains=part)) |   Q(Dob__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -4753,7 +4770,9 @@ def admin_active_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            # queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part) | (Q(assign_to_agent__users__first_name__icontains=part) |  # Both First Name
+            Q(assign_to_agent__users__last_name__icontains=part)) | (Q(assign_to_outsourcingagent__users__first_name__icontains=part) |  Q(assign_to_outsourcingagent__users__last_name__icontains=part)) |   Q(Dob__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -4824,7 +4843,9 @@ def admin_latest_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            # queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part) | (Q(assign_to_agent__users__first_name__icontains=part) |  # Both First Name
+            Q(assign_to_agent__users__last_name__icontains=part)) | (Q(assign_to_outsourcingagent__users__first_name__icontains=part) |  Q(assign_to_outsourcingagent__users__last_name__icontains=part)) |   Q(Dob__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -4889,7 +4910,9 @@ def admin_inprocess_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            # queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part) | (Q(assign_to_agent__users__first_name__icontains=part) |  # Both First Name
+            Q(assign_to_agent__users__last_name__icontains=part)) | (Q(assign_to_outsourcingagent__users__first_name__icontains=part) |  Q(assign_to_outsourcingagent__users__last_name__icontains=part)) |   Q(Dob__icontains=part) |(Q(assign_to_visa_team_employee__users__first_name__icontains=part) | Q(assign_to_visa_team_employee__users__last_name__icontains=part))
 
     if start_date:
         start_date = parse_date(start_date)
@@ -4952,12 +4975,14 @@ def admin_appointment_leads_details(request):
     end_date = request.GET.get('end_date')
     page_number = request.GET.get('page', '1')
     
-    queries = Q(lead_status="Appointment") | Q(lead_status="Ready To Collection")
+    queries = Q(lead_status="Appointment") 
 
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            # queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part) | (Q(assign_to_agent__users__first_name__icontains=part) |  # Both First Name
+            Q(assign_to_agent__users__last_name__icontains=part)) | (Q(assign_to_outsourcingagent__users__first_name__icontains=part) |  Q(assign_to_outsourcingagent__users__last_name__icontains=part)) |   Q(Dob__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -5022,7 +5047,9 @@ def admin_deleivered_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            # queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part) | (Q(assign_to_agent__users__first_name__icontains=part) |  # Both First Name
+            Q(assign_to_agent__users__last_name__icontains=part)) | (Q(assign_to_outsourcingagent__users__first_name__icontains=part) |  Q(assign_to_outsourcingagent__users__last_name__icontains=part)) |   Q(Dob__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -5089,7 +5116,9 @@ def admin_completed_leads_details(request):
     if search_query:
         search_parts = search_query.split()
         for part in search_parts:
-            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            # queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part) | (Q(assign_to_agent__users__first_name__icontains=part) |  # Both First Name
+            Q(assign_to_agent__users__last_name__icontains=part)) | (Q(assign_to_outsourcingagent__users__first_name__icontains=part) |  Q(assign_to_outsourcingagent__users__last_name__icontains=part)) |   Q(Dob__icontains=part)
 
     if start_date:
         start_date = parse_date(start_date)
@@ -5829,3 +5858,5 @@ def delete_bulk_message(request, id):
     blukmessage.delete()
     messages.success(request, "Bulk Messages deleted successfully..")
     return HttpResponseRedirect(reverse("bulk_message_list"))
+
+

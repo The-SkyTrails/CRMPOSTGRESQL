@@ -836,6 +836,7 @@ class Enquiry(models.Model):
     color_code = models.CharField(
         max_length=20, choices=COLOR_CODE, blank=True, null=True
     )
+    visa_amount = models.CharField(max_length=500,blank=True, null=True)
 
     # def set_spouse_name(self, spouse_names):
     #     self.spouse_name = json.dumps(spouse_names)
