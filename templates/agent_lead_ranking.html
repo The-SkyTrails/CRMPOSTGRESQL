@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agent Lead Ranking</title>
+</head>
+<body>
+    <h1>Agent Lead Ranking</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Agent Name</th>
+                <th>Close Leads</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for agent in agent_ranking %}
+               
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{ agent.assign_to_agent__users__first_name }}</td>
+                    <td>{{ agent.enquiry_count }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">No data available</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

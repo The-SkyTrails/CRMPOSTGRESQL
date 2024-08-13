@@ -344,6 +344,8 @@ urlpatterns = [
 
     path("bulk_message_list/", add_bulk_message, name="bulk_message_list"),
     path("bulk_message_Delete/<int:id>/", delete_bulk_message, name="bulk_message_Delete"),
+    path('agent-ranking/', agent_lead_ranking, name='agent_lead_ranking'),
+    
 
 
 

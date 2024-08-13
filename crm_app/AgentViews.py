@@ -323,6 +323,8 @@ class Enquiry3View(LoginRequiredMixin, CreateView):
 
             # ------------------------------
             enquiry.created_by = user
+            if user.user_type == "4":
+                enquiry.assign_to_agent=user.agent
             if user.user_type == "5":
                 enquiry.assign_to_outsourcingagent = user.outsourcingagent
             enquiry.lead_status = "New Lead"
@@ -430,7 +432,7 @@ def agent_new_leads_details(request):
         end_date = request.GET.get('end_date')
         page_number = request.GET.get('page', '1')
 
-        queries = Q(assign_to_outsourcingagent=user.outsourcingagent) | Q(created_by=user)
+        queries = Q(assign_to_outsourcingagent=user.outsourcingagent) | Q(created_by=user) 
         if search_query:
             search_parts = search_query.split()
             for part in search_parts:
@@ -488,7 +490,7 @@ def agent_new_leads_details(request):
 
         enq_list = Enquiry.objects.filter(queries).order_by("-id")
 
-        paginator = Paginator(enq_list, 1)
+        paginator = Paginator(enq_list, 10)
         
         
         page = paginator.get_page(page_number)

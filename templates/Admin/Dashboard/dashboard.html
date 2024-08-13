@@ -353,6 +353,73 @@
       </div>
    </div>
 </div>
+<div class="div5">
+   <div class="left11">
+      <div class="card" style="height: 360px;">
+         <div class="card-body tablescroll" style="overflow-y: auto;">
+            <h5 class="card-title">
+               Agent Ranking
+            </h5>
+            <table class="table">
+               <thead>
+                  <tr>
+                     <th>Rank</th>
+                     <th>Agent Name</th>
+                     <th>Closed Leads</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  {% for agent in agent_ranking %}
+                  <tr>
+                     <th scope="row">{{forloop.counter}}</th>
+                     <td><a href="{% url "admin_agent_details" agent.assign_to_agent__id %}">{{ agent.assign_to_agent__users__first_name }}</a></td>
+                     <td>{{ agent.enquiry_count }}</td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="2">No data available</td>
+                </tr>
+                {% endfor %}
+                  
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+   <div class="left11">
+      <div class="card" style="height: 360px;">
+         <div class="card-body tablescroll" style="overflow-y: auto;">
+            <h5 class="card-title">
+               OutSource Ranking
+            </h5>
+            <table class="table">
+               <thead>
+                  <tr>
+                     <th>Rank</th>
+                     <th>OP Name</th>
+                     <th>Closed Leads</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  {% for outsourcing_agent  in outsourceagent_ranking %}
+                  <tr>
+                        <th scope="row">{{forloop.counter}}</th>
+                        <td>{{ outsourcing_agent.assign_to_outsourcingagent__users__first_name }} {{ outsourcing_agent.assign_to_outsourcingagent__users__last_name }}</td>
+                        <td>{{ outsourcing_agent.enquiry_count }}</td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                     <td colspan="2">No data available</td>
+                  </tr>
+                  {% endfor %}
+                  
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+   
+</div>
 <div class="div4">
    <div class="he" style="display: flex; justify-content:space-between;">
       <h4><b>Product</b></h4>

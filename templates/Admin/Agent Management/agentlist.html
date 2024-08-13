@@ -299,7 +299,7 @@
                   <ul class="pagination">
                      {% if page_obj.has_previous %}
                      <li class="page-item"><a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">&laquo; first</a></li>
-                     <li class="page-item"><a class="page-link" href="?page={{ base_url }}{{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">previous</a></li>
+                     <li class="page-item"><a class="page-link" href="{{ base_url }}{{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">previous</a></li>
                      {% comment %} <li class="page-item"><a class="page-link" href="{{ base_url }}{{ page.previous_page_number }}">Previous</a></li> {% endcomment %}
                      {% endif %}
                      

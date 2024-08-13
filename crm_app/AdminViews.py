@@ -271,6 +271,37 @@ class admin_dashboard(LoginRequiredMixin, TemplateView):
 
         pending_query = FAQ.objects.filter(answer__exact="").exclude(answer__isnull=True)
 
+        agent_ranking = Enquiry.objects.filter(
+            
+            lead_status="Ready To Collection",
+            assign_to_agent__isnull=False
+        ).values(
+            'assign_to_agent__id', 
+            'assign_to_agent__users__first_name', 
+            'assign_to_agent__users__last_name'
+        ).annotate(
+            enquiry_count=Count('id')
+        ).order_by('-enquiry_count')
+        
+
+
+
+        outsourcing_agent_ranking = Enquiry.objects.filter(
+        lead_status="Ready To Collection",
+        assign_to_outsourcingagent__isnull=False
+    ).values(
+        'assign_to_outsourcingagent__id', 
+        'assign_to_outsourcingagent__users__first_name', 
+        'assign_to_outsourcingagent__users__last_name'
+    ).annotate(
+        enquiry_count=Count('id')
+    ).order_by('-enquiry_count')
+        print("outsource agent",outsourcing_agent_ranking)
+
+      
+        
+   
+
         context["pending_query"] = pending_query
 
         
@@ -301,6 +332,8 @@ class admin_dashboard(LoginRequiredMixin, TemplateView):
         context["enrolled_counts"] = enrolled_counts
         context["all_months"] = all_months
         context["all_counts"] = all_counts
+        context["agent_ranking"] = agent_ranking
+        context["outsourceagent_ranking"] = outsourcing_agent_ranking
         
 
         return context
@@ -1915,6 +1948,7 @@ class PackageListView(LoginRequiredMixin, ListView):
         context['page_obj'] = page
         context['page'] = page.object_list
         return context
+
 
 class DisapprivePackageListView(LoginRequiredMixin, ListView):
     model = Package
@@ -5860,3 +5894,40 @@ def delete_bulk_message(request, id):
     return HttpResponseRedirect(reverse("bulk_message_list"))
 
 
+# from django.db.models import Count, Q
+
+# def agent_lead_ranking(request):
+#     # Annotate each agent with the count of 'Ready To Collection' leads
+#     agent_ranking = Enquiry.objects.filter(
+#         lead_status="Ready To Collection",
+#         assign_to_agent__isnull=False,
+#     ).filter(
+#         Q(assign_to_agent__isnull=False) | Q(created_by__isnull=False)
+#     ).values('assign_to_agent__users__first_name', 'assign_to_agent__users__last_name').annotate(
+#         enquiry_count=Count('assign_to_agent')
+#     ).order_by('-enquiry_count')
+
+#     print("rankinggg", agent_ranking)
+#     context = {
+#         'agent_ranking': agent_ranking
+#     }
+#     return render(request, 'agent_lead_ranking.html', context)
+
+
+from django.db.models import Q, Count
+
+def agent_lead_ranking(request):
+    # Annotate each agent with the count of 'Ready To Collection' leads
+    agent_ranking = Enquiry.objects.filter(
+        lead_status="Ready To Collection"
+    ).filter(
+        Q(assign_to_agent__isnull=False) | Q(created_by__isnull=False)
+    ).values('assign_to_agent__id','assign_to_agent__users__first_name', 'assign_to_agent__users__last_name').annotate(
+        enquiry_count=Count('id', filter=Q(assign_to_agent__isnull=False) | Q(created_by__isnull=False))
+    ).order_by('-enquiry_count')
+
+    print("rankinggg", agent_ranking)
+    context = {
+        'agent_ranking': agent_ranking
+    }
+    return render(request, 'agent_lead_ranking.html', context)
