@@ -404,7 +404,9 @@
                   {% for outsourcing_agent  in outsourceagent_ranking %}
                   <tr>
                         <th scope="row">{{forloop.counter}}</th>
-                        <td>{{ outsourcing_agent.assign_to_outsourcingagent__users__first_name }} {{ outsourcing_agent.assign_to_outsourcingagent__users__last_name }}</td>
+                        <td><a href="{% url "admin_outsourceagent_details" outsourcing_agent.assign_to_outsourcingagent__id %}">{{ outsourcing_agent.assign_to_outsourcingagent__users__first_name }} {{ outsourcing_agent.assign_to_outsourcingagent__users__last_name }}</a></td>
+                        {% comment %} <td>{{ outsourcing_agent.assign_to_outsourcingagent__users__first_name }} {{ outsourcing_agent.assign_to_outsourcingagent__users__last_name }}</td> {% endcomment %}
+                        
                         <td>{{ outsourcing_agent.enquiry_count }}</td>
                   </tr>
                   {% empty %}
