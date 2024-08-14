@@ -1422,7 +1422,7 @@ class all_agent(LoginRequiredMixin, ListView):
             agents = agents.filter(registeron__date__lte=end_date)
         
         # Order by date in descending order
-        agents = agents.order_by('-registeron')
+        agents = agents.order_by('-id')
         
         return agents
 
