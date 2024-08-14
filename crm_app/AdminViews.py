@@ -1363,30 +1363,67 @@ class all_agent(LoginRequiredMixin, ListView):
     context_object_name = "agent"
     paginate_by = 10
 
+    # def get_queryset(self):
+    #     query = self.request.GET.get('query', '')
+    #     agents = Agent.objects.all().order_by("-id")
+    #     start_date = self.request.GET.get('start_date')
+        
+    #     end_date = self.request.GET.get('end_date')
+    #     queries = Q()
+    #     if query:
+    #         search_parts = query.split()
+            
+    #         for part in search_parts:
+    #             # queries |= Q(first_name__icontains=part) | Q(last_name__icontains=part) | Q(agent_code__icontains=part)
+    #             queries &= Q(users__first_name__icontains=part) | Q(users__last_name__icontains=part) | Q(contact_no__icontains=part) | Q(users__email__icontains=part)  | Q(registerdby__first_name__icontains=part) 
+            
+        
+    #     if start_date:
+    #         start_date = parse_date(start_date)
+    #         queries &= Q(registeron__date__gte=start_date)
+            
+
+    #     if end_date:
+    #         end_date = parse_date(end_date)
+    #         queries &= Q(registeron__date__lte=end_date)
+    #     agents = Agent.objects.filter(queries)
+    #     return agents
+
     def get_queryset(self):
         query = self.request.GET.get('query', '')
-        agents = Agent.objects.all().order_by("-id")
         start_date = self.request.GET.get('start_date')
-        
         end_date = self.request.GET.get('end_date')
+        
+        # Create the base queryset
+        agents = Agent.objects.all()
+        
+        # Build the Q object for search queries
         queries = Q()
         if query:
             search_parts = query.split()
-            
             for part in search_parts:
-                # queries |= Q(first_name__icontains=part) | Q(last_name__icontains=part) | Q(agent_code__icontains=part)
-                queries &= Q(users__first_name__icontains=part) | Q(users__last_name__icontains=part) | Q(contact_no__icontains=part) | Q(users__email__icontains=part)  | Q(registerdby__first_name__icontains=part) 
-            
+                queries &= (Q(users__first_name__icontains=part) |
+                            Q(users__last_name__icontains=part) |
+                            Q(contact_no__icontains=part) |
+                            Q(users__email__icontains=part) |
+                            Q(registerdby__first_name__icontains=part))
         
+        # Apply the query filters
+        if queries:
+            agents = agents.filter(queries)
+        
+        # Apply date filters
         if start_date:
             start_date = parse_date(start_date)
-            queries &= Q(registeron__date__gte=start_date)
-            
-
+            agents = agents.filter(registeron__date__gte=start_date)
+        
         if end_date:
             end_date = parse_date(end_date)
-            queries &= Q(registeron__date__lte=end_date)
-        agents = Agent.objects.filter(queries)
+            agents = agents.filter(registeron__date__lte=end_date)
+        
+        # Order by date in descending order
+        agents = agents.order_by('-registeron')
+        
         return agents
 
     def get_context_data(self, **kwargs):
