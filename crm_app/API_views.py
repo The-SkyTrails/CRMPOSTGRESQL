@@ -8,6 +8,8 @@ from .models import (
     VisaCategory,
     Package,
     Enquiry,
+    DocumentFiles,
+    CaseCategoryDocument
 )
 from .serializers import (
     BookingSerializer,
@@ -16,6 +18,8 @@ from .serializers import (
     VisaCountrySerializer,
     ProductSerializer,
     EnquirySerializer,
+    DocumentsSerializer,
+    CaseCategoryDocumentSerializer
 )
 from rest_framework.viewsets import ViewSet, ModelViewSet
 
@@ -98,3 +102,19 @@ def AgentWebsitePackage(request):
 
 
 
+
+class DocumentsWebsite(ModelViewSet):
+    queryset = DocumentFiles.objects.all()
+    serializer_class = DocumentsSerializer
+
+
+
+class DocumentsWebsite(ModelViewSet):
+    queryset = DocumentFiles.objects.all()
+    serializer_class = DocumentsSerializer
+
+
+
+class CaseCategoryDocumentViewSet(viewsets.ModelViewSet):
+    queryset = CaseCategoryDocument.objects.all()
+    serializer_class = CaseCategoryDocumentSerializer

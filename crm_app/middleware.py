@@ -12,7 +12,7 @@ class SessionExpireMiddleware:
         # Middleware processing
         if request.user.is_authenticated:
             session_key = request.session.session_key
-            print("ggggggggggggggg")
+           
             if session_key:
                 try:
                     session = Session.objects.get(pk=session_key)

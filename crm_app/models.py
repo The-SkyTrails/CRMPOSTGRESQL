@@ -654,8 +654,14 @@ leads_status = [
     ("Ready To Collection", "Ready To Collection"),
 ]
 
+lead_type = [
+    ("Mobile", "Mobile"),
+    ("local", "local"),
+    ]
 
 class Enquiry(models.Model):
+    
+    
 
     Salutation = models.CharField(
         max_length=20, choices=SALUTATION_CHOICES, null=True, blank=True
@@ -837,6 +843,9 @@ class Enquiry(models.Model):
         max_length=20, choices=COLOR_CODE, blank=True, null=True
     )
     visa_amount = models.CharField(max_length=500,blank=True, null=True)
+    lead_type = models.CharField(
+        max_length=20, choices=lead_type, default="local"
+    )
 
     # def set_spouse_name(self, spouse_names):
     #     self.spouse_name = json.dumps(spouse_names)
