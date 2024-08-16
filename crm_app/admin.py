@@ -89,7 +89,7 @@ class AgentAdmin(admin.ModelAdmin):
         "users","registerdby","registeron"
     ]
     list_display = ["users", "contact_no", "assign_employee","registerdby","registeron"]
-    search_fields = ["id"]
+    search_fields = ["id","contact_no"]
     list_per_page = 10
 
 
