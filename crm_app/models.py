@@ -1204,6 +1204,8 @@ class Notification(models.Model):
         OutSourcingAgent, on_delete=models.CASCADE, null=True, blank=True
     )
     name = models.CharField(max_length=100)
+    lead_id = models.PositiveIntegerField(null=True, blank=True)  # Store lead ID if applicable
+   
     is_seen = models.BooleanField(default=False)
 
 

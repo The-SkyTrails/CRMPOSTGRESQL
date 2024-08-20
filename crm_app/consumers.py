@@ -376,31 +376,89 @@ class NotificationAgentConsumer(AsyncWebsocketConsumer):
 
 # ------------------------------------------------------------------------
 
+from .models import Notification
 
+# class NotificationAdminConsumer(AsyncWebsocketConsumer):
+#     async def connect(self):
+#         await self.accept()
+#         # Add the user to the "employees_group" group
+
+#         print("helooooo admin connection...")
+#         await self.channel_layer.group_add("admin_group", self.channel_name)
+
+#     async def disconnect(self, close_code):
+#         # Remove the user from the "employees_group" group
+#         await self.channel_layer.group_discard("admin_group", self.channel_name)
+
+#     async def receive(self, text_data):
+#         text_data_json = json.loads(text_data)
+#         print("Message receive from client", text_data)
+#         message = text_data_json["message"]
+#         print("message receive form client",message)
+
+#         # Send the received message to the client
+#         await self.send(text_data=json.dumps({"message": message}))
+
+#     # Custom method to handle notifications
+#     async def notify_admin(self, event):
+#         message = event["message"]
+#         count = event["count"]
+#         # notif = Notification.objects.get()
+#         # print("ssssssssssssss",event["agent_id"])
+#         agentID = event["agent_id"]
+#         notif_id = ""
+#         if agentID:
+            
+#             notif_id = Notification.objects.get(agent=agentID)
+#             print("ooooooooooooo id",notif_id)
+        
+
+#         # Send the notification to the client
+#         await self.send(text_data=json.dumps({"message": message, "count": count,"notif_id":notif_id}))
+
+from django.core.serializers import serialize
 class NotificationAdminConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
-        # Add the user to the "employees_group" group
-
-        print("helooooo admin connection...")
         await self.channel_layer.group_add("admin_group", self.channel_name)
+        
 
     async def disconnect(self, close_code):
-        # Remove the user from the "employees_group" group
         await self.channel_layer.group_discard("admin_group", self.channel_name)
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        print("Message receive from client", text_data)
+        print("Message received from client", text_data)
         message = text_data_json["message"]
-
+        print("Message received from client:", message)
+        # notifications = Notification.objects.all()
+        # serialized_notifications = serialize('json', notifications)
+        # print("serailizzee",serialized_notifications)
         # Send the received message to the client
         await self.send(text_data=json.dumps({"message": message}))
 
-    # Custom method to handle notifications
     async def notify_admin(self, event):
         message = event["message"]
         count = event["count"]
+        agentID = event["agent_id"]
+        notifications = Notification.objects.filter(is_seen=False).order_by("-id")
+        serialized_notifications = serialize('json', notifications)
+        print("serailizzee",serialized_notifications)
+        
+
+        # Assuming agentID is being used to filter or fetch the Notification object
+        notif_id = None
+        if agentID:
+            try:
+                notification = Notification.objects.get(agent=agentID)
+                notif_id = notification.id  # Extract the ID only
+                print("Notification ID:", notif_id)
+            except Notification.DoesNotExist:
+                print("Notification does not exist for the given agent.")
 
         # Send the notification to the client
-        await self.send(text_data=json.dumps({"message": message, "count": count}))
+        await self.send(text_data=json.dumps({
+            "message": message,
+            "count": count,
+            "notifications": serialized_notifications  # Send the ID only
+        }))

@@ -60,11 +60,14 @@ def current_login(request):
             }
 
         elif request.user.user_type == "2":
+            print("workk.................")
             user = request.user
 
             
-            notification = Notification.objects.filter(is_seen__in=[False]).order_by("-id")
-            notification_Count = Notification.objects.filter(is_seen__in=[False]).count()
+            notification = Notification.objects.filter(is_seen=False).order_by("-id")
+            print("notificaitonssssssssssssssssssssssssssss",notification)
+            notification_Count = Notification.objects.filter(is_seen=False).count()
+            print("notificationsss counts::",notification_Count)
             return {
                 "notification": notification,
                 "notification_Count": notification_Count,

@@ -5,6 +5,9 @@
   .menusss::-webkit-scrollbar {
     display: none;
   }
+  .not-text:hover{
+    cursor: pointer;
+  }
   </style>
 
 <div class="Navbar">
@@ -38,7 +41,7 @@
           <h4 style="background-color: #E1EFFE;padding: 10px;text-align: center;">Notifications</h4>
           <div class="rounded-lg shadow d-flex flex-column justify-content-end inline-flex" id="notifications-dropdown">
             {% for i in notification %}
-            <div class="row not" >
+            <div class="row not"  data-id="{{ i.id }}" onclick="markAsSeen({{ i.id }})">
               <div class="col-md-1 not-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 24 24" fill="none">
                   <path d="M6.42895 2.41301C6.55502 2.26254 6.61707 2.06863 6.60178 1.87292C6.58649 1.67721 6.49508 1.49529 6.34716 1.36622C6.19924 1.23716 6.00662 1.17123 5.81064 1.18259C5.61466 1.19396 5.43095 1.28171 5.29895 1.42701L4.00695 2.90701C3.27433 3.74658 2.86018 4.81698 2.83695 5.93101L2.77995 8.65001C2.77791 8.7485 2.79529 8.84643 2.8311 8.9382C2.86691 9.02997 2.92045 9.1138 2.98866 9.18488C3.05686 9.25596 3.1384 9.31292 3.22861 9.35249C3.31883 9.39206 3.41595 9.41347 3.51445 9.41551C3.61294 9.41754 3.71086 9.40016 3.80264 9.36435C3.89441 9.32854 3.97823 9.275 4.04932 9.2068C4.1204 9.1386 4.17735 9.05706 4.21692 8.96684C4.25649 8.87663 4.27791 8.7795 4.27995 8.68101L4.33595 5.96301C4.35199 5.20074 4.63552 4.46837 5.13695 3.89401L6.42895 2.41301Z" fill="#31C48D"/>
@@ -133,4 +136,87 @@
      </div>
    </div>
  </div>
+{% comment %} 
+ <script>
+ function markAsSeen(notificationId) {
+    console.log("noification id",notificationId)
+    fetch(`mark-as-seen/${notificationId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken') // Ensure you include CSRF token for POST requests
+        },
+        body: JSON.stringify({ id: notificationId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Notification marked as seen:', data);
+        // Update the notification UI if needed
+        const notifElement = document.querySelector(`div[data-id="${notificationId}"]`);
+        if (notifElement) {
+            notifElement.classList.add('seen'); // Optional: add a class to visually indicate it's been seen
+        }
+    })
+    .catch(error => console.error('Error marking notification as seen:', error));
+}
+
+// Helper function to get CSRF token from cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+</script> {% endcomment %}
+
+<script>
+function markAsSeen(notificationId) {
+    const url = "{% url 'mark_as_seen' 0 %}".replace('0', notificationId);
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken') // You can remove this if not using CSRF tokens
+        },
+        body: JSON.stringify({ id: notificationId })
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+        } else {
+            console.log('Notification marked as seen');
+        }
+    })
+    .catch(error => console.error('Error marking notification as seen:', error));
+}
+
+// Helper function to get CSRF token from cookies (remove if not using CSRF)
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+
+
+
  {% include "Admin/Password Settings/updatepassword.html" %}

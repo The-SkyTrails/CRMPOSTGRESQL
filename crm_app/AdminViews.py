@@ -1497,6 +1497,10 @@ def agent_delete(request, id):
 def admin_agent_details(request, id):
     agent = Agent.objects.get(id=id)
     users = agent.users
+    notifications = Notification.objects.get(agent=agent.id)
+    if notifications.is_seen == False:
+        notifications.is_seen = True
+        notifications.save()
 
     if request.method == "POST":
         firstname = request.POST.get("first_name")
@@ -1706,6 +1710,10 @@ class Grid_outsource_agent(LoginRequiredMixin, ListView):
 @login_required
 def admin_outsourceagent_details(request, id):
     outsourceagent = OutSourcingAgent.objects.get(id=id)
+    notification = Notification.objects.get(outsourceagent=id)
+    if notification.is_seen == False:
+        notification.is_seen = True
+        notification.save()
     users = users = outsourceagent.users
     context = {"agent": outsourceagent}
     if request.method == "POST":
@@ -3367,6 +3375,10 @@ def edit_enrolled_application(request, id):
     enquiry = Enquiry.objects.get(id=id)
     country = VisaCountry.objects.all()
     category = VisaCategory.objects.all()
+    notifications = Notification.objects.get(lead_id=enquiry.id)
+    if notifications.is_seen == False:
+        notifications.is_seen = True
+        notifications.save()
 
     context = {
         "enquiry": enquiry,
@@ -5968,3 +5980,59 @@ def agent_lead_ranking(request):
         'agent_ranking': agent_ranking
     }
     return render(request, 'agent_lead_ranking.html', context)
+
+
+
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+def mark_as_seen(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id)
+    # notification.is_seen = True
+    # notification.save()
+    print("ooooooooooooooo",notification)
+    print("lead lead....",notification.lead_id)
+    if notification.lead_id:
+       
+        return HttpResponseRedirect(reverse("edit_enrolled_application", kwargs={"id": notification.lead_id}))
+        # return HttpResponseRedirect(reverse("edit_enrolled_application"))
+    if notification.outsourceagent:
+        return HttpResponseRedirect(reverse("admin_outsourceagent_details", kwargs={"id": notification.outsourceagent.id}))
+        
+    if notification.agent:
+        
+        return HttpResponseRedirect(reverse("admin_agent_details", kwargs={"id": notification.agent.id}))
+        
+    # else:
+    #     pass
+
+    # if request.method == 'POST':
+    #     try:
+    #         notification = Notification.objects.get(id=notification_id)
+    #         notification.is_seen = True
+    #         notification.save()
+    #         return JsonResponse({'status': 'success'})
+    #     except Notification.DoesNotExist:
+    #         return JsonResponse({'status': 'error', 'message': 'Notification not found'})
+    # return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+
+def mark_notification_as_seen(request, notification_id):
+    print("heloo armaan")
+    notification = get_object_or_404(Notification, id=notification_id)
+    print("agenttttttt",notification.agent)
+    # notification = get_object_or_404(Notification, id=notification_id)
+    # notification.is_seen = True
+    # notification.save()
+
+    if notification.lead_id:
+       
+        return HttpResponseRedirect(reverse("edit_enrolled_application", kwargs={"id": notification.lead_id}))
+        # return HttpResponseRedirect(reverse("edit_enrolled_application"))
+    if notification.outsourceagent:
+        return HttpResponseRedirect(reverse("admin_outsourceagent_details", kwargs={"id": notification.outsourceagent.id}))
+        
+    if notification.agent:
+        
+        return HttpResponseRedirect(reverse("admin_agent_details", kwargs={"id": notification.agent.id}))
+    return JsonResponse({'status': 'success'})

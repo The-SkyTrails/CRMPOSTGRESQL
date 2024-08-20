@@ -537,11 +537,12 @@ class emp_Enquiry3View(LoginRequiredMixin, CreateView):
             enquiry.created_by = self.request.user
             enquiry.lead_status = "New Lead"
             enquiry.save()
+            lead_id = enquiry.id
             employee_id = self.request.user.employee.id
 
-            create_admin_notification("New Lead Added")
+            create_admin_notification("New Lead Added",lead_id=lead_id)
 
-            current_count = Notification.objects.filter(is_seen__in=[False]).count()
+            current_count = Notification.objects.filter(is_seen=False).count()
             send_notification_admin("New Lead Added", current_count)
 
             messages.success(request, "Enquiry Added successfully")
@@ -1409,10 +1410,11 @@ def emp_add_agent(request):
                 # chat_group.group_member.add(user)
 
                 user.save()
+                outsourceagent_id = user.outsourcingagent.id
 
                 # create_admin_notification("New Lead Added")
                 msg = f"New OutSourceAgent Added({fullname})"
-                create_admin_notification(msg)
+                create_admin_notification(msg,outsourceagent_id=outsourceagent_id)
 
                 current_count = Notification.objects.filter(is_seen=False).count()
                 send_notification_admin(msg, current_count)
@@ -1461,12 +1463,14 @@ def emp_add_agent(request):
                 # chat_group.group_member.add(user.agent.assign_employee.users)
                 # chat_group.group_member.add(user)
                 user.save()
+                agentid = user.agent.id
 
                 msg = f"New Agent Added({fullname})"
-                create_admin_notification(msg)
+                create_admin_notification(msg,agent_id=agentid)
 
                 current_count = Notification.objects.filter(is_seen=False).count()
-                send_notification_admin(msg, current_count)
+                
+                send_notification_admin(msg, current_count,agent_id=agentid)
 
                 context = {"employees": relevant_employees, "dep": dep}
 
@@ -6755,13 +6759,15 @@ def update_assigned_employee(request, id):
                 enquiry.assign_to_visa_team_employee = emp
                 enquiry.lead_status = "Inprocess"
             employee_id = emp.id
-            create_notification(emp, "New Lead Assign Added")
+            create_notification(emp, "New Lead Assign Added",lead_id=enquiry.id)
 
-            current_count = Notification.objects.filter(
-                is_seen__in=[False], employee=assign_to_employee
-            ).count()
-            assign_notification(employee_id, "New Lead Assign Added", current_count)
+            # current_count = Notification.objects.filter(
+            #     is_seen=False, employee=assign_to_employee
+            # ).count()
+            # assign_notification(employee_id, "New Lead Assign Added", current_count)
 
+            current_count = Notification.objects.filter(is_seen=False).count()
+            send_notification_admin("Lead Assign", current_count)
         except Employee.DoesNotExist:
             if enquiry.assign_to_employee is None:
                 enquiry.assign_to_employee = None

@@ -329,6 +329,10 @@ class Enquiry3View(LoginRequiredMixin, CreateView):
                 enquiry.assign_to_outsourcingagent = user.outsourcingagent
             enquiry.lead_status = "New Lead"
             enquiry.save()
+            lead_id = enquiry.id
+            create_admin_notification("New Lead Added",lead_id=lead_id)
+            current_count = Notification.objects.filter(is_seen=False).count()
+            send_notification_admin("New Lead Added", current_count)
             messages.success(request, "Enquiry Added successfully")
 
             # Clear session data after successful submission
