@@ -2996,10 +2996,12 @@ def update_assigned_employee(request, id):
         ######### ASSIGN CODE #########
         try:
             assign_to_employee = request.POST.get("assign_to_employee")
+            
             emp = Employee.objects.get(id=assign_to_employee)
             enquiry.assign_to_employee = emp
             employee_id = emp.id
-            create_notification(emp, "New Lead Assign Added")
+            lead_id=enquiry.id
+            create_notification(emp, "New Lead Assign Added",lead_id=lead_id,is_admin=False)
 
             current_count = Notification.objects.filter(
                 is_seen=False, employee=assign_to_employee
@@ -3020,12 +3022,14 @@ def update_assigned_employee(request, id):
             enquiry.assign_to_assesment_employee = emp
 
             employee_id = emp.id
-            create_notification(emp, "New Assign Added")
+            lead_id=enquiry.id
+            # create_notification(emp, "New Assign Added")
+            create_notification(emp, "Lead Active assign Added",lead_id=lead_id,is_admin=False)
 
             current_count = Notification.objects.filter(
                 is_seen=False, employee=employee_id
             ).count()
-            assign_notification(employee_id, "New Assign Added", current_count)
+            assign_notification(employee_id, "Lead Active Assign Added", current_count)
 
         except Employee.DoesNotExist:
             if enquiry.assign_to_assesment_employee is None:
@@ -3039,12 +3043,13 @@ def update_assigned_employee(request, id):
             enquiry.assign_to_sales_employee = emp
 
             employee_id = emp.id
-            create_notification(emp, "New Assign Added")
+            # create_notification(emp, "New Assign Added")
+            create_notification(emp, "PreEnrolled Lead assign Added",lead_id=lead_id,is_admin=False)
 
             current_count = Notification.objects.filter(
                 is_seen=False, employee=employee_id
             ).count()
-            assign_notification(employee_id, "New Assign Added", current_count)
+            assign_notification(employee_id, "PreEnrolled Lead assign Added", current_count)
 
         except Employee.DoesNotExist:
             if enquiry.assign_to_sales_employee is None:
@@ -3060,12 +3065,14 @@ def update_assigned_employee(request, id):
             enquiry.assign_to_documentation_employee = emp
 
             employee_id = emp.id
-            create_notification(emp, "New Lead Assign Added")
+            # create_notification(emp, "New Lead Assign Added")
+            create_notification(emp, "Documentation Lead assign Added",lead_id=lead_id,is_admin=False)
+
 
             current_count = Notification.objects.filter(
                 is_seen=False, employee=employee_id
             ).count()
-            assign_notification(employee_id, "New Lead Assign Added", current_count)
+            assign_notification(employee_id, "Documentation Lead assign Added", current_count)
 
         except Employee.DoesNotExist:
             if enquiry.assign_to_documentation_employee is None:
@@ -3081,12 +3088,13 @@ def update_assigned_employee(request, id):
             enquiry.assign_to_visa_team_employee = emp
 
             employee_id = emp.id
-            create_notification(emp, "New Assign Added")
+            # create_notification(emp, "New Assign Added")
+            create_notification(emp, "Visa Team Lead assign Added",lead_id=lead_id,is_admin=False)
 
             current_count = Notification.objects.filter(
                 is_seen=False, employee=employee_id
             ).count()
-            assign_notification(employee_id, "New Assign Added", current_count)
+            assign_notification(employee_id, "Visa Team Lead assign Added", current_count)
 
         except Employee.DoesNotExist:
             if enquiry.assign_to_visa_team_employee is None:
@@ -3101,6 +3109,7 @@ def update_assigned_employee(request, id):
         
         return redirect(redirect_url)
     
+
     
 @login_required
 def admin_grid_leads_details(request):
@@ -3375,10 +3384,11 @@ def edit_enrolled_application(request, id):
     enquiry = Enquiry.objects.get(id=id)
     country = VisaCountry.objects.all()
     category = VisaCategory.objects.all()
-    notifications = Notification.objects.get(lead_id=enquiry.id)
-    if notifications.is_seen == False:
-        notifications.is_seen = True
-        notifications.save()
+    notifications = Notification.objects.filter(lead_id=enquiry.id)
+    for notification in notifications:
+        if not notification.is_seen:
+            notification.is_seen = True
+            notification.save()
 
     context = {
         "enquiry": enquiry,
@@ -5768,6 +5778,15 @@ def update_assigned_rm(request, id):
             rm = CustomUser.objects.get(id=assign_rm)
             agent.assign_employee = rm
             agent.save()
+            # agentid = agent
+            # print("agent id.....",agentid)
+            # # print("pppppppppppppppp",agentid.id)
+            # create_notification(agentid=agentid, message="New Lead Assign Added",is_admin=False)
+            # current_count = Notification.objects.filter(
+            #     is_seen=False, agent= agentid
+            # ).count()
+            # assign_notification(agent.assign_employee.id, "New Agent Assign Added", current_count)
+
             messages.success(request, "RM Assigned Successfully...")
         except CustomUser.DoesNotExist:
             messages.error(request, "RM does not exist.")
@@ -6017,22 +6036,22 @@ def mark_as_seen(request, notification_id):
 
 
 
-def mark_notification_as_seen(request, notification_id):
-    print("heloo armaan")
-    notification = get_object_or_404(Notification, id=notification_id)
-    print("agenttttttt",notification.agent)
-    # notification = get_object_or_404(Notification, id=notification_id)
-    # notification.is_seen = True
-    # notification.save()
+# def mark_notification_as_seen(request, notification_id):
+#     print("heloo armaan")
+#     notification = get_object_or_404(Notification, id=notification_id)
+#     print("agenttttttt",notification.agent)
+#     # notification = get_object_or_404(Notification, id=notification_id)
+#     # notification.is_seen = True
+#     # notification.save()
 
-    if notification.lead_id:
+#     if notification.lead_id:
        
-        return HttpResponseRedirect(reverse("edit_enrolled_application", kwargs={"id": notification.lead_id}))
-        # return HttpResponseRedirect(reverse("edit_enrolled_application"))
-    if notification.outsourceagent:
-        return HttpResponseRedirect(reverse("admin_outsourceagent_details", kwargs={"id": notification.outsourceagent.id}))
+#         return HttpResponseRedirect(reverse("edit_enrolled_application", kwargs={"id": notification.lead_id}))
+#         # return HttpResponseRedirect(reverse("edit_enrolled_application"))
+#     if notification.outsourceagent:
+#         return HttpResponseRedirect(reverse("admin_outsourceagent_details", kwargs={"id": notification.outsourceagent.id}))
         
-    if notification.agent:
+#     if notification.agent:
         
-        return HttpResponseRedirect(reverse("admin_agent_details", kwargs={"id": notification.agent.id}))
-    return JsonResponse({'status': 'success'})
+#         return HttpResponseRedirect(reverse("admin_agent_details", kwargs={"id": notification.agent.id}))
+#     return JsonResponse({'status': 'success'})

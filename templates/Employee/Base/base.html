@@ -264,13 +264,13 @@
 </script> {% endcomment %}
 
 {{ emp_idd|json_script:"employee" }}
-
+{% comment %} 
  <script>
         document.addEventListener('DOMContentLoaded', function() {
             const EmployeeId = JSON.parse(document.getElementById('employee').textContent);
             notif = document.getElementById("notification");
             
-            const socket = new WebSocket('wss://' + window.location.host + '/ws/notifications/' + EmployeeId + '/');
+            const socket = new WebSocket('ws://' + window.location.host + '/ws/notifications/' + EmployeeId + '/');
     
             socket.onopen = function () {
                 console.log('WebSocket connection opened.');
@@ -307,8 +307,7 @@
               
             <hr>
                 `;
-                {% comment %} notificationLogDiv.appendChild(newMessage) {% endcomment %}
-                {% comment %} document.getElementById("notifications-dropdown").innerHTML = "<li class='dropdown-item'>" + data + "</li><hr class='dropdown-divider'>" + document.getElementById("notifications-dropdown").innerHTML; {% endcomment %}
+               
                 if (notificationLogDiv.firstChild) {
                     notificationLogDiv.insertBefore(newMessage, notificationLogDiv.firstChild);
                 } else {
@@ -322,7 +321,96 @@
 
             
         });
-    </script>
+</script> {% endcomment %}
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const notif = document.getElementById("notification");
+    const EmployeeId = JSON.parse(document.getElementById('employee').textContent);
+    const socket = new WebSocket('ws://' + window.location.host + '/ws/notifications/' + EmployeeId + '/');
+
+    socket.onopen = function() {
+        console.log('WebSocket admin connection opened.');
+    };
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        console.log('Received message:', data.message);
+        console.log('Received count:', data.count);
+        console.log('Received notification ID:', data.notif_id);
+
+        notif.innerHTML = data.count;
+
+        const notificationLogDiv = document.querySelector('#notifications-dropdown');
+
+        // Parse the serialized notifications into an array of objects
+        const notifications = JSON.parse(data.notifications);
+        notifications.forEach(notification => {
+            const fields = notification.fields; // Access the fields of each notification
+            const name = fields.name; // Extract the 'name' field
+            const id = notification.pk; // Extract the 'pk' field
+
+            console.log('Notification Name:', name); // Log the name field
+            console.log('id:', id); // Log the id field
+
+            // Check if the notification is already present
+            if (!notificationLogDiv.querySelector(`[data-id="${id}"]`)) {
+                var newMessage = document.createElement('div');
+                newMessage.innerHTML = `
+                    <div class="row not" data-id="${id}">
+                        <div class="col-md-1 not-icon">
+                            <!-- Your SVG or icon here -->
+                        </div>
+                        <div class="col-md-11 not-text">
+                            ${name} <!-- Display the 'name' field -->
+                           
+                        </div>
+                    </div>
+                    <hr>
+                `;
+
+                if (notificationLogDiv.firstChild) {
+                    notificationLogDiv.insertBefore(newMessage, notificationLogDiv.firstChild);
+                } else {
+                    notificationLogDiv.appendChild(newMessage);
+                }
+
+                // Add click event listener to mark notification as seen
+                newMessage.addEventListener('click', function() {
+                    const notificationId = this.getAttribute('data-id');
+
+                    console.log("Notification ID clicked by pk...:", id);
+                    const url = `{% url 'mark_notification_as_seen' 0 %}`.replace('0', id);
+
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            console.log('Notification marked as seen');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                });
+            } else {
+                console.log('Notification already exists:', id);
+            }
+        });
+    };
+
+    socket.onclose = function(event) {
+        console.log('WebSocket connection closed:', event);
+    };
+});
+</script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     

@@ -586,7 +586,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const notif = document.getElementById("notification");
-    const socket = new WebSocket('wss://' + window.location.host + '/ws/Admin/notifications/');
+    const socket = new WebSocket('ws://' + window.location.host + '/ws/Admin/notifications/');
 
     socket.onopen = function() {
         console.log('WebSocket admin connection opened.');
@@ -622,7 +622,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <div class="col-md-11 not-text">
                             ${name} <!-- Display the 'name' field -->
-                            ${id}
+                           
                         </div>
                     </div>
                     <hr>

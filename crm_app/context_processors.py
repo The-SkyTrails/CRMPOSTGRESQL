@@ -46,12 +46,14 @@ def current_login(request):
         elif request.user.user_type == "3":
             user = request.user
             emp_idd = user.employee.id
-            notification = Notification.objects.filter(
-                employee=emp_idd, is_seen__in=[False]
-            ).order_by("-id")
+            notification = Notification.objects.filter(employee=emp_idd,is_seen=False,is_admin=False).order_by("-id")
+            # notification = Notification.objects.filter(
+            #     employee=emp_idd, is_seen__in=[False]
+            # ).order_by("-id")
             notification_Count = Notification.objects.filter(
-                employee=user.employee, is_seen__in=[False]
+                employee=user.employee, is_seen=False,is_admin=False
             ).count()
+            print("NO...............",notification)
 
             return {
                 "emp_idd": emp_idd,
@@ -60,13 +62,13 @@ def current_login(request):
             }
 
         elif request.user.user_type == "2":
-            print("workk.................")
+            
             user = request.user
 
             
-            notification = Notification.objects.filter(is_seen=False).order_by("-id")
-            print("notificaitonssssssssssssssssssssssssssss",notification)
-            notification_Count = Notification.objects.filter(is_seen=False).count()
+            notification = Notification.objects.filter(is_seen=False,is_admin=True).order_by("-id")
+            
+            notification_Count = Notification.objects.filter(is_seen=False,is_admin=True).count()
             print("notificationsss counts::",notification_Count)
             return {
                 "notification": notification,

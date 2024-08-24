@@ -5,12 +5,13 @@ from asgiref.sync import async_to_sync
 from .models import Notification
 
 
-def create_notification(employee, message,lead_id=None):
+def create_notification(employee, message,lead_id=None,is_admin=None):
     notification = Notification.objects.create(
         employee=employee,
         name=message,
         lead_id=lead_id,
         is_seen=False,
+        is_admin=is_admin,
     )
     notification.save()
 
@@ -57,13 +58,15 @@ def assignop_notification(agent_id, message, current_count):
     )
 
 
-def create_admin_notification(message,lead_id=None, agent_id=None,outsourceagent_id=None):
+def create_admin_notification(message,lead_id=None, agent_id=None,outsourceagent_id=None,is_admin=None):
     notification = Notification.objects.create(
         name=message,
         is_seen=False,
         lead_id=lead_id,
         agent_id=agent_id,
         outsourceagent_id=outsourceagent_id,
+        is_admin=is_admin
+        
     )
     notification.save()
 

@@ -540,9 +540,9 @@ class emp_Enquiry3View(LoginRequiredMixin, CreateView):
             lead_id = enquiry.id
             employee_id = self.request.user.employee.id
 
-            create_admin_notification("New Lead Added",lead_id=lead_id)
+            create_admin_notification("New Lead Added",lead_id=lead_id,is_admin=True)
 
-            current_count = Notification.objects.filter(is_seen=False).count()
+            current_count = Notification.objects.filter(is_seen=False,is_admin=True).count()
             send_notification_admin("New Lead Added", current_count)
 
             messages.success(request, "Enquiry Added successfully")
@@ -1414,7 +1414,8 @@ def emp_add_agent(request):
 
                 # create_admin_notification("New Lead Added")
                 msg = f"New OutSourceAgent Added({fullname})"
-                create_admin_notification(msg,outsourceagent_id=outsourceagent_id)
+                # create_admin_notification(msg,outsourceagent_id=outsourceagent_id)
+                create_admin_notification(msg,outsourceagent_id=outsourceagent_id,is_admin=True)
 
                 current_count = Notification.objects.filter(is_seen=False).count()
                 send_notification_admin(msg, current_count)
@@ -1466,7 +1467,8 @@ def emp_add_agent(request):
                 agentid = user.agent.id
 
                 msg = f"New Agent Added({fullname})"
-                create_admin_notification(msg,agent_id=agentid)
+                # create_admin_notification(msg,agent_id=agentid)
+                create_admin_notification(msg,agent_id=agentid,is_admin=True)
 
                 current_count = Notification.objects.filter(is_seen=False).count()
                 
@@ -2054,8 +2056,14 @@ def emp_outsource_agent_kyc(request, id):
 
 
 # --------------------------------------- Enrolled ------------------------------
+
 def emp_edit_enrolled_application(request, id):
     enquiry = Enquiry.objects.get(id=id)
+    notifications = Notification.objects.filter(lead_id=enquiry.id)
+    for notification in notifications:
+        if not notification.is_seen:
+            notification.is_seen = True
+            notification.save()
     country = VisaCountry.objects.all()
     category = VisaCategory.objects.all()
     user = request.user

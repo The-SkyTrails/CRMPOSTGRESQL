@@ -634,6 +634,7 @@ source = [
     ("Youtube", "Youtube"),
     ("WhatsApp", "WhatsApp"),
     ("Google", "Google"),
+    ("Mobile", "Mobile"),
     ("Others", "Others"),
 ]
 
@@ -1205,6 +1206,7 @@ class Notification(models.Model):
     )
     name = models.CharField(max_length=100)
     lead_id = models.PositiveIntegerField(null=True, blank=True)  # Store lead ID if applicable
+    is_admin = models.BooleanField(default=False)
    
     is_seen = models.BooleanField(default=False)
 

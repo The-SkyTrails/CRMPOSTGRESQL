@@ -1,11 +1,12 @@
 import requests
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth.views import LoginView
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.utils import timezone
+from django.http import HttpResponseRedirect
 from .models import (
     CustomUser,
     LoginLog,
@@ -15,6 +16,7 @@ from .models import (
     Admin,
     ChatGroup,
     ChatMessage,
+    Notification
 )
 from .doubletick import whatsapp_signup_mes,login_otp_mes
 from django.contrib.auth.hashers import check_password
@@ -698,3 +700,86 @@ def Packageshare(request,pk):
         'package':package
         }
     return render(request,'Productdetails.html',context)
+
+
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def mark_as_seen(request, notification_id):
+    user = request.user
+    notification = get_object_or_404(Notification, id=notification_id)
+    # notification.is_seen = True
+    # notification.save()
+    user_type = user.user_type
+    if user_type == "2":
+        if notification.lead_id:
+        
+            return HttpResponseRedirect(reverse("edit_enrolled_application", kwargs={"id": notification.lead_id}))
+            # return HttpResponseRedirect(reverse("edit_enrolled_application"))
+        if notification.outsourceagent:
+            return HttpResponseRedirect(reverse("admin_outsourceagent_details", kwargs={"id": notification.outsourceagent.id}))
+            
+        if notification.agent:
+            
+            return HttpResponseRedirect(reverse("admin_agent_details", kwargs={"id": notification.agent.id}))
+
+    if user_type == "3":
+        if notification.lead_id:
+        
+            return HttpResponseRedirect(reverse("emp_edit_enrolled_application", kwargs={"id": notification.lead_id}))
+            # return HttpResponseRedirect(reverse("edit_enrolled_application"))
+        if notification.outsourceagent:
+            return HttpResponseRedirect(reverse("emp_outsourceagent_details", kwargs={"id": notification.outsourceagent.id}))
+            
+        if notification.agent:
+            
+            return HttpResponseRedirect(reverse("emp_agent_details", kwargs={"id": notification.agent.id}))
+            
+    # else:
+    #     pass
+
+    # if request.method == 'POST':
+    #     try:
+    #         notification = Notification.objects.get(id=notification_id)
+    #         notification.is_seen = True
+    #         notification.save()
+    #         return JsonResponse({'status': 'success'})
+    #     except Notification.DoesNotExist:
+    #         return JsonResponse({'status': 'error', 'message': 'Notification not found'})
+    # return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+
+
+
+def mark_notification_as_seen(request, notification_id):
+    user = request.user
+    notification = get_object_or_404(Notification, id=notification_id)
+    print("agenttttttt",notification.agent)
+   
+    user_type = user.user_type
+    if user_type == "2":
+        if notification.lead_id:
+        
+            return HttpResponseRedirect(reverse("edit_enrolled_application", kwargs={"id": notification.lead_id}))
+            # return HttpResponseRedirect(reverse("edit_enrolled_application"))
+        if notification.outsourceagent:
+            return HttpResponseRedirect(reverse("admin_outsourceagent_details", kwargs={"id": notification.outsourceagent.id}))
+            
+        if notification.agent:
+            
+            return HttpResponseRedirect(reverse("admin_agent_details", kwargs={"id": notification.agent.id}))
+        return JsonResponse({'status': 'success'})
+    if user_type == "3":
+        if notification.lead_id:
+            print("idddddddd",notification.lead_id)
+        
+            return HttpResponseRedirect(reverse("emp_edit_enrolled_application", kwargs={"id": notification.lead_id}))
+            # return HttpResponseRedirect(reverse("edit_enrolled_application"))
+        if notification.outsourceagent:
+            return HttpResponseRedirect(reverse("emp_outsourceagent_details", kwargs={"id": notification.outsourceagent.id}))
+            
+        if notification.agent:
+            
+            return HttpResponseRedirect(reverse("emp_agent_details", kwargs={"id": notification.agent.id}))
+        return JsonResponse({'status': 'success'})

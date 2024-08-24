@@ -326,9 +326,12 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def assign(self, event):
         message = event["message"]
         count = event["count"]
+        notifications = Notification.objects.filter(is_seen=False,is_admin=False).order_by("-id")
+        serialized_notifications = serialize('json', notifications)
+        print("serailizzee",serialized_notifications)
 
         # Send the notification to the client
-        await self.send(text_data=json.dumps({"message": message, "count": count}))
+        await self.send(text_data=json.dumps({"message": message, "count": count,"notifications": serialized_notifications}))
 
 
 class NotificationAgentConsumer(AsyncWebsocketConsumer):
@@ -431,17 +434,14 @@ class NotificationAdminConsumer(AsyncWebsocketConsumer):
         print("Message received from client", text_data)
         message = text_data_json["message"]
         print("Message received from client:", message)
-        # notifications = Notification.objects.all()
-        # serialized_notifications = serialize('json', notifications)
-        # print("serailizzee",serialized_notifications)
-        # Send the received message to the client
+       
         await self.send(text_data=json.dumps({"message": message}))
 
     async def notify_admin(self, event):
         message = event["message"]
         count = event["count"]
         agentID = event["agent_id"]
-        notifications = Notification.objects.filter(is_seen=False).order_by("-id")
+        notifications = Notification.objects.filter(is_seen=False,is_admin=True).order_by("-id")
         serialized_notifications = serialize('json', notifications)
         print("serailizzee",serialized_notifications)
         
