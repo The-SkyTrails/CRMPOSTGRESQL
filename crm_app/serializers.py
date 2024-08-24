@@ -28,7 +28,7 @@ class VisaCountrySerializer(serializers.ModelSerializer):
 class VisaCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = VisaCategory
-        fields = ["id", "category"]
+        fields = ["id", "category","subcategory"]
 
 
 class FrontWebsiteSerializer(serializers.ModelSerializer):
