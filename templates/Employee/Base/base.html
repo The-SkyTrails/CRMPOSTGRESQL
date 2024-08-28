@@ -328,7 +328,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const notif = document.getElementById("notification");
     const EmployeeId = JSON.parse(document.getElementById('employee').textContent);
-    const socket = new WebSocket('ws://' + window.location.host + '/ws/notifications/' + EmployeeId + '/');
+    const socket = new WebSocket('wss://' + window.location.host + '/ws/notifications/' + EmployeeId + '/');
 
     socket.onopen = function() {
         console.log('WebSocket admin connection opened.');

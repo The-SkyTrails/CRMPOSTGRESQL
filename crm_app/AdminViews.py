@@ -3043,6 +3043,7 @@ def update_assigned_employee(request, id):
             enquiry.assign_to_sales_employee = emp
 
             employee_id = emp.id
+            lead_id=enquiry.id
             # create_notification(emp, "New Assign Added")
             create_notification(emp, "PreEnrolled Lead assign Added",lead_id=lead_id,is_admin=False)
 
@@ -3065,6 +3066,7 @@ def update_assigned_employee(request, id):
             enquiry.assign_to_documentation_employee = emp
 
             employee_id = emp.id
+            lead_id=enquiry.id
             # create_notification(emp, "New Lead Assign Added")
             create_notification(emp, "Documentation Lead assign Added",lead_id=lead_id,is_admin=False)
 
@@ -3088,6 +3090,7 @@ def update_assigned_employee(request, id):
             enquiry.assign_to_visa_team_employee = emp
 
             employee_id = emp.id
+            lead_id=enquiry.id
             # create_notification(emp, "New Assign Added")
             create_notification(emp, "Visa Team Lead assign Added",lead_id=lead_id,is_admin=False)
 
