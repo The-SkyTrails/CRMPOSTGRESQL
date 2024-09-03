@@ -2414,11 +2414,13 @@ class Enquiry3View(LoginRequiredMixin, CreateView):
             # ------------------------------
             enquiry.created_by = user
             enquiry.save()
+            lead_id = enquiry.id
 
-            create_notification(enquiry.assign_to_employee, "New Enquiry Added")
+            # create_notification(enquiry.assign_to_employee, "New Enquiry Added")
+            create_notification(enquiry.assign_to_employee, "New Enquiry Added",lead_id=lead_id,is_admin=False)
 
             current_count = Notification.objects.filter(
-                is_seen__in=[False], employee=enquiry.assign_to_employee
+                is_seen=False, employee=enquiry.assign_to_employee
             ).count()
             try:
                 employee_id = enquiry.assign_to_employee.id
