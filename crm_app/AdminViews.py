@@ -4571,59 +4571,132 @@ from django.http import HttpResponse
 logger = logging.getLogger(__name__)
 
 
+# @login_required
+# def download_all_documents(request, id):
+#     enq = Enquiry.objects.get(id=id)
+#     doc_files = DocumentFiles.objects.filter(enquiry_id=enq)
+
+#     # Collect document URLs
+#     document_urls = [
+#         request.build_absolute_uri(doc_file.document_file.url)
+#         for doc_file in doc_files
+#         if doc_file.document_file
+#     ]
+
+#     logger.info(f"Document URLs: {document_urls}")
+
+#     # Create a temporary directory to store the files
+#     temp_dir = tempfile.mkdtemp()
+
+#     try:
+#         # Download each document to the temporary directory
+#         for index, document_url in enumerate(document_urls):
+#             response = requests.get(document_url, stream=True)
+#             content_type = response.headers.get(
+#                 "Content-Type", "application/octet-stream"
+#             )  # Get the content type
+
+#             if response.status_code == 200:
+#                 # Determine file extension based on content type
+#                 file_extension = get_file_extension(content_type)
+#                 document_path = os.path.join(
+#                     temp_dir, f"document_{index + 1}{file_extension}"
+#                 )
+#                 with open(document_path, "wb") as file:
+#                     for chunk in response.iter_content(chunk_size=128):
+#                         file.write(chunk)
+#             else:
+#                 logger.warning(f"Failed to download document from {document_url}")
+
+#         # Create the ZIP archive
+#         zip_file_path = os.path.join(temp_dir, "documents.zip")
+#         with zipfile.ZipFile(zip_file_path, "w", zipfile.ZIP_DEFLATED) as archive:
+#             for index, document_url in enumerate(document_urls):
+#                 response = requests.head(document_url)
+#                 content_type = response.headers.get(
+#                     "Content-Type", "application/octet-stream"
+#                 )
+#                 file_extension = get_file_extension(content_type)
+#                 document_path = os.path.join(
+#                     temp_dir, f"document_{index + 1}{file_extension}"
+#                 )
+#                 if os.path.exists(document_path):
+#                     archive.write(document_path, os.path.basename(document_path))
+#                 else:
+#                     logger.warning(f"Document file not found: {document_path}")
+
+#         # Serve the ZIP archive for download
+#         with open(zip_file_path, "rb") as archive_file:
+#             response = HttpResponse(archive_file.read(), content_type="application/zip")
+#             response["Content-Disposition"] = f"attachment; filename=documents.zip"
+#             return response
+
+#     except Exception as e:
+#         logger.error(f"Error during download_all_documents: {e}")
+#         raise  # Reraise the exception to see the traceback in the console
+
+#     finally:
+#         # Clean up temporary files and directory
+#         for file_path in os.listdir(temp_dir):
+#             file_path = os.path.join(temp_dir, file_path)
+#             os.remove(file_path)
+#         os.rmdir(temp_dir)
+
+
 @login_required
 def download_all_documents(request, id):
-    enq = Enquiry.objects.get(id=id)
+    enq = get_object_or_404(Enquiry, id=id)
     doc_files = DocumentFiles.objects.filter(enquiry_id=enq)
 
-    # Collect document URLs
-    document_urls = [
-        request.build_absolute_uri(doc_file.document_file.url)
+    # Collect document URLs and original names
+    documents = [
+        {
+            'url': request.build_absolute_uri(doc_file.document_file.url),
+            'name': doc_file.document_file.name.split('/')[-1]  # Get the original filename
+        }
         for doc_file in doc_files
         if doc_file.document_file
     ]
 
-    logger.info(f"Document URLs: {document_urls}")
+    logger.info(f"Documents: {documents}")
 
     # Create a temporary directory to store the files
     temp_dir = tempfile.mkdtemp()
 
     try:
         # Download each document to the temporary directory
-        for index, document_url in enumerate(document_urls):
+        for document in documents:
+            document_url = document['url']
+            original_name = document['name']
             response = requests.get(document_url, stream=True)
-            content_type = response.headers.get(
-                "Content-Type", "application/octet-stream"
-            )  # Get the content type
+            content_type = response.headers.get("Content-Type", "application/octet-stream")
 
             if response.status_code == 200:
                 # Determine file extension based on content type
                 file_extension = get_file_extension(content_type)
-                document_path = os.path.join(
-                    temp_dir, f"document_{index + 1}{file_extension}"
-                )
+                document_path = os.path.join(temp_dir, f"{original_name}")
+
+                logger.info(f"Saving file: {document_path}")
+
                 with open(document_path, "wb") as file:
                     for chunk in response.iter_content(chunk_size=128):
                         file.write(chunk)
             else:
-                logger.warning(f"Failed to download document from {document_url}")
+                logger.warning(f"Failed to download document from {document_url}. Status code: {response.status_code}")
 
         # Create the ZIP archive
         zip_file_path = os.path.join(temp_dir, "documents.zip")
         with zipfile.ZipFile(zip_file_path, "w", zipfile.ZIP_DEFLATED) as archive:
-            for index, document_url in enumerate(document_urls):
-                response = requests.head(document_url)
-                content_type = response.headers.get(
-                    "Content-Type", "application/octet-stream"
-                )
-                file_extension = get_file_extension(content_type)
-                document_path = os.path.join(
-                    temp_dir, f"document_{index + 1}{file_extension}"
-                )
-                if os.path.exists(document_path):
-                    archive.write(document_path, os.path.basename(document_path))
+            for document in documents:
+                original_name = document['name']
+                file_path = os.path.join(temp_dir, f"{original_name}")
+
+                logger.info(f"Adding file to ZIP: {file_path}")
+
+                if os.path.exists(file_path):
+                    archive.write(file_path, original_name)  # Use the original name in the ZIP
                 else:
-                    logger.warning(f"Document file not found: {document_path}")
+                    logger.warning(f"Document file not found for ZIP: {file_path}")
 
         # Serve the ZIP archive for download
         with open(zip_file_path, "rb") as archive_file:
@@ -4637,11 +4710,12 @@ def download_all_documents(request, id):
 
     finally:
         # Clean up temporary files and directory
-        for file_path in os.listdir(temp_dir):
-            file_path = os.path.join(temp_dir, file_path)
-            os.remove(file_path)
-        os.rmdir(temp_dir)
-
+        if os.path.isdir(temp_dir):  # Check if the temp_dir exists
+            for file_path in os.listdir(temp_dir):
+                file_path = os.path.join(temp_dir, file_path)
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            os.rmdir(temp_dir)
 
 def get_file_extension(content_type):
     extension = mimetypes.guess_extension(content_type, strict=False)
