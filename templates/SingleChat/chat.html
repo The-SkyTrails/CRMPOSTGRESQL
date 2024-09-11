@@ -348,7 +348,7 @@
     });
 </script>
 
-
+{% comment %} 
 <script>
     $(document).ready(function () {
         $('#searchInput').on('input', function () {
@@ -361,6 +361,27 @@
             $('.all-member').filter(function () {
                 return $(this).text().toLowerCase().includes(searchQuery);
             }).show();
+        });
+    });
+</script> {% endcomment %}
+
+<script>
+    $(document).ready(function () {
+        let debounceTimer;
+        
+        $('#searchInput').on('input', function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function () {
+                var searchQuery = $('#searchInput').val().toLowerCase();
+                
+                // Hide all groups
+                $('.all-member').hide();
+
+                // Show only the groups that match the search query
+                $('.all-member').filter(function () {
+                    return $(this).text().toLowerCase().includes(searchQuery);
+                }).show();
+            }, 300); // Adjust the debounce time as needed (e.g., 300ms)
         });
     });
 </script>
