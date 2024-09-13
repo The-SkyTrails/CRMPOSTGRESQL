@@ -6767,7 +6767,7 @@ def update_assigned_employee(request, id):
                 enquiry.assign_to_visa_team_employee = emp
                 enquiry.lead_status = "Inprocess"
             employee_id = emp.id
-            create_notification(emp, "New Lead Assign Added",lead_id=enquiry.id)
+            create_notification(emp, "New Lead Assign Added",lead_id=enquiry.id,is_admin=True)
 
             # current_count = Notification.objects.filter(
             #     is_seen=False, employee=assign_to_employee
