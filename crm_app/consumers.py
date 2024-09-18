@@ -61,6 +61,7 @@ class SingleChatConsumer(AsyncWebsocketConsumer):
                 is_seen=False  # Initially, the message is not seen
             )
         attachment_id = ""   
+        attachemt_img=""
         if attachment:
             attachment_data = base64.b64decode(attachment['data'].split(',')[1])  # Decode base64 data
             attachment_file = ContentFile(attachment_data, attachment['filename'])
