@@ -165,7 +165,7 @@
         let chatSocket;
         const userId = document.getElementById('userId').value;
         chatSocket = new WebSocket(
-            'ws://' + window.location.host + '/ws/chat/single/' + userId + '/'
+            'wss://' + window.location.host + '/ws/chat/single/' + userId + '/'
         );
     
         chatSocket.onmessage = function(e) {
