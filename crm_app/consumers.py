@@ -4,6 +4,9 @@ from asgiref.sync import async_to_sync
 from .models import ChatGroup, ChatMessage, Employee
 from asgiref.sync import sync_to_async
 from .models import CustomUser
+from channels.db import database_sync_to_async
+from django.core.files.base import ContentFile
+import base64
 # ------------------------- Single chat added -------------------
 
 from django.utils import timezone
@@ -19,8 +22,7 @@ class SingleChatConsumer(AsyncWebsocketConsumer):
         
         self.room_name = f'{min(self.user_id, self.other_user_id)}_{max(self.user_id, self.other_user_id)}'
         self.room_group_name = f'chat_{self.room_name}'
-
-       
+  
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -44,41 +46,40 @@ class SingleChatConsumer(AsyncWebsocketConsumer):
         )
         print("websocket disconnected",close_code)
 
-    # async def receive(self, text_data):
-    #     text_data_json = json.loads(text_data)
-    #     message = text_data_json['message']
-        
-    #     await sync_to_async(ChatMessage.objects.create)(
-    #         message_by=self.user,
-    #         receive_by=self.other_user,
-    #         message=message
-    #     )
-
-        
-       
-    #     await self.channel_layer.group_send(
-    #         self.room_group_name,
-    #         {
-    #             'type': 'chat_message',
-    #             'message': message,
-    #             'message_by': self.user_id
-    #         }
-    #     )
-
+   
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json['message']
-        print("message",message)
-        
-        # Create the message with is_seen=False by default
-        chat_message = await sync_to_async(ChatMessage.objects.create)(
-            message_by=self.user,
-            receive_by=self.other_user,
-            message=message,
-            is_seen=False  # Initially, the message is not seen
-        )
+        # message = text_data_json['message']
+        message = text_data_json.get('message', None)
+        attachment = text_data_json.get('attachment', None)
 
-        # await self.mark_messages_as_seen()
+        if message:
+            chat_message = await database_sync_to_async(ChatMessage.objects.create)(
+                message_by=self.user,
+                receive_by=self.other_user,
+                message=message,
+                is_seen=False  # Initially, the message is not seen
+            )
+        attachment_id = ""   
+        if attachment:
+            attachment_data = base64.b64decode(attachment['data'].split(',')[1])  # Decode base64 data
+            attachment_file = ContentFile(attachment_data, attachment['filename'])
+            
+            # Save the attachment to your model (assume you have a field for attachments)
+            chat_message = await database_sync_to_async(ChatMessage.objects.create)(
+                message_by=self.user,
+                receive_by=self.other_user,
+                attachment=attachment_file,
+                is_seen=False
+            )
+
+            attachment_id=chat_message.id
+            attachemt_img = chat_message.attachment.url
+            
+        
+
+        
+        
         
         await self.channel_layer.group_send(
             self.room_group_name,
@@ -87,6 +88,10 @@ class SingleChatConsumer(AsyncWebsocketConsumer):
                 'message': message,
                 'message_by': self.user_id,
                 'is_seen': False,  # This will be false until the recipient sees it
+                'attachment': attachment ,
+                'attachment_id':attachment_id,
+                'attachemt_img':attachemt_img,
+               
             }
         )
 
@@ -95,13 +100,21 @@ class SingleChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, event):
         message = event['message']
         msg_by = event['message_by']
+        attachment = event['attachment']
         is_seen = event.get('is_seen', False)
-        print("okkkkkkkkkkkkggggggggg.......",message)
+        msg_id = event['attachment_id']
+        attachemt_img = event['attachemt_img']
+        print("msg id",msg_id)
+        print("attachment image",attachemt_img)
+        
         
         await self.send(text_data=json.dumps({
             'message': message,
             'msg_by': msg_by,
             'is_seen': is_seen,
+            'attachment': attachment,
+            'msg_id': msg_id,
+            'attachemt_img': attachemt_img,
         }))
         
     
@@ -125,90 +138,47 @@ class SingleChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
+
 # class SingleChatConsumer(AsyncWebsocketConsumer):
-# #     async def connect(self):
-# #         self.user_id = self.scope["user"].id
-# #         self.user = self.scope["user"]
-# #         self.other_user_id = self.scope['url_route']['kwargs']['other_user_id']
-# #         self.other_user = await sync_to_async(CustomUser.objects.get)(id=self.other_user_id)
-        
-# #         self.room_name = f'{min(self.user_id, self.other_user_id)}_{max(self.user_id, self.other_user_id)}'
-# #         self.room_group_name = f'chat_{self.room_name}'
+    
+#     async def receive(self, text_data):
+#         text_data_json = json.loads(text_data)
+#         message = text_data_json.get('message', None)
+#         attachment = text_data_json.get('attachment', None)
 
-# #         # Mark unread messages as seen when the user connects
-# #         await self.mark_messages_as_seen()
+#         # Handle message
+#         if message:
+#             chat_message = await database_sync_to_async(ChatMessage.objects.create)(
+#                 message_by=self.user,
+#                 receive_by=self.other_user,
+#                 message=message,
+#                 is_seen=False  # Initially, the message is not seen
+#             )
 
-# #         # Join the room group
-# #         await self.channel_layer.group_add(
-# #             self.room_group_name,
-# #             self.channel_name,
-# #         )
+#         # Handle attachment
+#         if attachment:
+#             attachment_data = base64.b64decode(attachment['data'].split(',')[1])  # Decode base64 data
+#             attachment_file = ContentFile(attachment_data, attachment['filename'])
+            
+#             # Save the attachment to your model (assume you have a field for attachments)
+#             chat_message = await database_sync_to_async(ChatMessage.objects.create)(
+#                 message_by=self.user,
+#                 receive_by=self.other_user,
+#                 attachment=attachment_file,
+#                 is_seen=False
+#             )
 
-# #         # Accept the WebSocket connection
-# #         await self.accept()
-# #         print("websocket connected.........")
+#         await self.channel_layer.group_send(
+#             self.room_group_name,
+#             {
+#                 'type': 'chat_message',
+#                 'message': message,
+#                 'message_by': self.user_id,
+#                 'is_seen': False,
+#                 'attachment': attachment  # Pass attachment info to the group
+#             }
+#         )
 
-# #     async def disconnect(self, close_code):
-# #         # Leave the room group
-# #         await self.channel_layer.group_discard(
-# #             self.room_group_name,
-# #             self.channel_name
-# #         )
-# #         print("websocket disconnected...",close_code)
-
-# #     async def receive(self, text_data):
-# #         text_data_json = json.loads(text_data)
-# #         message = text_data_json['message']
-        
-# #         # Create the message with is_seen=False by default
-# #         chat_message = await sync_to_async(ChatMessage.objects.create)(
-# #             message_by=self.user,
-# #             receive_by=self.other_user,
-# #             message=message,
-# #             is_seen=False  # Initially, the message is not seen
-# #         )
-        
-# #         # Send the message to the room group
-# #         await self.channel_layer.group_send(
-# #             self.room_group_name,
-# #             {
-# #                 'type': 'chat_message',
-# #                 'message': message,
-# #                 'message_by': self.user_id,
-# #                 'is_seen': False,  # This will be false until the recipient sees it
-# #             }
-# #         )
-
-# #     async def chat_message(self, event):
-# #         message = event['message']
-# #         msg_by = event['message_by']
-# #         is_seen = event.get('is_seen', False)
-        
-# #         # Send message to WebSocket
-# #         await self.send(text_data=json.dumps({
-# #             'message': message,
-# #             'msg_by': msg_by,
-# #             'is_seen': is_seen,
-# #         }))
-
-# #     async def mark_messages_as_seen(self):
-# #         """Mark unseen messages as seen when the user connects"""
-# #         await sync_to_async(ChatMessage.objects.filter(
-# #             message_by=self.other_user,
-# #             receive_by=self.user,
-# #             is_seen=False
-# #         ).update)(is_seen=True)
-        
-# #         # Notify the other user that their messages have been seen
-# #         await self.channel_layer.group_send(
-# #             self.room_group_name,
-# #             {
-# #                 'type': 'chat_message',
-# #                 'message': '',  # Optional: Only send if needed to trigger an update
-# #                 'message_by': self.user_id,
-# #                 'is_seen': True,  # Mark the messages as seen
-# #             }
-# #         )
 
 
 # ------------------------------------- END SINGLE CHAT ------------------
@@ -268,6 +238,7 @@ class ChatConsumer(WebsocketConsumer):
             )
 
     def chat_message(self, event):
+       
         self.send(
             text_data=json.dumps(
                 {"msg": event["message"], "msg_by": event["message_by"]}

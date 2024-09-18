@@ -337,9 +337,10 @@
 }
 
 #frame #sidepanel #search {
-  border-top: 1px solid #32465a;
+  /* border-top: 1px solid #32465a; */
   border-bottom: 1px solid #32465a;
   font-weight: 300;
+  margin-left: 25px;
 }
 
 @media screen and (max-width: 735px) {
@@ -360,6 +361,8 @@
   border: none;
   background: #32465a;
   color: #f5f5f5;
+  margin-bottom: 7px;
+  border-radius: 19px;
 }
 
 #frame #sidepanel #search input:focus {
@@ -692,9 +695,73 @@
   color: #f5f5f5;
 }
 
+
+
+.customSent {
+  display: flex;
+  flex-direction: row;
+  padding: 3px 0px;
+}
+
+
+.customSentInner {
+  display: flex;
+  flex-direction: column-reverse;
+  background-color: #f5f5f5;
+  justify-content: center;
+  /* align-items: flex-end; */
+  border-radius: 8px;
+}
+
+.customReplies {
+  display: flex;
+  flex-direction: row-reverse;
+  padding: 3px 0px;
+}
+
+.customimg{
+  display: flex !important;
+  flex-direction: column-reverse !important;
+  
+} 
+
+
+.customSentInner {
+  display: flex;
+  flex-direction: column-reverse;
+  background-color: #435f7a;
+  justify-content: center;
+  /* align-items: flex-end; */
+  border-radius: 8px;
+}
+
+.customSentInner .replyImage {
+  width: 160px !important;
+  height: 200px !important;
+  border-radius: 7px !important;
+  margin: 0 !important;
+  padding: 16px;
+}
+
+.customRepliesInner {
+  display: flex;
+  flex-direction: column-reverse;
+  background-color: #f5f5f5;
+  justify-content: center;
+  align-items: flex-end;
+  border-radius: 8px;
+}
+
+.customRepliesInner .replyImage {
+  width: 160px !important;
+  height: 200px !important;
+  border-radius: 7px !important;
+  margin: 0 !important;
+  padding: 16px;
+}
 #frame .content .messages ul li.replies img {
   float: right;
-  margin: 6px 0 0 8px;
+  /* margin: 6px 0 0 8px; */
 }
 
 #frame .content .messages ul li.replies p {
@@ -779,11 +846,12 @@
 #frame .content .message-input .wrap button {
   float: right;
   border: none;
-  width: 50px;
-  padding: 12px 0;
+  width: 44px;
+  padding: 7px 0;
   cursor: pointer;
   background: #32465a;
   color: #f5f5f5;
+  margin:0.5px;
 }
 
 @media screen and (max-width: 735px) {

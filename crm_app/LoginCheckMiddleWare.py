@@ -15,6 +15,7 @@ class LoginCheckMiddleWare(MiddlewareMixin):
             "Packageshare",
             "mark_as_seen",
             "mark_notification_as_seen",
+            "download_attachment",
         ]:
             return None
         if user.is_authenticated:

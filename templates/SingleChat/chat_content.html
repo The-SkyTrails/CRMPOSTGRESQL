@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 {% load humanize %}
 <div class="contact-profile">
     <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
@@ -16,14 +17,43 @@
       {% if i.receive_by == user %}
      
        <li class="sent">
-          {% comment %} <img src="http://emilcarlsson.se/assets/mikeross.png" alt="" /> {% endcomment %}
-          {% comment %} <p>How the hell am I supposed to get a jury to believe you when I am not even sure that I do?!</p> {% endcomment %}
-          <p>{{i.message}}
+        {% if i.attachment %}
+        <div class="customSent" >
+            <div class="customSentInner">
+                <div class="customRepliesTime" style="color:white; !important">
+                    {% if i.attachment|is_pdf %}
+                    {% else %}
+                    <a data-user-id="{{i.id}}" style="background:white;margin: 7px;" href="{% url 'download_attachment' message_id=i.id %}"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                        <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293z"/>
+                        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                      </svg></a>
+                    {% endif %}
+                    {{ i.msg_time|naturaltime }}
+                   
+              </div>
+              {% if i.attachment|is_pdf %}
+              <iframe src="{{ i.attachment.url }}" width="100%" height="500px" style="border: none;">
+                Your browser does not support iframes.
+            </iframe>
+              {% else %}
+              <a href="{{ i.attachment.url }}" target="_blank">
+                <img class="replyImage" src="{{ i.attachment.url }}" alt="" >
+              </a>
+              {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <p>{{i.message}}
             <span class="message-meta">
                {{i.msg_time|naturaltime}}
                
              </span>
           </p>
+
+        {% endif %}
+        
+          
+          
          
        </li>
        {% else %}
@@ -32,6 +62,36 @@
 
       
 <li class="replies">
+    {% if i.attachment %}
+        <div class="customReplies" >
+            <div class="customRepliesInner">
+                <div class="customRepliesTime">
+                    {% if i.attachment|is_pdf %}
+                    {% else %}
+                    <a href="{% url 'download_attachment' message_id=i.id %}"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                        <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293z"/>
+                        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                      </svg></a>
+                    {% endif %}
+                    {{ i.msg_time|naturaltime }}
+                    {% if i.is_seen %}
+                       <img src="{% static 'visa/images/doublecheck.jpg' %}" alt="Double Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;" />
+                    {% else %}
+                       <img src="{% static 'visa/images/check.png' %}" alt="Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;" />
+                    {% endif %}
+              </div>
+              {% if i.attachment|is_pdf %}
+              <iframe src="{{ i.attachment.url }}" width="100%" height="500px" style="border: none;">
+                Your browser does not support iframes.
+            </iframe>
+              {% else %}
+              <a href="{{ i.attachment.url }}" target="_blank">
+                <img class="replyImage" src="{{ i.attachment.url }}" alt="" >
+              </a>
+              {% endif %}
+            </div>
+        </div>
+   {% else %}
    <p>{{ i.message }}
       <span class="message-meta">
             {{ i.msg_time|naturaltime }}
@@ -42,6 +102,7 @@
             {% endif %}
       </span>
    </p>
+   {% endif %}
 </li>
 
 
@@ -53,13 +114,6 @@
       
        
       
-{% comment %}         
-       <li class="replies">
-          <img src="http://emilcarlsson.se/assets/harveyspecter.png" alt="" />
-          <p>When you're backed against the wall, break the god damn thing down.</p>
-       </li>  {% endcomment %}
-       
-
        
        
        
@@ -68,15 +122,229 @@
 
     
  </div>
- <input type="text" value="{{user_id}}" id="user_id" hidden>
+ 
  <div class="message-input">
-    <div class="wrap">
+    {% comment %} <div class="wrap">
        <input type="text" placeholder="Write your message..." />
-       {% comment %} <i class="fa fa-paperclip attachment" aria-hidden="true"></i> {% endcomment %}
+       <i class="fa fa-paperclip attachment" aria-hidden="true"></i>
+       
+      
        <button class="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
        
-    </div>
+    </div> {% endcomment %}
+
+    <div class="wrap">
+      <input type="text" placeholder="Write your message..." class="msg" />
+      {% comment %} <label for="fileInput" class="fa fa-paperclip attachment" aria-hidden="true"></label> {% endcomment %}
+      {% comment %} <input type="file" id="fileInput" class="file-input" style="display: none;" /> {% endcomment %}
+      <button class="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i></button> 
+      <button id="attach-button" class="btn" id="send-button">
+         <input type="file" id="attachment-input" style="display: none;">
+        <div class="inputfilesvg"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                height="24" viewBox="0 0 24 24" fill="none">
+                <mask id="mask0_119_7041" style="mask-type:alpha" maskUnits="userSpaceOnUse"
+                    x="0" y="0" width="24" height="24">
+                    <rect width="24" height="24" fill="#D9D9D9" />
+                </mask>
+                <g mask="url(#mask0_119_7041)">
+                    <path
+                        d="M11.5 22C9.96667 22 8.66667 21.4667 7.6 20.4C6.53333 19.3333 6 18.0333 6 16.5V6C6 4.9 6.39167 3.95833 7.175 3.175C7.95833 2.39167 8.9 2 10 2C11.1 2 12.0417 2.39167 12.825 3.175C13.6083 3.95833 14 4.9 14 6V15.5C14 16.2 13.7583 16.7917 13.275 17.275C12.7917 17.7583 12.2 18 11.5 18C10.8 18 10.2083 17.7583 9.725 17.275C9.24167 16.7917 9 16.2 9 15.5V6H10.5V15.5C10.5 15.7833 10.5958 16.0208 10.7875 16.2125C10.9792 16.4042 11.2167 16.5 11.5 16.5C11.7833 16.5 12.0208 16.4042 12.2125 16.2125C12.4042 16.0208 12.5 15.7833 12.5 15.5V6C12.5 5.3 12.2583 4.70833 11.775 4.225C11.2917 3.74167 10.7 3.5 10 3.5C9.3 3.5 8.70833 3.74167 8.225 4.225C7.74167 4.70833 7.5 5.3 7.5 6V16.5C7.5 17.6 7.89167 18.5417 8.675 19.325C9.45833 20.1083 10.4 20.5 11.5 20.5C12.6 20.5 13.5417 20.1083 14.325 19.325C15.1083 18.5417 15.5 17.6 15.5 16.5V6H17V16.5C17 18.0333 16.4667 19.3333 15.4 20.4C14.3333 21.4667 13.0333 22 11.5 22Z"
+                        fill="#071C2C" />
+                </g>
+            </svg></div></button>
+     
+  </div>
    
  </div>
+<input type="text" value="{{other_user_id.id}}" id="userId" hidden >
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        let chatSocket;
+        const userId = document.getElementById('userId').value;
+        chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/single/' + userId + '/'
+        );
+    
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            console.error("dddddddddd",data)
+            const message = data['message'];
+            const msg_by = data['msg_by'];
+            const attachment = data['attachment'];
+            const is_seen = data['is_seen'];
+            const msg_id = data['msg_id'];
+            const attachemt_img = data['attachemt_img'];
+            
+            const timestamp = data['timestamp'] || new Date().toISOString(); // Fallback to current time if timestamp is missing
+            const user = "{{ usersid|escapejs }}";
+            const timeAgoText = timeAgo(timestamp);
+            
+           
+    
+            let messageElement;
+    
+            if (msg_by == user) {
+                // User sent the message
+                messageElement = `
+                <li class="replies">
+                        ${attachment ? `
+                            <div class="customReplies">
+                                <div class="customRepliesInner">
+
+                                <div class="customRepliesTime">
+                                        <a href="/download/${msg_id}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                                <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293z"/>
+                                                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                                            </svg>
+                                        </a>
+                                        ${timeAgoText}
+                                        ${is_seen ? 
+                                            '<img src="{% static "visa/images/doublecheck.jpg" %}" alt="Double Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;" />' :
+                                            '<img src="{% static "visa/images/check.png" %}" alt="Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;" />'
+                                        }
+                                    </div>
+                                    ${attachment.filename.endsWith('.pdf') ? `
+                                        <iframe src="${attachemt_img}" width="100%" height="500px" style="border: none;">
+                                            Your browser does not support iframes.
+                                        </iframe>
+                                    ` : `
+                                        <a href="${attachemt_img}" target="_blank">
+                                            <img class="replyImage" src="${attachment.data}" alt="" >
+                                        </a>
+                                    `}
+                                    
+                                </div>
+                            </div>
+                        ` : `
+                            <p>${message}
+                                <span class="message-meta">
+                                    ${timeAgoText}
+                                    ${is_seen ? 
+                                        '<img src="{% static "visa/images/doublecheck.jpg" %}" alt="Double Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;" />' :
+                                        '<img src="{% static "visa/images/check.png" %}" alt="Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;" />'
+                                    }
+                                </span>
+                            </p>
+                        `}
+                    </li>
+                    
+                `;
+            } else {
+                // Other users sent the message
+                messageElement = `
+                <li class="sent">
+                        ${attachment ? `
+                            <div class="customSent">
+                                <div class="customSentInner">
+                                    <div class="customRepliesTime" style="color:white;">
+                                        
+                                        <a style="background:white;margin: 7px;" href="/download/${msg_id}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                                                <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293z"/>
+                                                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                                            </svg>
+                                        </a>
+                                        ${timeAgoText}
+                                    </div>
+                                    ${attachment.filename.endsWith('.pdf') ? `
+                                            <iframe src="${attachemt_img}" width="100%" height="500px" style="border: none;">
+                                                Your browser does not support iframes.
+                                            </iframe>
+                                        ` : `
+                                            <a href="${attachemt_img}" target="_blank">
+                                                <img class="replyImage" src="${attachment.data}" alt="demoo" >
+                                            </a>
+                                        `}
+                                </div>
+                            </div>
+                        ` : `
+                            <p>${message}
+                                <span class="message-meta">
+                                    ${timeAgoText}
+                                    {% comment %} ${is_seen ? 
+                                        '<img src="{% static "visa/images/doublecheck.jpg" %}" alt="Double Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;" />' :
+                                        '<img src="{% static "visa/images/check.png" %}" alt="Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;" />'
+                                    } {% endcomment %}
+                                </span>
+                            </p>
+                        `}
+                    </li>
+                    
+                `;
+            }
+    
+            // Append or update the message
+            $('#chat-messages .messages ul').append(messageElement);
+            $('#chat-messages .messages').scrollTop($('#chat-messages .messages')[0].scrollHeight); // Scroll to bottom
+        };
+    
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+    
+        chatSocket.onerror = function(e) {
+            console.error('Chat socket error:', e);
+        };
+    
+        $('#chat-messages').on('click', '.submit', function () {
+            const messageInputDom = $('.message-input input');
+            const message = messageInputDom.val();
+            if (message) {
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                }));
+                messageInputDom.val('');
+            }
+        });
+    
+        document.getElementById('attach-button').onclick = function (event) {
+            document.getElementById('attachment-input').click();
+        };
+    
+        document.getElementById('attachment-input').addEventListener('change', function (event) {
+            const fileInput = event.target;
+            const files = fileInput.files;
+    
+            if (files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+    
+                reader.onload = function (e) {
+                    const attachmentData = e.target.result;
+    
+                    // Send the attachment data to the server
+                    chatSocket.send(JSON.stringify({
+                        'attachment': {
+                            'filename': file.name,
+                            'data': attachmentData,
+                        }
+                    }));
+                };
+    
+                reader.readAsDataURL(file);
+    
+                // Clear the file input after reading the file
+                fileInput.value = '';
+            }
+        });
+    
+        $('#chat-messages').on('keydown', '.message-input input', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const messageInputDom = $('.message-input input');
+                const message = messageInputDom.val();
+                if (message) {
+                    chatSocket.send(JSON.stringify({
+                        'message': message,
+                    }));
+                    messageInputDom.val('');
+                }
+            }
+        });
+    });
+    
+</script>

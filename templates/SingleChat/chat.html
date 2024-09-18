@@ -75,6 +75,7 @@
               
             </div>
           </li>
+          {% comment %} <hr> {% endcomment %}
           {% endfor %}
 
         </ul>
@@ -126,100 +127,36 @@
 
 </script>
 
-{% comment %} 
 <script>
-        $(document).ready(function () {
-            let chatSocket;
+    $(document).ready(function (){
 
-            function connectToWebSocket(userId) {
-                // Close any existing WebSocket connection
-                if (chatSocket) {
-                    chatSocket.close();
-                }
+        $('.chat-group-link').click(function (){
+            
+            const userId = $(this).data('user-id');
+            console.log("user id",userId)
+            
 
-                // Create a new WebSocket connection
-                chatSocket = new WebSocket(
-                    'ws://' + window.location.host + '/ws/chat/single/' + userId + '/'
-                );
 
-                // WebSocket event handlers
-                chatSocket.onmessage = function(e) {
-                    const data = JSON.parse(e.data);
-                    const message = data['message'];
-                    const msg_by = data['msg_by'];
-                    const is_seen = data['is_seen'];
-                    const timestamp = data['timestamp'];
-                    const user = "{{ usersid|escapejs }}";
-                    const timeAgoText = timeAgo(timestamp);
-                    console.log("userssssssssssssss",user)
-                    console.log("msg by",msg_by)
-                    console.log("hellooo ggg",is_seen)
-
-                    if (msg_by == user) {
-                        $('#chat-messages .messages ul').append('<li class="replies"><p>' + message +  '<span class="message-meta">'+ timeAgoText +'<img src="{% static 'visa/images/check.png' %}" alt="Check Icon" class="check-icon" style="height:12px;width:12px;margin-left: 3px;"/></span></p></li>');
-                        //$('#chat-messages .messages ul').append('<li class="replies"><p>' + message + '</p></li>');
-                    } else {
-                        $('#chat-messages .messages ul').append('<li class="sent"><p>' + message + '<span class="message-meta">'+ timeAgoText + '</p></li>');
-                    }
-                };
-
-                chatSocket.onclose = function(e) {
-                    console.error('Chat socket closed unexpectedly');
-                };
+            if (!$(this).closest('.contact').hasClass('active')) {
+                $('.contact').removeClass('active');
+                $(this).closest('.contact').addClass('active');
+                loadGroupChat(userId);
+                {% comment %} connectToWebSocket(userId); {% endcomment %}
             }
 
-            $('.chat-group-link').click(function () {
-                const userId = $(this).data('user-id');
-
-                // Check if the clicked user's parent li is already active
-                if (!$(this).closest('.contact').hasClass('active')) {
-                    // Deactivate all users
-                    $('.contact').removeClass('active');
-
-                    // Activate the clicked user's parent li
-                    $(this).closest('.contact').addClass('active');
-
-                    // Load chat messages for the selected user using AJAX
-                    loadGroupChat(userId);
-
-                    // Connect to WebSocket
-                    connectToWebSocket(userId);
-                }
-            });
-
-            function loadGroupChat(userId) {
-                // Fetch chat messages for the selected user using AJAX
-                $.ajax({
-                    url: `/get_single_chat_messages/?user_id=${userId}`,
-                    success: function (data) {
-                        $('#chat-messages').html(data);
-                    }
-                });
-            }
-
-            // Send message
-            $('#chat-messages').on('click', '.submit', function () {
-                const messageInputDom = $('.message-input input');
-                const message = messageInputDom.val();
-                chatSocket.send(JSON.stringify({
-                    'message': message,
-                }));
-                messageInputDom.val(''); // Clear the input field after sending
-            });
-            $('#chat-messages').on('keydown',function (event){
-              if (event.key === 'Enter'){
-                event.preventDefault();
-                const messageInputDom = $('.message-input input');
-                const message = messageInputDom.val();
-                chatSocket.send(JSON.stringify({
-                    'message': message,
-                }));
-                messageInputDom.val('');
-              }
-            })
         });
+        function loadGroupChat(userId) {
+            $.ajax({
+                url: `/get_single_chat_messages/?user_id=${userId}`,
+                success: function (data) {
+                    $('#chat-messages').html(data);
+                    $('#chat-messages .messages').scrollTop($('#chat-messages .messages')[0].scrollHeight);  // Scroll to bottom
+                }
+            });
+        }
+    });
 </script>
- {% endcomment %}
+{% comment %} 
 <script>
     $(document).ready(function () {
         let chatSocket;
@@ -230,7 +167,7 @@
             }
 
             chatSocket = new WebSocket(
-                'wss://' + window.location.host + '/ws/chat/single/' + userId + '/'
+                'ws://' + window.location.host + '/ws/chat/single/' + userId + '/'
             );
 
             chatSocket.onmessage = function(e) {
@@ -316,6 +253,7 @@
             }
         });
 
+
         $('#chat-messages').on('keydown', '.message-input input', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
@@ -329,6 +267,13 @@
                 }
             }
         });
+
+       
+        
+
+        
+
+        
 
         function timeAgo(timestamp) {
             const time = new Date(timestamp);
@@ -345,23 +290,8 @@
                 return `${Math.floor(diff / 86400)} days ago`;
             }
         }
-    });
-</script>
 
-{% comment %} 
-<script>
-    $(document).ready(function () {
-        $('#searchInput').on('input', function () {
-            var searchQuery = $(this).val().toLowerCase();
-
-            // Hide all groups
-            $('.all-member').hide();
-
-            // Show only the groups that match the search query
-            $('.all-member').filter(function () {
-                return $(this).text().toLowerCase().includes(searchQuery);
-            }).show();
-        });
+       
     });
 </script> {% endcomment %}
 

@@ -646,9 +646,11 @@ def single_Chat(request):
 
 def get_single_chat_messages(request):
     user_id = request.GET.get("user_id")
+    print("user id",user_id)
     other_user_id = CustomUser.objects.get(id=user_id)
     user = request.user
 
+    usersid = request.user.id
     # Mark all unseen messages as seen
     ChatMessage.objects.filter(
         message_by=other_user_id, receive_by=user, is_seen=False
@@ -663,12 +665,25 @@ def get_single_chat_messages(request):
         'other_user_id': other_user_id,
         'user': user,
         'msg_All': msg_all,
+        'usersid': usersid,
     }
 
     chat_content = loader.render_to_string("SingleChat/chat_content.html", context)
     return HttpResponse(chat_content)
 
 
+
+
+def download_attachment(request, message_id):
+    message = get_object_or_404(ChatMessage, id=message_id)
+    file = message.attachment
+    print("fileeeeeeee",file)
+    print("fileeeeeeee name",file.name)
+
+
+    response = HttpResponse(file, content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename="{file.name}"'
+    return response
 def session_status(request):
     session_expiry = request.session.get_expiry_date()
     if timezone.now() > session_expiry:

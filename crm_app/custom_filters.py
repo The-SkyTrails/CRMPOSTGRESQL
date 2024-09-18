@@ -12,3 +12,4 @@ def filename(value):
     Extracts the filename from a given URL.
     """
     return urlparse(value).path.split('/')[-1]
+

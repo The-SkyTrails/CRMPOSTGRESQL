@@ -201,6 +201,11 @@ function timeAgo(timestamp) {
     console.log("Message Recive from server..................")
     var time = new Date().toLocaleTimeString();
     const data = JSON.parse(event.data);
+    const message = data['message'];
+    const msg_id = data['msg_id'];
+    const attachemt_img = data['attachemt_img'];
+    console.log("aaaaaaaaaaaaa",attachemt_img)
+   
     const chatLogDiv = document.querySelector('#chat-log');
     if(chatLogDiv){
         if (data.msg){
@@ -299,7 +304,7 @@ function timeAgo(timestamp) {
     document.getElementById('send-button').onclick = function (event) {
        const messageInputDom = document.getElementById('message-input');
        const message = messageInputDom.value;
-
+        
        ws.send(JSON.stringify({
            'msg': message
        }));
@@ -357,7 +362,7 @@ function timeAgo(timestamp) {
 {% comment %} 
 <script>
     $(function () {
-        $("#message-input").emojioneArea({
+       document.getElementById('attachment-input').addEventListener('change', function (event) { $("#message-input").emojioneArea({
             pickerPosition: "bottom"
         });
     });
