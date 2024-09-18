@@ -170,7 +170,7 @@
     
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            console.error("dddddddddd",data)
+            console.log("dddddddddd",data)
             const message = data['message'];
             const msg_by = data['msg_by'];
             const attachment = data['attachment'];
@@ -283,11 +283,11 @@
         };
     
         chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
+            console.log('Chat socket closed unexpectedly');
         };
     
         chatSocket.onerror = function(e) {
-            console.error('Chat socket error:', e);
+            console.log('Chat socket error:', e);
         };
     
         $('#chat-messages').on('click', '.submit', function () {
