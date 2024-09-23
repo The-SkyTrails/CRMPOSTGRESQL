@@ -1499,10 +1499,21 @@ def agent_delete(request, id):
 def admin_agent_details(request, id):
     agent = Agent.objects.get(id=id)
     users = agent.users
-    notifications = Notification.objects.get(agent=agent.id)
-    if notifications.is_seen == False:
-        notifications.is_seen = True
-        notifications.save()
+    # notifications = Notification.objects.get(agent=agent.id)
+    # # if notifications.is_seen == False:
+    # #     notifications.is_seen = True
+    # #     notifications.save()
+
+    try:
+        notification = Notification.objects.get(agent=agent.id)
+        
+        if not notification.is_seen:
+            notification.is_seen = True
+            notification.save()
+    except Notification.DoesNotExist:
+        # Handle the case where no notification exists for this agent
+        notification = None
+        print("No notification found for this agent.")
 
     if request.method == "POST":
         firstname = request.POST.get("first_name")
