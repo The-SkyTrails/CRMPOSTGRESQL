@@ -297,6 +297,11 @@ urlpatterns = [
         name="admin_appointment_leads_details",
     ),
     path(
+        "Result/Awaited",
+        admin_result_awaited,
+        name="admin_result_awaited",
+    ),
+    path(
         "DeliveredLeads/",
         admin_deleivered_leads_details,
         name="admin_deleivered_leads_details",

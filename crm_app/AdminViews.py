@@ -148,6 +148,7 @@ class admin_dashboard(LoginRequiredMixin, TemplateView):
        
 
         leadappoint_count = Enquiry.objects.filter(lead_status="Appointment" ,archive = False).count()
+        result_awaited_count = Enquiry.objects.filter(lead_status="Result Awaited" ,archive = False).count()
 
         
 
@@ -325,6 +326,7 @@ class admin_dashboard(LoginRequiredMixin, TemplateView):
         context["active_agent"] = active_agent
         context["leadinprocess_count"] = leadinprocess_count
         context["leadappoint_count"] = leadappoint_count
+        context["result_awaited_count"] = result_awaited_count
         context["completed_count"] = completed_count
         context["leadresult_count"] = leadresult_count
         # context["webpackages"] = webpackages
@@ -5203,6 +5205,73 @@ def admin_appointment_leads_details(request):
         'page_number': page_number
     }
     return render(request, "Admin/Enquiry/statusleads/appointleads.html", context)
+
+@login_required
+def admin_result_awaited(request):
+    excluded_statuses = ["Accept","Reject"]
+    lead = [status for status in leads_status if status[0] not in excluded_statuses]
+    
+    search_query = request.GET.get('query', '')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    page_number = request.GET.get('page', '1')
+    
+    queries = Q(lead_status="Result Awaited") 
+
+    if search_query:
+        search_parts = search_query.split()
+        for part in search_parts:
+            # queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part)
+            queries &= Q(FirstName__icontains=part) | Q(LastName__icontains=part) | Q(enquiry_number__icontains=part) | Q(passport_no__icontains=part) | Q(registered_on__icontains=part) | Q(Visa_country__country__icontains=part) | Q(Visa_type__icontains=part) | Q(created_by__username__icontains=part) | Q(Visa_category__category__icontains=part) | (Q(assign_to_agent__users__first_name__icontains=part) |  # Both First Name
+            Q(assign_to_agent__users__last_name__icontains=part)) | (Q(assign_to_outsourcingagent__users__first_name__icontains=part) |  Q(assign_to_outsourcingagent__users__last_name__icontains=part)) |   Q(Dob__icontains=part)
+
+    if start_date:
+        start_date = parse_date(start_date)
+        queries &= Q(registered_on__date__gte=start_date)
+
+    if end_date:
+        end_date = parse_date(end_date)
+        queries &= Q(registered_on__date__lte=end_date)
+
+    enquiry_list = Enquiry.objects.filter(queries).order_by("-id")
+
+    paginator = Paginator(enquiry_list, 10)
+    
+    
+    page = paginator.get_page(page_number)
+
+        
+    query_params = request.GET.copy()
+    if 'page' in query_params:
+        del query_params['page']
+    base_url = request.path + '?' + query_params.urlencode()
+    if query_params:
+        base_url += '&page='
+    else:
+        base_url += 'page='
+
+    presales_employees = get_presale_employee()
+    sales_employees = get_sale_employee()
+    documentation_employees = get_documentation_team_employee()
+    visa_team = get_visa_team_employee()
+    assesment_employee = get_assesment_employee()
+    agent = get_agent()
+    outsourcepartner = get_outsourcepartner()
+
+    context = {
+        "page": page,
+        "presales_employees": presales_employees,
+        "sales_employees": sales_employees,
+        "documentation_employees": documentation_employees,
+        "visa_team": visa_team,
+        "assesment_employee": assesment_employee,
+        "agent": agent,
+        "outsourcepartner": outsourcepartner,
+        "lead": lead,
+        "base_url":base_url,
+        'page_number': page_number
+    }
+    return render(request, "Admin/Enquiry/statusleads/result_awaited.html", context)
 
 
 @login_required

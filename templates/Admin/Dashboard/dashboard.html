@@ -129,7 +129,7 @@
                   </div>
                </div>
                <div class="row">
-                  <div class="col-md-6 col-6 p-1">
+                  <div class="col-md-4 col-4 p-1">
                      <a href="{% url "admin_inprocess_leads_details" %}">
                      <div class="card mb-3">
                         <div class="card-body bg3">
@@ -139,12 +139,22 @@
                      </div>
                      </a>
                   </div>
-                  <div class="col-md-6 col-6 p-1">
+                  <div class="col-md-4 col-4 p-1">
                      <a href="{% url "admin_appointment_leads_details" %}">
                      <div class="card mb-3">
                         <div class="card-body bg4">
                            <h5 class=" cases6">{{leadappoint_count}}</h5>
                            <p class="card-text textcase4">Appointment</p>
+                        </div>
+                     </div>
+                     </a>
+                  </div>
+                  <div class="col-md-4 col- p-1">
+                     <a href="{% url "admin_result_awaited" %}">
+                     <div class="card mb-3">
+                        <div class="card-body bg4">
+                           <h5 class=" cases6">{{result_awaited_count}}</h5>
+                           <p class="card-text textcase4">Result Awaited</p>
                         </div>
                      </div>
                      </a>
@@ -181,6 +191,7 @@
                      </div>
                      </a>
                   </div>
+                 
                </div>
                <div class="leadss">
                   <a href="{% url "admin_new_leads_details" %}">
