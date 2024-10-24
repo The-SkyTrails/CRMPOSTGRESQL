@@ -890,12 +890,13 @@ class Enquiry(models.Model):
         first_initial = self.FirstName[0].upper() if self.FirstName else ""
         last_initial = self.LastName[0].upper() if self.LastName else ""
         return f"{first_initial}{last_initial}"
+
     class Meta:
         db_table = "Enquiry"
-        # indexes = [
-        #     models.Index(fields=['id'], name='enquiry_id_index'),
-        #     # Add indexes for other frequently queried fields if needed
-        # ]
+        indexes = [
+            models.Index(fields=['id'], name='enquiry_id_index'),
+            # Add indexes for other frequently queried fields if needed
+        ]
 
     def save(self, *args, **kwargs):
         if not self.enquiry_number:
