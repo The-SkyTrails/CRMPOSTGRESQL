@@ -2247,7 +2247,7 @@ def visa_subcategory_edit(request, id):
         form = VisasubCategoryForm(instance=instance)
 
     return render(
-        request, "Admin/mastermodule/pricing/edit_pricing.html", {"form": form}
+        request, "Admin/mastermodule/Pricing/edit_pricing.html", {"form": form}
     )
 
 
