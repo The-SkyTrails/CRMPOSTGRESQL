@@ -890,7 +890,6 @@ class Enquiry(models.Model):
         first_initial = self.FirstName[0].upper() if self.FirstName else ""
         last_initial = self.LastName[0].upper() if self.LastName else ""
         return f"{first_initial}{last_initial}"
-
     class Meta:
         db_table = "Enquiry"
         # indexes = [
