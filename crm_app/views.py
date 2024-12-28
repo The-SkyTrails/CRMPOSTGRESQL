@@ -257,6 +257,91 @@ def verify_otp(request):
     return render(request, "Login/Otp.html", context)
 
 
+# def CustomLoginView(request):
+#     if request.method == "POST":
+#         username = request.POST.get("username")
+#         password = request.POST.get("password")
+#         request.session["username"] = username
+#         request.session["password"] = password
+
+#         try:
+#             user = CustomUser.objects.get(username=username)
+
+#             if check_password(password, user.password):
+#                 user_type = user.user_type
+
+#                 if user_type == "1":
+#                     # If user_type is "1" (HOD), log in directly
+#                     user = authenticate(request, username=username, password=password)
+
+#                     if user is not None:
+#                         login(request, user)
+#                         return redirect("SuperAdmin/crm/dashboard/")
+
+#                 elif user_type in ("2", "3", "4", "5","7"):
+#                     public_ip = get_public_ip()
+#                     LoginLog.objects.create(
+#                         user=user,
+#                         ip_address=public_ip if public_ip else None,
+#                         login_datetime=timezone.now(),
+#                         # date = timezone.now()
+#                     )
+#                     # If user_type is "2" (Admin) or "3" (Employee), proceed with OTP verification
+#                     request.session["username"] = username
+#                     request.session["password"] = password
+#                     user_id = user.id
+#                     mob = ""
+#                     customeruser = CustomUser.objects.get(id=user_id)
+#                     user_type = customeruser.user_type
+#                     if user_type == "2":
+#                         mob = customeruser.admin.contact_no
+
+#                     if user_type == "3":
+#                         mob = customeruser.employee.contact_no
+
+#                     if user_type == "4":
+#                         mob = customeruser.agent.contact_no
+
+#                     if user_type == "5":
+#                         mob = customeruser.outsourcingagent.contact_no
+#                     if user_type == "7":
+#                         mob = customeruser.subagent.contact_no
+
+#                     request.session["mobile"] = mob
+#                     random_number = random.randint(0, 99999)
+#                     send_otp = str(random_number).zfill(6)
+#                     print("opt is : ", send_otp)
+#                     request.session["sendotp"] = send_otp
+#                     login_otp_mes(send_otp,mob)
+#                     url = "http://sms.txly.in/vb/apikey.php"
+#                     payload = {
+#                         "apikey": "lbwUbocDLNFjenpa",
+#                         "senderid": "SKTRAL",
+#                         "templateid": "1007338024565017323",
+#                         "number": mob,
+#                         "message": f"Use this OTP {send_otp} to login to your. theskytrails account",
+#                     }
+#                     response = requests.post(url, data=payload)
+
+#                     # send_otp_and_redirect(request, user_id, user_type)
+#                     # return redirect("verify_otp")
+#                     return redirect("verify_otp")
+#                 else:
+#                     return HttpResponse("User type not supported")
+
+#             else:
+#                 messages.error(request, "Username and Password Incorrect")
+#                 return redirect("login")
+
+#         except CustomUser.DoesNotExist:
+#             messages.error(request, "User Does Not Exist")
+#             return redirect("login")
+#             # return HttpResponse("Username and Password Incorrect")
+
+#     return render(request, "Login/Login.html")
+
+
+
 def CustomLoginView(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -268,65 +353,43 @@ def CustomLoginView(request):
             user = CustomUser.objects.get(username=username)
 
             if check_password(password, user.password):
-                user_type = user.user_type
+                user = authenticate(request, username=username, password=password)
+                print("Authenticated user:", user)
 
-                if user_type == "1":
-                    # If user_type is "1" (HOD), log in directly
-                    user = authenticate(request, username=username, password=password)
+                if user is not None:
+                    login(request, user)
+                    user_type = user.user_type
 
-                    if user is not None:
-                        login(request, user)
-                        return redirect("SuperAdmin/crm/dashboard/")
+                    # Set user as logged in and save
+                    user.is_logged_in = True
+                    user.save()
 
-                elif user_type in ("2", "3", "4", "5","7"):
                     public_ip = get_public_ip()
                     LoginLog.objects.create(
                         user=user,
                         ip_address=public_ip if public_ip else None,
                         login_datetime=timezone.now(),
-                        # date = timezone.now()
                     )
-                    # If user_type is "2" (Admin) or "3" (Employee), proceed with OTP verification
-                    request.session["username"] = username
-                    request.session["password"] = password
-                    user_id = user.id
-                    mob = ""
-                    customeruser = CustomUser.objects.get(id=user_id)
-                    user_type = customeruser.user_type
-                    if user_type == "2":
-                        mob = customeruser.admin.contact_no
 
-                    if user_type == "3":
-                        mob = customeruser.employee.contact_no
+                    # Redirect based on user_type
+                    if user_type == "1":
+                        return redirect("SuperAdmin/crm/dashboard/")
+                    elif user_type == "2":
+                        return redirect("admin_dashboard")
+                    elif user_type == "3":
+                        return redirect("employee_dashboard")
+                    elif user_type == "4":
+                        return redirect("agent_dashboard")
+                    elif user_type == "5":
+                        return redirect("agent_dashboard")
+                    elif user_type == "7":
+                        return redirect("subagent_dashboard")
+                    else:
+                        return HttpResponse("User type not supported")
 
-                    if user_type == "4":
-                        mob = customeruser.agent.contact_no
-
-                    if user_type == "5":
-                        mob = customeruser.outsourcingagent.contact_no
-                    if user_type == "7":
-                        mob = customeruser.subagent.contact_no
-
-                    request.session["mobile"] = mob
-                    random_number = random.randint(0, 99999)
-                    send_otp = str(random_number).zfill(6)
-                    request.session["sendotp"] = send_otp
-                    login_otp_mes(send_otp,mob)
-                    url = "http://sms.txly.in/vb/apikey.php"
-                    payload = {
-                        "apikey": "lbwUbocDLNFjenpa",
-                        "senderid": "SKTRAL",
-                        "templateid": "1007338024565017323",
-                        "number": mob,
-                        "message": f"Use this OTP {send_otp} to login to your. theskytrails account",
-                    }
-                    response = requests.post(url, data=payload)
-
-                    # send_otp_and_redirect(request, user_id, user_type)
-                    # return redirect("verify_otp")
-                    return redirect("verify_otp")
                 else:
-                    return HttpResponse("User type not supported")
+                    messages.error(request, "Authentication failed")
+                    return redirect("login")
 
             else:
                 messages.error(request, "Username and Password Incorrect")
@@ -335,7 +398,6 @@ def CustomLoginView(request):
         except CustomUser.DoesNotExist:
             messages.error(request, "User Does Not Exist")
             return redirect("login")
-            # return HttpResponse("Username and Password Incorrect")
 
     return render(request, "Login/Login.html")
 

@@ -661,8 +661,7 @@ lead_type = [
     ]
 
 class Enquiry(models.Model):
-    
-    
+   
 
     Salutation = models.CharField(
         max_length=20, choices=SALUTATION_CHOICES, null=True, blank=True

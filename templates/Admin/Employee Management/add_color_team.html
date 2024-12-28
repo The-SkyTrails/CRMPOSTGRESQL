@@ -104,7 +104,7 @@
 
                     <div class="row formrow">
                         {% for user in visateam %}
-                        <div class="col-md-4">
+                        <div class="col-xxl-3 col-md-4">
                             <input type="checkbox" name="selected_users" value="{{ user.users.id }}" id="user_{{ user.users.id }}">
                             <label for="user_{{ user.users.id }}">{{ user.users.first_name }} {{ user.users.last_name }}</label>
                             

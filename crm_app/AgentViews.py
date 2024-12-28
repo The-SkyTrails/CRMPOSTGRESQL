@@ -1119,7 +1119,7 @@ class FAQCreateView(LoginRequiredMixin, CreateView):
         form.instance.user = self.request.user
 
         user = self.request.user.agent
-        form.instance.employee = user.assign_employee
+        form.instance.Employee = user.assign_employee
 
         messages.success(self.request, "FAQ Added Successfully.")
 

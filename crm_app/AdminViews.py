@@ -1281,15 +1281,7 @@ def add_agent(request):
                     ) % sales_team_employees.count()
                     user.agent.assign_employee = sales_team_employees[next_index]
                     cache.set("last_assigned_index", next_index)
-                    # chat_group_name = f"{fullname} Group"
-                    # chat_group = ChatGroup.objects.create(
-                    #     group_name=chat_group_name,
-                    #     create_by=logged_in_user,
-                    # )
-                    # chat_group.group_member.add(
-                    #     user.agent.assign_employee.users
-                    # )  # Add assigned employee
-                    # chat_group.group_member.add(user)
+                    
 
                 user.save()
                 send_congratulatory_email(
@@ -1365,32 +1357,7 @@ class all_agent(LoginRequiredMixin, ListView):
     context_object_name = "agent"
     paginate_by = 10
 
-    # def get_queryset(self):
-    #     query = self.request.GET.get('query', '')
-    #     agents = Agent.objects.all().order_by("-id")
-    #     start_date = self.request.GET.get('start_date')
-        
-    #     end_date = self.request.GET.get('end_date')
-    #     queries = Q()
-    #     if query:
-    #         search_parts = query.split()
-            
-    #         for part in search_parts:
-    #             # queries |= Q(first_name__icontains=part) | Q(last_name__icontains=part) | Q(agent_code__icontains=part)
-    #             queries &= Q(users__first_name__icontains=part) | Q(users__last_name__icontains=part) | Q(contact_no__icontains=part) | Q(users__email__icontains=part)  | Q(registerdby__first_name__icontains=part) 
-            
-        
-    #     if start_date:
-    #         start_date = parse_date(start_date)
-    #         queries &= Q(registeron__date__gte=start_date)
-            
-
-    #     if end_date:
-    #         end_date = parse_date(end_date)
-    #         queries &= Q(registeron__date__lte=end_date)
-    #     agents = Agent.objects.filter(queries)
-    #     return agents
-
+   
     def get_queryset(self):
         query = self.request.GET.get('query', '')
         start_date = self.request.GET.get('start_date')
@@ -3940,13 +3907,11 @@ def FAQUpdateView(request):
         question_id = request.POST.get("question_id")
         question = request.POST.get("question")
         answer = request.POST.get("answer")
-
         question_id = FAQ.objects.get(id=question_id)
         question_id.question = question
         question_id.answer = answer
 
         question_id.user = user
-
         question_id.save()
         messages.success(request, "Question Updated successfully")
         return HttpResponseRedirect(reverse("Admin_resolved_queries"))
