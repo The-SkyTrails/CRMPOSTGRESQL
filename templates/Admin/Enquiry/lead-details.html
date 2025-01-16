@@ -418,14 +418,14 @@
                   </td>
                   <td>
                      {% if i.lead_status == "Appointment" %}
-                     <button class="btn btn-warning" data-toggle="modal" data-target="#addappointment{{i.id}}"">Add Appointment</button>
+                     <button class="btn btn-warning" data-toggle="modal" data-target="#addappointment{{i.id}}">Add Appointment</button>
                      {% endif %}
                      {% if i.enqappointment_set.exists %}
                      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#appointmentModal-{{i.id}}" data-bs-whatever="@getbootstrap"  style="margin-top:4px;">View Appointment</button>
                      {% endif %}
                      {% if i.enqappointment_set.exists %}
                      {% if i.enqappointment_set.last.status == "Done" %}
-                     {% comment %} <button class="btn btn-info" style="margin-top:2px; width:180px;" disabled>Appointment Done</button> {% endcomment %}
+                     <button class="btn btn-info" style="margin-top:2px; width:180px;" disabled>Appointment Done</button>
                      {% elif dep == "Sales" %}
                      <a href="{% url "appointment_done" i.id %}"><button class="btn btn-info" style="margin-top:2px; width:180px;">Appointment Done</button></a>
                      {% endif %}
